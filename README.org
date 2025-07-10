@@ -1,0 +1,3 @@
+** Emacs Configuration
+
+My Emacs configuration - based off of the amazing [[https://github.com/jamescherti/minimal-emacs.d][minimal-emacs.d]]
