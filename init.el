@@ -261,6 +261,12 @@
       window-divider-default-places t
       window-divider-default-right-width 1)
 
+;;; Fontification
+
+;; Disable fontification during user input to reduce lag in large buffers.
+;; Also helps marginally with scrolling performance.
+(setq redisplay-skip-fontification-on-input t)
+
 ;;; Scrolling
 
 ;; Enables faster scrolling. This may result in brief periods of inaccurate
@@ -421,13 +427,16 @@
 (setq dired-omit-files (concat "\\`[.]\\'"))
 
 ;; Group directories first
-(let ((args "--group-directories-first -ahlv"))
-  (when (featurep :system 'bsd)
-    (if-let* ((gls (executable-find "gls")))
-        (setq insert-directory-program gls)
-      (setq args nil)))
-  (when args
-    (setq dired-listing-switches args)))
+(when minimal-emacs-dired-group-directories-first
+  (with-eval-after-load 'dired
+    (let ((args "--group-directories-first -ahlv"))
+      (when (or (eq system-type 'darwin)
+                (eq system-type 'berkeley-unix))
+        (if-let* ((gls (executable-find "gls")))
+            (setq insert-directory-program gls)
+          (setq args nil)))
+      (when args
+        (setq dired-listing-switches args)))))
 
 (setq ls-lisp-verbosity nil)
 (setq ls-lisp-dirs-first t)
@@ -551,7 +560,8 @@
 ;;; Remove warnings from narrow-to-region, upcase-region...
 
 (dolist (cmd '(list-timers narrow-to-region upcase-region downcase-region
-                           erase-buffer scroll-left dired-find-alternate-file))
+                           list-threads erase-buffer scroll-left
+                           dired-find-alternate-file))
   (put cmd 'disabled nil))
 
 ;;; Load post init
