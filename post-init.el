@@ -37,24 +37,24 @@
 ;; My themeing
 (mapc #'disable-theme custom-enabled-themes)  ; Disable all active themes
 
-;; (use-package doom-themes
-;;   :ensure t
-;;   :custom
-;;   ;; Global settings (defaults)
-;;   (doom-themes-enable-bold t)   ; if nil, bold is universally disabled
-;;   (doom-themes-enable-italic t) ; if nil, italics is universally disabled
-;;   ;; for treemacs users
-;;   ;;  (doom-themes-treemacs-theme "doom-tokyo-night") ; use "doom-colors" for less minimal icon theme
-;;   :config
-;;   (load-theme 'doom-tokyo-night t)
-;;
-;;   ;; Enable flashing mode-line on errors
-;;   ;;  (doom-themes-visual-bell-config)
-;;   ;; Enable custom neotree theme (nerd-icons must be installed!)
-;;   ;; or for treemacs users
-;;   (doom-themes-treemacs-config)
-;;   ;; Corrects (and improves) org-mode's native fontification.
-;;   (doom-themes-org-con fig))
+(use-package doom-themes
+  :ensure t
+  :custom
+  ;; Global settings (defaults)
+  (doom-themes-enable-bold t)   ; if nil, bold is universally disabled
+  (doom-themes-enable-italic t) ; if nil, italics is universally disabled
+  ;; for treemacs users
+  ;;(doom-themes-treemacs-theme "doom-tokyo-night") ; use "doom-colors" for less minimal icon theme
+  :config
+  (load-theme 'doom-tokyo-night t)
+
+  ;; Enable flashing mode-line on errors
+  ;;  (doom-themes-visual-bell-config)
+  ;; Enable custom neotree theme (nerd-icons must be installed!)
+  ;; or for treemacs users
+  (doom-themes-treemacs-config)
+  ;; Corrects (and improves) org-mode's native fontification.
+  (doom-themes-org-config))
 
 
 ;; Auto-revert in Emacs is a feature that automatically updates the
@@ -120,12 +120,12 @@
 ;; by providing additional backends through completion-at-point-functions.
 (use-package cape
   :ensure t
-  :commands (cape-dabbrev cape-file cape-elisp-block)
+  :commands (cape-file cape-elisp-block)
   :bind ("C-c p" . cape-prefix-map)
   :init
   ;; Add to the global default value of `completion-at-point-functions' which is
   ;; used by `completion-at-point'.
-  (add-hook 'completion-at-point-functions #'cape-dabbrev)
+  ;; (add-hook 'completion-at-point-functions #'cape-dabbrev)
   (add-hook 'completion-at-point-functions #'cape-file)
   (add-hook 'completion-at-point-functions #'cape-elisp-block))
 
@@ -154,7 +154,7 @@
 (use-package marginalia
   :ensure t
   :commands (marginalia-mode marginalia-cycle)
-  :hook (after-init . marginalia-mode))
+  :hook (after-init-hook . marginalia-mode))
 
 ;; Embark integrates with Consult and Vertico to provide context-sensitive
 ;; actions and quick access to commands based on the current selection, further
@@ -341,14 +341,18 @@
              undo-fu-only-redo-all
              undo-fu-disable-checkpoint)
   :config
-  (global-set-key (kbd "M-/") 'undo-fu-only-redo))
+  (global-unset-key (kbd "C-z")))
+
 
 ;; The undo-fu-session package complements undo-fu by enabling the saving
 ;; and restoration of undo history across Emacs sessions, even after restarting.
+;; (use-package undo-fu-session
+;;   :ensure t
+;;   :hook (after-init . undo-fu-session-global-mode))
 (use-package undo-fu-session
   :ensure t
-  :commands undo-fu-session-global-mode
-  :hook (after-init . undo-fu-session-global-mode))
+  :init
+  (undo-fu-session-global-mode))
 
 ;; Give Emacs sessions-bar a style similar to Vim's
 (use-package vim-tab-bar
@@ -389,6 +393,8 @@
       '((sequence "TODO(t)" "|" "DONE(d)")
         (sequence "REPORT(r)" "BUG(b)" "KNOWNCAUSE(k)" "|" "FIXED(f)")
         (sequence "|" "CANCELED(c)")))
+(use-package htmlize
+  :defer t)
 
 ;; The markdown-mode package provides a major mode for Emacs for syntax
 ;; highlighting, editing commands, and preview support for Markdown documents.
@@ -704,7 +710,8 @@
 ;; my custom junk that will probably slowww this down
 (use-package doom-modeline
   :ensure t
-  :hook (after-init . doom-modeline-mode))
+  :init (doom-modeline-mode 1))
+
 
 (setq visible-bell t)
 (use-package nerd-icons)
@@ -920,11 +927,15 @@ function that sets `deactivate-mark' to t."
   (setq ivy-mode t)
   (setopt ivy-use-virtual-buffers t)
   (setopt enable-recursive-minibuffers t)
+  (setopt ivy-toggle-fuzzy t)
   (setq ivy-initial-inputs-alist nil)
   ;; Enable this if you want `swiper' to use it:
   ;; (setopt search-default-mode #'char-fold-to-regexp)
   )
 
+(use-package ivy-prescient
+  :ensure t
+  :hook (ivy-mode . ivy-prescient-mode))
 ;; additions from https://zzamboni.org/post/my-doom-emacs-configuration-with-commentary/
 (setq kill-whole-line t)
 
@@ -940,3 +951,24 @@ function that sets `deactivate-mark' to t."
   :commands (nix-modeline-mode)
   :config
   (setq nix-modeline-idle-text ""))
+
+
+;; git gutter from https://ianyepan.github.io/posts/emacs-git-gutter/
+(use-package git-gutter
+  :hook (prog-mode . git-gutter-mode)
+  :config
+  (setq git-gutter:update-interval 0.02))
+
+(use-package git-gutter-fringe
+  :config
+  (define-fringe-bitmap 'git-gutter-fr:added [224] nil nil '(center repeated))
+  (define-fringe-bitmap 'git-gutter-fr:modified [224] nil nil '(center repeated))
+  (define-fringe-bitmap 'git-gutter-fr:deleted [128 192 224 240] nil nil 'bottom))
+
+
+(use-package vundo
+  :bind ("M-/" . vundo)
+  :hook (prog-mode . vundo-popup-mode)
+  :config
+  (setq vundo-glyph-alist vundo-unicode-symbols)
+  (setq vundo-popup-timeout 1))
