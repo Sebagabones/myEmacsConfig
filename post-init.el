@@ -934,8 +934,19 @@ function that sets `deactivate-mark' to t."
   )
 
 (use-package ivy-prescient
-  :ensure t
-  :hook (ivy-mode . ivy-prescient-mode))
+
+  :after counsel
+  :config
+  (ivy-prescient-mode 1))
+
+(use-package company-prescient
+  :after company
+  :config
+  (company-prescient-mode 1))
+
+(prescient-persist-mode 1)
+(setq completion-preview-sort-function #'prescient-completion-sort)
+
 ;; additions from https://zzamboni.org/post/my-doom-emacs-configuration-with-commentary/
 (setq kill-whole-line t)
 
@@ -968,7 +979,5 @@ function that sets `deactivate-mark' to t."
 
 (use-package vundo
   :bind ("M-/" . vundo)
-  :hook (prog-mode . vundo-popup-mode)
   :config
-  (setq vundo-glyph-alist vundo-unicode-symbols)
-  (setq vundo-popup-timeout 1))
+  (setq vundo-glyph-alist vundo-unicode-symbols))
