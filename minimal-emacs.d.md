@@ -1781,6 +1781,10 @@ The *minimal-emacs.d* project includes two initialization files:
 - `early-init.el`: Loaded early in the Emacs startup process, before the graphical interface is initialized. Introduced in Emacs 27, this file configures settings that influence startup performance and GUI behavior prior to package loading.
 - `init.el`: Loaded after the graphical interface is initialized. This file contains user customizations, including variable settings, package loading, mode configurations, and keybindings.
 
+Excluding empty lines, comments, and docstrings, the minimal-emacs.d configuration is approximately 450 lines long. It does not introduce additional functionality beyond offering improved default settings. The user retains full control over which packages to install and which modes to enable.
+
+Emacs comes with many well-designed defaults, but it also retains some less-than-ideal settings, often due to historical constraints or legacy compatibility. The purpose of *minimal-emacs.d* is to offer refined defaults that improve both usability and performance, replacing long-standing Emacs settings that no longer serve modern workflows well.
+
 ![](https://www.jamescherti.com/misc/screenshot-minimal-emacs-2.png)
 *(The theme shown in the screenshot above is ef-melissa-light, which is part of the ef-themes collection available on MELPA.)*
 ![](https://www.jamescherti.com/misc/screenshot-minimal-emacs-1.png)
@@ -1811,6 +1815,7 @@ In addition to *minimal-emacs.d*, startup speed is influenced by your computer's
   - [Debug on error](#debug-on-error)
   - [Customizations: UI (pre-early-init.el)](#customizations-ui-pre-early-initel)
     - [How to enable the menu-bar, the tool-bar, dialogs, the contextual menu, and tooltips?](#how-to-enable-the-menu-bar-the-tool-bar-dialogs-the-contextual-menu-and-tooltips)
+    - [Reducing clutter in `~/.emacs.d` by redirecting files to `~/.emacs.d/var/`](#reducing-clutter-in-emacsd-by-redirecting-files-to-emacsdvar)
   - [Customizations: Packages (post-init.el)](#customizations-packages-post-initel)
     - [Optimization: Native Compilation](#optimization-native-compilation)
     - [How to activate recentf, savehist, saveplace, and auto-revert?](#how-to-activate-recentf-savehist-saveplace-and-auto-revert)
@@ -1825,14 +1830,18 @@ In addition to *minimal-emacs.d*, startup speed is influenced by your computer's
     - [Enhancing undo/redo](#enhancing-undoredo)
     - [Configuring Vim keybindings using Evil?](#configuring-vim-keybindings-using-evil)
     - [Configuring LSP Servers with Eglot (built-in)](#configuring-lsp-servers-with-eglot-built-in)
-    - [Session Management](#session-management)
+    - [Persisting and Restoring all buffers, windows/split, tab-bar, frames...](#persisting-and-restoring-all-buffers-windowssplit-tab-bar-frames)
     - [Configuring org-mode](#configuring-org-mode)
     - [Configuring markdown-mode (e.g., README.md syntax)](#configuring-markdown-mode-eg-readmemd-syntax)
     - [Tree-sitter Integration (Better Syntax Highlighting)](#tree-sitter-integration-better-syntax-highlighting)
+    - [Auto upgrade Emacs packages](#auto-upgrade-emacs-packages)
+    - [Safely terminating unused buffers](#safely-terminating-unused-buffers)
     - [Treemacs, a tree layout file explorer (Sidebar file explorer)](#treemacs-a-tree-layout-file-explorer-sidebar-file-explorer)
     - [Inhibit the mouse](#inhibit-the-mouse)
     - [Spell checker](#spell-checker)
+    - [Efficient jumps for enhanced productivity](#efficient-jumps-for-enhanced-productivity)
     - [Asynchronous code formatting without cursor disruption](#asynchronous-code-formatting-without-cursor-disruption)
+    - [Efficient template expansion with snippets](#efficient-template-expansion-with-snippets)
     - [A better Emacs *help* buffer](#a-better-emacs-help-buffer)
     - [Enhancing the Elisp development experience](#enhancing-the-elisp-development-experience)
     - [Showing the tab-bar](#showing-the-tab-bar)
@@ -1840,7 +1849,6 @@ In addition to *minimal-emacs.d*, startup speed is influenced by your computer's
     - [Changing the Default Font](#changing-the-default-font)
     - [Which other customizations can be interesting to add?](#which-other-customizations-can-be-interesting-to-add)
   - [Customizations: pre-early-init.el](#customizations-pre-early-initel)
-    - [Reducing clutter in `~/.emacs.d` by redirecting files to `~/.emacs.d/var/`](#reducing-clutter-in-emacsd-by-redirecting-files-to-emacsdvar)
     - [Configuring straight.el](#configuring-straightel)
     - [Configuring elpaca (package manager)](#configuring-elpaca-package-manager)
   - [Frequently asked questions](#frequently-asked-questions)
@@ -1946,6 +1954,23 @@ To customize your Emacs setup to include various user interface elements, you ca
 ```
 
 These settings control the visibility of dialogs, context menus, toolbars, menu bars, and tooltips.
+
+### Reducing clutter in `~/.emacs.d` by redirecting files to `~/.emacs.d/var/`
+
+Emacs, by default, stores various configuration files, caches, backups, and other data in the `~/.emacs.d` directory. Over time, this directory can become cluttered with numerous files, making it difficult to manage and maintain.
+
+A common solution to this issue is installing the no-littering package; however, this package is not essential.
+
+An alternative lightweight approach is to simply change the default `~/.emacs.d` directory to `~/.emacs.d/var/`, which will contain all the files that Emacs typically stores in the base directory. This can be accomplished by adding the following code to `~/.emacs.d/pre-early-init.el`:
+``` emacs-lisp
+;; Reducing clutter in ~/.emacs.d by redirecting files to ~/.emacs.d/var/
+;; IMPORTANT: This part should be in the pre-early-init.el file
+(setq minimal-emacs-var-dir (expand-file-name "var/" minimal-emacs-user-directory))
+(setq package-user-dir (expand-file-name "elpa" minimal-emacs-var-dir))
+(setq user-emacs-directory minimal-emacs-var-dir)
+```
+
+**IMPORTANT:** The code above should be added to `~/.emacs.d/pre-early-init.el`, not the other files, as it modifies the behavior of all subsequent init files.
 
 ## Customizations: Packages (post-init.el)
 
@@ -2424,7 +2449,7 @@ To enable **stripspace** and automatically delete trailing whitespace, add the f
 
 ### Enhancing undo/redo
 
-The undo-fu package is a lightweight wrapper around Emacs' built-in undo system, providing more convenient undo/redo functionality while preserving access to the full undo history. The undo-fu-session package complements undo-fu by enabling the saving and restoration of undo history across Emacs sessions, even after restarting.
+The [undo-fu](https://codeberg.org/ideasman42/emacs-undo-fu) package is a lightweight wrapper around Emacs' built-in undo system, providing more convenient undo/redo functionality while preserving access to the full undo history. The [undo-fu-session](https://codeberg.org/ideasman42/emacs-undo-fu-session) package complements undo-fu by enabling the saving and restoration of undo history across Emacs sessions, even after restarting.
 
 The default undo system in Emacs has two main issues that undo-fu fixes:
 
@@ -2602,7 +2627,7 @@ Here is an example of how to configure Eglot to enable or disable certain option
                          :rope_autoimport (:enabled :json-false)))))
 ```
 
-### Session Management
+### Persisting and Restoring all buffers, windows/split, tab-bar, frames...
 
 The [easysession](https://github.com/jamescherti/easysession.el) Emacs package is a session manager for Emacs that can persist and restore file editing buffers, indirect buffers/clones, Dired buffers, windows/splits, the built-in tab-bar (including tabs, their buffers, and windows), and Emacs frames. It offers a convenient and effortless way to manage Emacs editing sessions and utilizes built-in Emacs functions to persist and restore frames.
 
@@ -2686,15 +2711,35 @@ To configure **markdown-mode**, add the following to `~/.emacs.d/post-init.el`:
   :mode (("\\.markdown\\'" . markdown-mode)
          ("\\.md\\'" . markdown-mode)
          ("README\\.md\\'" . gfm-mode))
-  :init
-  (setq markdown-command "multimarkdown")
-
   :bind
   (:map markdown-mode-map
         ("C-c C-e" . markdown-do)))
 ```
 
 This configuration sets up `markdown-mode` with deferred loading to improve startup performance. The `:commands` and `:mode` keywords ensure that the mode is loaded only when needed—for example, when opening `.md`, `.markdown`, or `README.md` files. Files named `README.md` are specifically associated with `gfm-mode`, which is for GitHub Flavored Markdown syntax. The `markdown-command` variable is set to `"multimarkdown"` to specify the Markdown processor used for previews and exports. Additionally, a keybinding (`C-c C-e`) is defined in `markdown-mode-map` to invoke `markdown-do`, which can be customized to perform common Markdown-related actions.
+
+**Table of contents:** To generate a table of contents when editing Markdown files, add the following to your `~/.emacs.d/post-init.el`:
+```elisp
+;; Automatically generate a table of contents when editing Markdown files
+(use-package markdown-toc
+  :ensure t
+  :commands (markdown-toc-generate-toc
+             markdown-toc-generate-or-refresh-toc
+             markdown-toc-delete-toc
+             markdown-toc--toc-already-present-p)
+  :custom
+  (markdown-toc-header-toc-title "**Table of Contents**"))
+```
+
+Once installed:
+
+- To **insert a table of contents** for the first time, run: `M-x markdown-toc-generate-toc`
+- To **update an existing table of contents**, run: `M-x markdown-toc-generate-or-refresh-toc`
+- To **remove an existing table of contents**, run: `M-x markdown-toc-delete-toc`
+
+These commands work on any Markdown buffer and rely on properly formatted headers (e.g., `#`, `##`) to build the table of contents.
+
+The author also recommends reading the following article: [Emacs: Automating Table of Contents Update for Markdown Documents (e.g., README.md)](https://www.jamescherti.com/emacs-markdown-table-of-contents-update-before-save/).
 
 ### Tree-sitter Integration (Better Syntax Highlighting)
 
@@ -2718,6 +2763,79 @@ To enable Tree-sitter, add the following to your `~/.emacs.d/post-init.el`:
   (treesit-auto-add-to-auto-mode-alist 'all)
   (global-treesit-auto-mode))
 ```
+
+### Auto upgrade Emacs packages
+
+The `auto-package-update` package that automates the process of updating installed packages managed by *package.el*. Instead of requiring users to manually invoke `package-list-packages` and update each package, `auto-package-update` can check for available updates at regular intervals, perform updates in the background, and optionally hide the results buffer or prompt before applying changes.
+
+To configure **auto-package-update**, add the following to `~/.emacs.d/post-init.el`:
+
+```elisp
+;; This automates the process of updating installed packages
+(use-package auto-package-update
+  :ensure t
+  :custom
+  ;; Set the number of days between automatic updates.
+  ;; Here, packages will only be updated if at least 7 days have passed
+  ;; since the last successful update.
+  (auto-package-update-interval 7)
+
+  ;; Suppress display of the *auto-package-update results* buffer after updates.
+  ;; This keeps the user interface clean and avoids unnecessary interruptions.
+  (auto-package-update-hide-results t)
+
+  ;; Automatically delete old package versions after updates to reduce disk
+  ;; usage and keep the package directory clean. This prevents the accumulation
+  ;; of outdated files in Emacs’s package directory, which consume
+  ;; unnecessary disk space over time.
+  (auto-package-update-delete-old-versions t)
+
+  ;; Uncomment the following line to enable a confirmation prompt
+  ;; before applying updates. This can be useful if you want manual control.
+  ;; (auto-package-update-prompt-before-update t)
+
+  :config
+  ;; Run package updates automatically at startup, but only if the configured
+  ;; interval has elapsed.
+  (auto-package-update-maybe)
+
+  ;; Schedule a background update attempt daily at 10:00 AM.
+  ;; This uses Emacs' internal timer system. If Emacs is running at that time,
+  ;; the update will be triggered. Otherwise, the update is skipped for that
+  ;; day. Note that this scheduled update is independent of
+  ;; `auto-package-update-maybe` and can be used as a complementary or
+  ;; alternative mechanism.
+  (auto-package-update-at-time "10:00"))
+```
+
+### Safely terminating unused buffers
+
+The [buffer-terminator](https://github.com/jamescherti/buffer-terminator.el) Emacs package *automatically and safely kills buffers*, ensuring a clean and efficient workspace while *enhancing the performance of Emacs* by reducing open buffers, which minimizes active modes, timers, processes...
+
+Beyond performance, *buffer-terminator* provides other benefits. For instance, if you occasionally need to close annoying or unused buffers, *buffer-terminator* can handle this automatically, eliminating the need for manual intervention. (The default configuration is suitable for most users. However, the *buffer-terminator* package is highly customizable. You can define specific rules for retaining or terminating buffers by modifying the `buffer-terminator-rules-alist` with your preferred set of rules.)
+
+To configure **buffer-terminator**, add the following to `~/.emacs.d/post-init.el`:
+
+```emacs-lisp
+(use-package buffer-terminator
+  :ensure t
+  :custom
+  ;; Enable/Disable verbose mode to log buffer cleanup events
+  (buffer-terminator-verbose nil)
+
+  ;; Set the inactivity timeout (in seconds) after which buffers are considered
+  ;; inactive (default is 30 minutes):
+  (buffer-terminator-inactivity-timeout (* 30 60)) ; 30 minutes
+
+  ;; Define how frequently the cleanup process should run (default is every 10
+  ;; minutes):
+  (buffer-terminator-interval (* 10 60)) ; 10 minutes
+
+  :config
+  (buffer-terminator-mode 1))
+```
+
+(By default, *buffer-terminator* automatically determines which buffers are safe to terminate. However, if you need to define specific rules for keeping or terminating certain buffers, you can configure them using `buffer-terminator-rules-alist`.)
 
 ### Treemacs, a tree layout file explorer (Sidebar file explorer)
 
@@ -2914,6 +3032,25 @@ To configure **flyspell**, add the following to `~/.emacs.d/post-init.el`:
                                        flyspell-prog-text-faces)))
 ```
 
+### Efficient jumps for enhanced productivity
+
+The [avy](https://github.com/abo-abo/avy) package is a navigation framework designed for jumping directly to any visible text on the screen with minimal keystrokes. The primary benefit of *avy* is a substantial increase in navigational efficiency, as it minimizes keystrokes compared to iterative methods like arrow keys or standard search.
+
+It operates by generating a dynamic, temporary mapping: upon invocation, such as with the command `avy-goto-char` or `avy-goto-char-2`, the user inputs a target character, and `avy` highlights all visible instances on the screen with unique key sequences. Typing the short sequence corresponding to the desired location instantly moves the point directly there.
+
+To configure **avy**, add the following to `~/.emacs.d/post-init.el`:
+```elisp
+(use-package avy
+  :ensure t
+  :commands (avy-goto-char
+             avy-goto-char-2
+             avy-next)
+  :init
+  (global-set-key (kbd "C-'") 'avy-goto-char-2))
+```
+
+The author recommends using `avy-goto-char-2` (typically bound to `C-'`). Upon invocation, *avy* prompts the user to input a two-character sequence. Subsequently, all visible instances of this sequence are highlighted with unique, concise labels (e.g., single letters or numbers). The user then simply presses the key corresponding to the desired label, and *avy* instantly transports the cursor to that specific occurrence.
+
 ### Asynchronous code formatting without cursor disruption
 
 [Apheleia](https://github.com/radian-software/apheleia) is an Emacs package designed to run code formatters asynchronously without disrupting the cursor position. Code formatters like Shfmt, Black and Prettier ensure consistency and improve collaboration by automating formatting, but running them on save can introduce latency (e.g., Black takes around 200ms on an empty file) and unpredictably move the cursor when modifying nearby text.
@@ -2933,9 +3070,50 @@ To configure **apheleia**, add the following to `~/.emacs.d/post-init.el`:
   :hook ((prog-mode . apheleia-mode)))
 ```
 
+### Efficient template expansion with snippets
+
+The [yasnippet](https://github.com/joaotavora/yasnippet) package provides a template system that enhances text editing by enabling users to define and use snippets, which are predefined templates of code or text. The user triggers snippet expansion by pressing the Tab key after typing an abbreviation, such as `if`. Upon pressing Tab, YASnippet replaces the abbreviation with the corresponding full template, allowing the user to fill in placeholders or fields within the expanded snippet.
+
+The [yasnippet-snippets](https://github.com/AndreaCrotti/yasnippet-snippets) package with a comprehensive collection of bundled templates for numerous programming and markup languages, including C, C++, C#, Perl, Python, Ruby, SQL, LaTeX, HTML, CSS...
+
+(NOTE: Users of UltiSnips, a popular snippet engine for Vim, can export their snippets to YASnippet format using the tool [ultyas](https://github.com/jamescherti/ultyas))
+
+
+```elisp
+;; The official collection of snippets for yasnippet.
+(use-package yasnippet-snippets
+  :ensure t
+  :after yasnippet)
+
+;; YASnippet is a template system designed that enhances text editing by
+;; enabling users to define and use snippets. When a user types a short
+;; abbreviation, YASnippet automatically expands it into a full template, which
+;; can include placeholders, fields, and dynamic content.
+(use-package yasnippet
+  :ensure t
+  :commands (yas-minor-mode
+             yas-global-mode)
+
+  :hook
+  (after-init . yas-global-mode)
+
+  :custom
+  (yas-also-auto-indent-first-line t)  ; Indent first line of snippet
+  (yas-also-indent-empty-lines t)
+  (yas-snippet-revival nil)  ; Setting this to t causes issues with undo
+  (yas-wrap-around-region nil) ; Do not wrap region when expanding snippets
+  ;; (yas-triggers-in-field nil)  ; Disable nested snippet expansion
+  ;; (yas-indent-line 'fixed) ; Do not auto-indent snippet content
+  ;; (yas-prompt-functions '(yas-no-prompt))  ; No prompt for snippet choices
+
+  :init
+  ;; Suppress verbose messages
+  (setq yas-verbosity 0))
+```
+
 ### A better Emacs *help* buffer
 
-Helpful is an alternative to the built-in Emacs help that provides much more contextual information.
+[Helpful](https://github.com/Wilfred/helpful) is an alternative to the built-in Emacs help that provides much more contextual information.
 
 To configure **helpful**, add the following to `~/.emacs.d/post-init.el`:
 ```emacs-lisp
@@ -3109,9 +3287,6 @@ fc-list : family | sed 's/,/\n/g' | sort -u
 ;; closing windows.
 (add-hook 'after-init-hook #'winner-mode)
 
-;; Replace selected text with typed text
-;; (delete-selection-mode 1)
-
 (use-package uniquify
   :ensure nil
   :custom
@@ -3154,6 +3329,24 @@ fc-list : family | sed 's/,/\n/g' | sort -u
 (setq vc-make-backup-files t)
 (setq kept-old-versions 10)
 (setq kept-new-versions 10)
+
+;; When tooltip-mode is enabled, certain UI elements (e.g., help text,
+;; mouse-hover hints) will appear as native system tooltips (pop-up windows),
+;; rather than as echo area messages. This is useful in graphical Emacs sessions
+;; where tooltips can appear near the cursor.
+(setq tooltip-hide-delay 20)    ; Time in seconds before a tooltip disappears (default: 10)
+(setq tooltip-delay 0.4)        ; Delay before showing a tooltip after mouse hover (default: 0.7)
+(setq tooltip-short-delay 0.08) ; Delay before showing a short tooltip (Default: 0.1)
+(tooltip-mode 1)
+
+;; Configure the built-in Emacs server to start after initialization,
+;; allowing the use of the emacsclient command to open files in the
+;; current session.
+(use-package server
+  :ensure nil
+  :commands server-start
+  :hook
+  (after-init . server-start))
 ```
 
 It is also recommended to read the following articles:
@@ -3162,23 +3355,6 @@ It is also recommended to read the following articles:
 
 
 ## Customizations: pre-early-init.el
-
-### Reducing clutter in `~/.emacs.d` by redirecting files to `~/.emacs.d/var/`
-
-Emacs, by default, stores various configuration files, caches, backups, and other data in the `~/.emacs.d` directory. Over time, this directory can become cluttered with numerous files, making it difficult to manage and maintain.
-
-A common solution to this issue is installing the no-littering package; however, this package is not essential.
-
-An alternative lightweight approach is to simply change the default `~/.emacs.d` directory to `~/.emacs.d/var/`, which will contain all the files that Emacs typically stores in the base directory. This can be accomplished by adding the following code to `~/.emacs.d/pre-early-init.el`:
-``` emacs-lisp
-;; Reducing clutter in ~/.emacs.d by redirecting files to ~/.emacs.d/var/
-;; IMPORTANT: This part should be in the pre-early-init.el file
-(setq minimal-emacs-var-dir (expand-file-name "var/" minimal-emacs-user-directory))
-(setq package-user-dir (expand-file-name "elpa" minimal-emacs-var-dir))
-(setq user-emacs-directory minimal-emacs-var-dir)
-```
-
-**IMPORTANT:** The code above should be added to `~/.emacs.d/pre-early-init.el`, not the other files, as it modifies the behavior of all subsequent init files.
 
 ### Configuring straight.el
 
@@ -3204,7 +3380,9 @@ The `straight.el` package is a declarative package manager for Emacs that aims t
   (load bootstrap-file nil 'nomessage))
 ```
 
-### Configuring elpaca (package manager)
+### Configuring Elpaca (package manager)
+
+**NOTE:** If you choose to use the Elpaca package manager, it is recommended to replace `after-init` and `emacs-startup` with `elpaca-after-init` when using the `:hook` keyword in `use-package`. Likewise, when using `add-hook`, substitute `after-init-hook` and `emacs-startup-hook` with `elpaca-after-init-hook` to ensure execution occurs only after Elpaca has initialized all queued packages.
 
 Elpaca is a modern, asynchronous package manager for Emacs designed to be a drop-in replacement for `package.el` and `straight.el`, with enhanced performance and flexibility. Unlike traditional Emacs package managers, Elpaca installs packages asynchronously, allowing Emacs to remain responsive during installation and updates.
 
@@ -3216,7 +3394,7 @@ Add to `~/.emacs.d/pre-early-init.el`:
 (setq minimal-emacs-package-initialize-and-refresh nil)
 ```
 
-And [add the elpaca bootstrap code](https://github.com/progfolio/elpaca?tab=readme-ov-file#installer) to `~/.emacs.d/pre-init.el`:
+And [add the Elpaca bootstrap code](https://github.com/progfolio/elpaca?tab=readme-ov-file#installer) to `~/.emacs.d/pre-init.el`:
 ```elisp
 ;; Elpaca bootstrap
 (defvar elpaca-installer-version 0.11)
@@ -3461,6 +3639,7 @@ A drawback of using the early-init phase instead of init is that if a package fa
 - [Leading_Ad6415 commented on Reddit](https://www.reddit.com/r/emacs/comments/1feaf37/comment/lmw7ijd/) that after switching to *minimal-emacs.d*, their configuration execution time decreased from 3 seconds to just 1 second by simply replacing their `init.el` and `early-init.el` files with those from the project.
 - [Another user commented on Reddit](https://www.reddit.com/r/emacs/comments/1feaf37/comment/lrsfd64/), highlighting how a minimal-emacs.d significantly enhanced their Emacs performance. They reported substantial startup time reductions on both their main machine (from ~2.25 to ~0.95 seconds) and an older laptop (from ~2.95 to ~1.27 seconds) while also experiencing a generally snappier performance within Emacs. The user expressed gratitude for the project, calling it fantastic.
 - [Cyneox commented on Reddit](https://www.reddit.com/r/emacs/comments/1gh687a/comment/lwdv18t/), expressing gratitude for the resource and sharing their experience. They mentioned it was their fourth attempt to set up a vanilla configuration and highlighted that they had been using the repository as a foundation for their customizations over the past few days. They appreciated the absence of unexplained behavior and the clear instructions on where to place files. The user reported successful testing on both Linux and macOS, noting that everything functioned smoothly, including in the terminal.
+- [Mlepnos1984](https://www.reddit.com/r/emacs/comments/1lz181i/comment/n2yjj17/): "I give you an A+ on documentation, the readme is great!"
 - [rrajath](https://www.reddit.com/r/emacs/comments/1ihn2tv/comment/mb0ja8k/) has been using the minimal-emacs.d config for the past several months and loves it. His previous setup used to take around 4 seconds to load, but with minimal-emacs.d, it now loads in just 1 second.
 - [LionyxML](https://www.reddit.com/r/emacs/comments/1ihn2tv/comment/mb35t9y/) considers that *minimal-emacs.d* contains one of the best README files he has ever read. The author of *minimal-emacs.d* found his comment encouraging. Reading this README.md is highly recommended for anyone looking to start customizing their *minimal-emacs.d* configuration.
 - [cyneox](https://www.reddit.com/r/emacs/comments/1ihn2tv/comment/mdnzgqx/): "Still using it and loving it! Thanks for the regular updates."
