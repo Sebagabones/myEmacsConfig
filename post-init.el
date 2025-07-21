@@ -937,14 +937,15 @@ function that sets `deactivate-mark' to t."
 
   :after counsel
   :config
-  (ivy-prescient-mode 1))
+  (ivy-prescient-mode 1)
+  (prescient-persist-mode 1))
 
 (use-package company-prescient
   :after company
   :config
   (company-prescient-mode 1))
 
-(prescient-persist-mode 1)
+
 (setq completion-preview-sort-function #'prescient-completion-sort)
 
 ;; additions from https://zzamboni.org/post/my-doom-emacs-configuration-with-commentary/
