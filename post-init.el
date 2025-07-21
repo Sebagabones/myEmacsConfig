@@ -938,8 +938,8 @@ function that sets `deactivate-mark' to t."
 
   :after counsel
   :config
-  (prescient-persist-mode 1)
-  (ivy-prescient-mode 1))
+  (ivy-prescient-mode 1)
+  (prescient-persist-mode 1))
 
 (use-package company-prescient
   :after company
