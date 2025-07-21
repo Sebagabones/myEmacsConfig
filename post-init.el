@@ -763,6 +763,7 @@
 (use-package flycheck
   :defer t)
 
+
 ;; LSP setup from https://emacs-lsp.github.io/lsp-mode/page/installation/
 (use-package lsp-mode
   :init
@@ -937,6 +938,7 @@ function that sets `deactivate-mark' to t."
 
   :after counsel
   :config
+  (prescient-persist-mode 1)
   (ivy-prescient-mode 1))
 
 (use-package company-prescient
@@ -944,7 +946,7 @@ function that sets `deactivate-mark' to t."
   :config
   (company-prescient-mode 1))
 
-(prescient-persist-mode 1)
+
 (setq completion-preview-sort-function #'prescient-completion-sort)
 
 ;; additions from https://zzamboni.org/post/my-doom-emacs-configuration-with-commentary/
@@ -953,9 +955,27 @@ function that sets `deactivate-mark' to t."
 
 
 ;; nix releated
+;; (use-package nix-mode
+;;   :defer t
+;;   :mode ("\\.nix\\'" "\\.nix.in\\'"))
+;; (add-hook! 'nix-mode-hook
+;;            ;; enable autocompletion with company
+;;            (setq company-idle-delay 0.1))
+
 (use-package nix-mode
-  :defer t
-  :mode ("\\.nix\\'" "\\.nix.in\\'"))
+  :after lsp-mode
+  :ensure t
+  :hook
+  (nix-mode . lsp-deferred) ;; So that envrc mode will work
+  :custom
+  (lsp-disabled-clients '((nix-mode . nix-nil))) ;; Disable nil so that nixd will be used as lsp-server
+  :config
+  (setq lsp-nix-nixd-server-path "nixd"
+        lsp-nix-nixd-formatting-command [ "nixfmt" ]
+        lsp-nix-nixd-nixpkgs-expr "import <nixpkgs> { }"
+        lsp-nix-nixd-nixos-options-expr "(builtins.getFlake \"/home/nb/nixos\").nixosConfigurations.mnd.options"
+        lsp-nix-nixd-home-manager-options-expr "(builtins.getFlake \"/home/nb/nixos\").homeConfigurations.\"nb@mnd\".options"))
+
 
 (use-package nix-modeline
   :after nix-mode
