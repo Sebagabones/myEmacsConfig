@@ -730,24 +730,35 @@
 (use-package magit
   :after transient
   :ensure t
-  :after
-  (setq magit-diff-refine-hunk 't))
+  ;; :after
+  ;; (setq magit-diff-refine-hunk 't))
+  )
+(use-package difftastic
+  :demand t
+  :bind (:map magit-blame-read-only-mode-map
+              ("D" . difftastic-magit-show)
+              ("S" . difftastic-magit-show))
+  :config
+  (eval-after-load 'magit-diff
+    '(transient-append-suffix 'magit-diff '(-1 -1)
+       [("D" "Difftastic diff (dwim)" difftastic-magit-diff)
+        ("S" "Difftastic show" difftastic-magit-show)])))
 
-(use-package magit-delta
-  :after transient
-  :hook (magit-mode . magit-delta-mode))
+;; (use-package magit-delta
+;;   :after transient
+;;   :hook (magit-mode . magit-delta-mode))
 
-(defun myfun/toggle-magit-delta ()
-  (interactive)
-  (magit-delta-mode
-   (if magit-delta-mode
-       -1
-     1))
-  (magit-refresh))
-
-(with-eval-after-load 'magit
-  (transient-append-suffix 'magit-diff '(-1 -1 -1)
-    '("D" "Toggle magit-delta" myfun/toggle-magit-delta))) ;Borrowed from https://shivjm.blog/better-magit-diffs/
+;; (defun myfun/toggle-magit-delta ()
+;;   (interactive)
+;;   (magit-delta-mode
+;;    (if magit-delta-mode
+;;        -1
+;;      1))
+;;   (magit-refresh))
+;;
+;; (with-eval-after-load 'magit
+;;   (transient-append-suffix 'magit-diff '(-1 -1 -1)
+;;     '("D" "Toggle magit-delta" myfun/toggle-magit-delta))) ;Borrowed from https://shivjm.blog/better-magit-diffs/
 
 (use-package exec-path-from-shell
   :defer t
@@ -755,10 +766,13 @@
   (setq exec-path-from-shell-arguments nil)
   (exec-path-from-shell-initialize))
 
-(use-package company
-  :defer t
-  :init
-  (global-company-mode))
+;; (use-package company
+;;   :defer t
+;;   :bind
+;;   (:map company-active-map
+;;         ("<tab>" . company-complete-selection))
+;;   :init
+;;   (global-company-mode))
 
 (use-package projectile
   :defer t
