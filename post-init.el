@@ -744,21 +744,21 @@
        [("D" "Difftastic diff (dwim)" difftastic-magit-diff)
         ("S" "Difftastic show" difftastic-magit-show)])))
 
-;; (use-package magit-delta
-;;   :after transient
-;;   :hook (magit-mode . magit-delta-mode))
+(use-package magit-delta
+  :after transient
+  :hook (magit-mode . magit-delta-mode))
 
-;; (defun myfun/toggle-magit-delta ()
-;;   (interactive)
-;;   (magit-delta-mode
-;;    (if magit-delta-mode
-;;        -1
-;;      1))
-;;   (magit-refresh))
-;;
-;; (with-eval-after-load 'magit
-;;   (transient-append-suffix 'magit-diff '(-1 -1 -1)
-;;     '("D" "Toggle magit-delta" myfun/toggle-magit-delta))) ;Borrowed from https://shivjm.blog/better-magit-diffs/
+(defun myfun/toggle-magit-delta ()
+  (interactive)
+  (magit-delta-mode
+   (if magit-delta-mode
+       -1
+     1))
+  (magit-refresh))
+
+(with-eval-after-load 'magit
+  (transient-append-suffix 'magit-diff '(-1 -1 -1)
+    '("D" "Toggle magit-delta" myfun/toggle-magit-delta))) ;Borrowed from https://shivjm.blog/better-magit-diffs/
 
 (use-package exec-path-from-shell
   :defer t
