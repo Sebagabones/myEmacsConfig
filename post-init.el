@@ -95,11 +95,18 @@
 (setq auto-save-visited-interval 5)   ; Save after 5 seconds if inactivity
 (auto-save-visited-mode 1)
 
+
+
 ;; Corfu enhances in-buffer completion by displaying a compact popup with
 ;; current candidates, positioned either below or above the point. Candidates
 ;; can be selected by navigating up or down.
 (use-package corfu
+  :custom
+  (corfu-auto t)               ;; Enable auto completion
+  (corfu-preselect 'directory) ;; Select the first candidate, except for directories
+
   :ensure t
+  ;; :custom
   :commands (corfu-mode global-corfu-mode)
   :hook ((prog-mode . corfu-mode)
          (shell-mode . corfu-mode)
@@ -113,6 +120,8 @@
 
   ;; Enable Corfu
   :config
+  ;; Free the RET key for less intrusive behavior.
+  (keymap-unset corfu-map "RET")
   (global-corfu-mode))
 
 ;; Cape, or Completion At Point Extensions, extends the capabilities of
