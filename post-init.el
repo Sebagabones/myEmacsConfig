@@ -380,16 +380,19 @@
   :mode
   ("\\.org\\'" . org-mode)
   :custom
-  (setq org-directory "~/org/")
+  (setq org-directory "~/Org/")
   (org-hide-leading-stars t)
   (org-startup-indented t)
   (org-adapt-indentation nil)
   (org-edit-src-content-indentation 0)
+  (org-link-search-must-match-exact-headline nil)
   ;; (org-fontify-done-headline t)
   ;; (org-fontify-todo-headline t)
   ;; (org-fontify-whole-heading-line t)
   ;; (org-fontify-quote-and-verse-blocks t)
-  (org-startup-truncated t))
+  (org-startup-truncated t)
+  (setq org-latex-compiler "lualatex")
+  (setq org-preview-latex-default-process 'dvisvgm))
 
 (defun org-show-todo-tree ()
   "Create new indirect buffer with sparse tree of undone TODO items"
@@ -402,6 +405,28 @@
       '((sequence "TODO(t)" "|" "DONE(d)")
         (sequence "REPORT(r)" "BUG(b)" "KNOWNCAUSE(k)" "|" "FIXED(f)")
         (sequence "|" "CANCELED(c)")))
+
+(setq org-publish-project-alist
+      '(
+        ("org-notes"
+         :base-directory "~/Org/"
+         :publishing-function org-html-publish-to-html
+         :publishing-directory "~/Org/public"
+         ;; :section-numbers nil
+         ;; :with-toc nil
+         :recursive "t")
+        ;; :html-head "<link rel=\"stylesheet\" type=\"text/css\" href=\"css/.tufte.css\" /><link rel=\"stylesheet\" type=\"text/css\" href=\"css/.srctufte.css\"/><link rel=\"stylesheet\" type=\"text/css\" href=\"css/.style.css\" />")
+        ;; :html-head "<link rel=\"stylesheet\" type=\"text/css\" href=\"~/Org/.style.css\" />"))
+        ("org-static"
+         :base-directory "~/Org/css/"
+         :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf"
+         :publishing-directory "~/Org/public"
+         :recursive t
+         :publishing-function org-publish-attachment
+         )
+        ("org" :components ("org-notes" "org-static")))
+      )
+
 (use-package htmlize
   :defer t)
 
