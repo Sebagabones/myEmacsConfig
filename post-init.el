@@ -34,7 +34,7 @@
   ;; A global mode that compiles .el files before they are loaded.
   (compile-angel-on-load-mode))
 
-;; My themeing
+;;My themeing
 (mapc #'disable-theme custom-enabled-themes)  ; Disable all active themes
 
 (use-package doom-themes
@@ -774,7 +774,14 @@
 
 (use-package magit-delta
   :after transient
-  :hook (magit-mode . magit-delta-mode))
+  :hook (magit-mode . magit-delta-mode)
+  :config
+  (setq magit-delta-delta-args
+        `("--syntax-theme" "tokyoNightNight"
+          ;; `("--syntax-theme" "Dracula"
+          "--max-line-distance" "0.6"
+          "--true-color" "always"
+          "--color-only")))
 
 (defun myfun/toggle-magit-delta ()
   (interactive)
