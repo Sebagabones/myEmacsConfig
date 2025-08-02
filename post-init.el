@@ -1061,3 +1061,8 @@ function that sets `deactivate-mark' to t."
   :bind ("M-/" . vundo)
   :config
   (setq vundo-glyph-alist vundo-unicode-symbols))
+
+(use-package direnv
+  :config
+  (direnv-mode))
+
