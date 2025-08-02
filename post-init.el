@@ -1066,3 +1066,6 @@ function that sets `deactivate-mark' to t."
   :config
   (direnv-mode))
 
+(use-package color-identifiers-mode
+  :ensure t
+  :hook (elpaca-after-init . global-color-identifiers-mode))
