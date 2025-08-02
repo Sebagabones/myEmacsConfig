@@ -60,14 +60,14 @@
 ;; Auto-revert in Emacs is a feature that automatically updates the
 ;; contents of a buffer to reflect changes made to the underlying file
 ;; on disk.
-(add-hook 'after-init-hook #'global-auto-revert-mode)
+(add-hook 'elpaca-after-init-hook #'global-auto-revert-mode)
 
 ;; recentf is an Emacs package that maintains a list of recently
 ;; accessed files, making it easier to reopen files you have worked on
 ;; recently.
-(add-hook 'after-init-hook #'(lambda()
-                               (let ((inhibit-message t))
-                                 (recentf-mode 1))))
+(add-hook 'elpaca-after-init-hook #'(lambda()
+                                      (let ((inhibit-message t))
+                                        (recentf-mode 1))))
 
 (with-eval-after-load "recentf"
   (add-hook 'kill-emacs-hook #'recentf-cleanup))
@@ -76,12 +76,12 @@
 ;; sessions. It saves the history of inputs in the minibuffer, such as commands,
 ;; search strings, and other prompts, to a file. This allows users to retain
 ;; their minibuffer history across Emacs restarts.
-(add-hook 'after-init-hook #'savehist-mode)
+(add-hook 'elpaca-after-init-hook #'savehist-mode)
 
 ;; save-place-mode enables Emacs to remember the last location within a file
 ;; upon reopening. This feature is particularly beneficial for resuming work at
 ;; the precise point where you previously left off.
-(add-hook 'after-init-hook #'save-place-mode)
+(add-hook 'elpaca-after-init-hook #'save-place-mode)
 
 ;; When auto-save-visited-mode is enabled, Emacs will auto-save file-visiting
 ;; buffers after a certain amount of idle time if the user forgets to save it
@@ -163,7 +163,10 @@
 (use-package marginalia
   :ensure t
   :commands (marginalia-mode marginalia-cycle)
-  :hook (after-init-hook . marginalia-mode))
+  ;; :init
+  ;; :defer t
+  ;; (marginalia-mode))
+  :hook (elpaca-after-init . marginalia-mode))
 
 ;; Embark integrates with Consult and Vertico to provide context-sensitive
 ;; actions and quick access to commands based on the current selection, further
@@ -357,7 +360,7 @@
 ;; and restoration of undo history across Emacs sessions, even after restarting.
 ;; (use-package undo-fu-session
 ;;   :ensure t
-;;   :hook (after-init . undo-fu-session-global-mode))
+;;   :hook (elpaca-after-init . undo-fu-session-global-mode))
 (use-package undo-fu-session
   :ensure t
   :init
@@ -367,7 +370,7 @@
 (use-package vim-tab-bar
   :ensure t
   :commands vim-tab-bar-mode
-  :hook (after-init . vim-tab-bar-mode))
+  :hook (elpaca-after-init . vim-tab-bar-mode))
 
 ;; Org mode is a major mode designed for organizing notes, planning, task
 ;; management, and authoring documents using plain text with a simple and
@@ -661,7 +664,7 @@
 (use-package which-key
   :ensure nil ; builtin
   :commands which-key-mode
-  :hook (after-init . which-key-mode)
+  :hook (elpaca-after-init . which-key-mode)
   :custom
   (which-key-idle-delay 1.5)
   (which-key-idle-secondary-delay 0.25)
@@ -680,14 +683,14 @@
   (pixel-scroll-precision-mode 1))
 
 ;; Display the time in the modeline
-(add-hook 'after-init-hook #'display-time-mode)
+(add-hook 'elpaca-after-init-hook #'display-time-mode)
 
 ;; Paren match highlighting
-(add-hook 'after-init-hook #'show-paren-mode)
+(add-hook 'elpaca-after-init-hook #'show-paren-mode)
 
 ;; Track changes in the window configuration, allowing undoing actions such as
 ;; closing windows.
-(add-hook 'after-init-hook #'winner-mode)
+(add-hook 'elpaca-after-init-hook #'winner-mode)
 
 ;; Replace selected text with typed text
 ;; (delete-selection-mode 1)
@@ -703,7 +706,7 @@
 ;; be dragged with the mouse, thus allowing you to easily resize adjacent
 ;; windows.
 ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Window-Dividers.html
-(add-hook 'after-init-hook #'window-divider-mode)
+(add-hook 'elpaca-after-init-hook #'window-divider-mode)
 
 ;; Dired buffers: Automatically hide file details (permissions, size,
 ;; modification date, etc.) and all the files in the `dired-omit-files' regular
@@ -724,7 +727,7 @@
 (add-hook 'dired-mode-hook #'dired-omit-mode)
 
 ;; Enables visual indication of minibuffer recursion depth after initialization.
-(add-hook 'after-init-hook #'minibuffer-depth-indicate-mode)
+(add-hook 'elpaca-after-init-hook #'minibuffer-depth-indicate-mode)
 
 ;; Configure Emacs to ask for confirmation before exiting
 (setq confirm-kill-emacs 'y-or-n-p)
@@ -877,7 +880,7 @@
 
 (use-package clipetty
   :ensure t
-  :hook (after-init . global-clipetty-mode))
+  :hook (elpaca-after-init . global-clipetty-mode))
 
 (setq auto-save-file-name-transforms
       `((".*" "~/.emacs.d/backups/" t)))
