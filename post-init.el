@@ -611,7 +611,13 @@
   :ensure t
   :commands (apheleia-mode
              apheleia-global-mode)
-  :hook ((prog-mode . apheleia-mode)))
+  :hook ((prog-mode . apheleia-mode))
+  :config
+  ;; Replace default (black) to use ruff for sorting import and formatting.
+  (setf (alist-get 'python-mode apheleia-mode-alist)
+        '(ruff-isort ruff))
+  (setf (alist-get 'python-ts-mode apheleia-mode-alist)
+        '(ruff-isort ruff)))
 
 
 ;; Helpful is an alternative to the built-in Emacs help that provides much more
@@ -819,7 +825,30 @@
   :defer t)
 
 (use-package flycheck
-  :defer t)
+  :defer t
+  :hook (elpaca-after-init . global-flycheck-mode)
+
+  :config
+  (setq flycheck-highlighting-mode "lines")
+  (setq lsp-diagnostics-provider :none)
+  )
+;; (flycheck-define-checker
+;;     python-mypy ""
+;;     :command ("mypy"
+;;               "--ignore-missing-imports" "--strict"
+;;               "--python-version" "3.12"
+;;               source-original)
+;;     :error-patterns
+;;     ((error line-start (file-name) ":" line ": error:" (message) line-end))
+;;     :modes python-mode)
+;;
+;;
+;; (add-to-list 'flycheck-checkers 'python-mypy t)
+;; (flycheck-add-next-checker 'python-pylint 'python-mypy t))
+
+(use-package flycheck-inline
+  :after flycheck
+  :hook (flycheck-mode . flycheck-inline-mode))
 
 
 ;; LSP setup from https://emacs-lsp.github.io/lsp-mode/page/installation/
@@ -828,8 +857,9 @@
   (setq lsp-keymap-prefix "C-c l")
   :ensure t
   :hook(
-        (python-mode . lsp-deferred)
+        (python-ts-mode . lsp-deferred)
         (nix-mode . lsp-deferred)
+        (c-mode . lsp-deferred)
         ;; Add more major modes here
         (lsp-mode . lsp-enable-which-key-integration))
   :commands  (lsp lsp-deferred))
