@@ -394,6 +394,7 @@
   ;; (org-fontify-whole-heading-line t)
   ;; (org-fontify-quote-and-verse-blocks t)
   (org-startup-truncated t)
+  (setq org-html-validation-link nil)
   (setq org-latex-compiler "lualatex")
   (setq org-preview-latex-default-process 'dvisvgm))
 
