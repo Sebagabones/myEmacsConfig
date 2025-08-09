@@ -590,12 +590,12 @@
   :ensure nil
   :commands flyspell-mode
   :hook
-  ((prog-mode . flyspell-prog-mode)
+  (;(prog-mode . flyspell-prog-mode)
    (text-mode . (lambda()
                   (if (or (derived-mode-p 'yaml-mode)
                           (derived-mode-p 'yaml-ts-mode)
                           (derived-mode-p 'ansible-mode))
-                      (flyspell-prog-mode)
+                      (flyspell-prog-mode 1)
                     (flyspell-mode 1)))))
   :config
   ;; Remove strings from Flyspell
