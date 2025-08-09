@@ -882,6 +882,8 @@
         (python-ts-mode . lsp-deferred)
         (nix-mode . lsp-deferred)
         (c-mode . lsp-deferred)
+        (c++-mode . lsp-deferred)
+
         ;; Add more major modes here
         (lsp-mode . lsp-enable-which-key-integration))
   :commands  (lsp lsp-deferred))
@@ -1121,3 +1123,16 @@ function that sets `deactivate-mark' to t."
 (use-package color-identifiers-mode
   :ensure t
   :hook (elpaca-after-init . global-color-identifiers-mode))
+
+;; ELEC3020
+(use-package platformio-mode
+  :ensure t
+  :hook (
+         (c++-mode . (lambda ()
+                       (lsp-deferred)
+                       )
+                   )))
+;; (use-package ccls
+;;   :hook ((c-mode c++-mode objc-mode cuda-mode) .
+;;          (lambda () (require 'ccls) (lsp))))
+;;
