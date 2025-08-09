@@ -3035,6 +3035,8 @@ NOTE: `inhibit-mouse-mode` allows users to disable and re-enable mouse functiona
 
 The `flyspell` package is a built-in Emacs minor mode that provides on-the-fly spell checking. It highlights misspelled words as you type, offering interactive corrections. In text modes, it checks the entire buffer, while in programming modes, it typically checks only comments and strings. It integrates with external spell checkers like `aspell`, `hunspell`, or `ispell` to provide suggestions and corrections.
 
+NOTE: `flyspell-mode` can become slow when using Aspell, especially with large buffers or aggressive suggestion settings like `--sug-mode=ultra`. This slowdown occurs because Flyspell checks words dynamically as you type or navigate text, requiring frequent communication between Emacs and the external Aspell process. Each check involves sending words to Aspell and receiving results, which introduces overhead from process invocation and inter-process communication.
+
 To configure **flyspell**, add the following to `~/.emacs.d/post-init.el`:
 ``` emacs-lisp
 (use-package ispell
@@ -3044,11 +3046,19 @@ To configure **flyspell**, add the following to `~/.emacs.d/post-init.el`:
   ;; Set the ispell program name to aspell
   (ispell-program-name "aspell")
 
+  ;; Define the "en_US" spell-check dictionary locally, telling Emacs to use
+  ;; UTF-8 encoding, match words using alphabetic characters, allow apostrophes
+  ;; inside words, treat non-alphabetic characters as word boundaries, and pass
+  ;; -d en_US to the underlying spell-check program.
+  (ispell-local-dictionary-alist
+   '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8)))
+
   ;; Configures Aspell's suggestion mode to "ultra", which provides more
   ;; aggressive and detailed suggestions for misspelled words. The language
   ;; is set to "en_US" for US English, which can be replaced with your desired
   ;; language code (e.g., "en_GB" for British English, "de_DE" for German).
-  (ispell-extra-args '("--sug-mode=ultra" "--lang=en_US")))
+  (ispell-extra-args '(; "--sug-mode=ultra"
+                       "--lang=en_US")))
 
 ;; The flyspell package is a built-in Emacs minor mode that provides
 ;; on-the-fly spell checking. It highlights misspelled words as you type,
@@ -3057,12 +3067,12 @@ To configure **flyspell**, add the following to `~/.emacs.d/post-init.el`:
   :ensure nil
   :commands flyspell-mode
   :hook
-  ((prog-mode . flyspell-prog-mode)
+  (; (prog-mode . flyspell-prog-mode)
    (text-mode . (lambda()
                   (if (or (derived-mode-p 'yaml-mode)
                           (derived-mode-p 'yaml-ts-mode)
                           (derived-mode-p 'ansible-mode))
-                      (flyspell-prog-mode)
+                      (flyspell-prog-mode 1)
                     (flyspell-mode 1)))))
   :config
   ;; Remove strings from Flyspell
