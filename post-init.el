@@ -372,6 +372,12 @@
   :commands vim-tab-bar-mode
   :hook (elpaca-after-init . vim-tab-bar-mode))
 
+(use-package ox-gfm
+  :ensure t
+  :init
+  (eval-after-load "org"
+    '(require 'ox-gfm nil t)))
+
 ;; Org mode is a major mode designed for organizing notes, planning, task
 ;; management, and authoring documents using plain text with a simple and
 ;; expressive markup syntax. It supports hierarchical outlines, TODO lists,
@@ -382,21 +388,43 @@
   :commands (org-mode org-version)
   :mode
   ("\\.org\\'" . org-mode)
-  :custom
+  :hook (org-mode . visual-line-mode)
+  :config
   (setq org-directory "~/Org/")
+  ;; lualatex setup from https://stackoverflow.com/questions/41568410/configure-org-mode-to-use-lualatex
+  (setq org-latex-pdf-process
+        '("lualatex -shell-escape -interaction nonstopmode %f"
+          "lualatex -shell-escape -interaction nonstopmode %f"))
+  (setq luamagick '(luamagick :programs ("lualatex" "convert")
+                              :description "pdf > png"
+                              :message "you need to install lualatex and imagemagick."
+                              :use-xcolor t
+                              :image-input-type "pdf"
+                              :image-output-type "png"
+                              :image-size-adjust (1.0 . 1.0)
+                              :latex-compiler ("lualatex -interaction nonstopmode -output-directory %o %f")
+                              :image-converter ("convert -density %D -trim -antialias %f -quality 100 %O")))
+
+  (add-to-list 'org-preview-latex-process-alist luamagick)
+  (setq org-html-validation-link nil)
+
+  ;; (setq org-preview-latex-default-process 'luamagick)
+
+  :custom
+  (org-preview-latex-default-process 'luamagick)
   (org-hide-leading-stars t)
   (org-startup-indented t)
   (org-adapt-indentation nil)
   (org-edit-src-content-indentation 0)
   (org-link-search-must-match-exact-headline nil)
-  ;; (org-fontify-done-headline t)
-  ;; (org-fontify-todo-headline t)
-  ;; (org-fontify-whole-heading-line t)
-  ;; (org-fontify-quote-and-verse-blocks t)
+  (org-fontify-done-headline t)
+  (org-fontify-todo-headline t)
+  (org-fontify-whole-heading-line t)
+  (org-fontify-quote-and-verse-blocks t)
   (org-startup-truncated t)
-  (setq org-html-validation-link nil)
-  (setq org-latex-compiler "lualatex")
-  (setq org-preview-latex-default-process 'dvisvgm))
+  (org-latex-compiler "lualatex")
+  ;; (setq org-preview-latex-default-process 'dvisvgm))
+  )
 
 (defun org-show-todo-tree ()
   "Create new indirect buffer with sparse tree of undone TODO items"
@@ -483,6 +511,7 @@
   :bind
   (:map global-map
         ("M-0"       . treemacs-select-window)
+
         ("C-x t 1"   . treemacs-delete-other-windows)
         ("C-x t t"   . treemacs)
         ("C-x t d"   . treemacs-select-directory)
