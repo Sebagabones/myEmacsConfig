@@ -947,10 +947,19 @@
   (setq tooltip-mode t)
   )
 
-(use-package avy
-  :bind ("C-c SPC" . avy-goto-char))
+;; (use-package avy
+;;   :commands avy
+;;   :bind
+;;   ("C-c SPC" . avy-goto-char)           ;
+;;   ;; ("C-c o" . avy-select-window)
+;;   )
+;; Yes ace is unmaintained, but it just is nicer imo
 (use-package ace-jump-mode
-  :bind ("C-c SPC" . avy-goto-char))
+  :commands ace-jump-mode
+  :bind
+  ("C-c SPC" . ace-jump-char-mode)
+  ("C-c o" . ace-select-window)
+  )
 
 (use-package treemacs-nerd-icons
   :config
