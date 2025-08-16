@@ -378,6 +378,62 @@
   (eval-after-load "org"
     '(require 'ox-gfm nil t)))
 
+;; (use-package olivetti
+;;   :ensure t
+;;   :custom
+;;   (olivetti-body-width 86)
+;;   :config
+;;   (setq olivetti-style t))
+
+(use-package org-modern-indent
+  :ensure t
+  :straight (org-modern-indent :type git :host github :repo "jdtsmith/org-modern-indent")
+  :hook org-mode)
+
+(use-package org-bullets-mode
+  :ensure org-bullets
+  :config
+  :hook org-mode)
+
+(use-package org-modern
+  :ensure t
+  :custom
+  (org-modern-hide-stars nil)		; adds extra indentation
+  (org-modern-table nil)
+  (org-modern-list
+   '(;; (?- . "-")
+     (?* . "•")
+     (?+ . "‣")))
+  :config
+  (setq
+   org-auto-align-tags t
+   org-tags-column 0
+   org-fold-catch-invisible-edits 'show-and-error
+   org-special-ctrl-a/e t
+   org-insert-heading-respect-content t
+
+   ;; ;; Don't style the following
+   ;; org-modern-tag nil
+   ;; org-modern-priority nil
+   ;; org-modern-todo nil
+   ;; org-modern-table nil
+
+   ;; Agenda styling
+   org-agenda-tags-column 0
+   org-agenda-block-separator ?─
+   org-agenda-time-grid
+   '((daily today require-timed)
+	 (800 1000 1200 1400 1600 1800 2000)
+	 " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄")
+   org-agenda-current-time-string
+   "⭠ now ─────────────────────────────────────────────────")
+  :hook
+  (org-mode . org-modern-mode)
+  (org-agenda-finalize . org-modern-agenda)
+  (org-mode . global-org-modern-mode))
+
+
+
 ;; Org mode is a major mode designed for organizing notes, planning, task
 ;; management, and authoring documents using plain text with a simple and
 ;; expressive markup syntax. It supports hierarchical outlines, TODO lists,
@@ -423,6 +479,13 @@
   (org-fontify-quote-and-verse-blocks t)
   (org-startup-truncated t)
   (org-latex-compiler "lualatex")
+  (org-adapt-indentation t)
+  (org-hide-emphasis-markers t)
+  (org-pretty-entities t)
+  (org-agenda-tags-column 0)
+  (org-ellipsis "…")
+  (org-lowest-priority ?F "Gives us priorities A through F")  ;;Gives us priorities A through F
+  (org-default-priority ?E "If an item has no priority, it is considered [#E]") ;; If an item has no priority, it is considered [#E].
   ;; (setq org-preview-latex-default-process 'dvisvgm))
   )
 
