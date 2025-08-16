@@ -1162,3 +1162,30 @@ function that sets `deactivate-mark' to t."
 ;;   :hook ((c-mode c++-mode objc-mode cuda-mode) .
 ;;          (lambda () (require 'ccls) (lsp))))
 ;;
+
+(use-package vterm-toggle
+  :ensure t
+  ;; :hook (elpaca-after-init . vterm-toggle)
+  :bind
+  ("C-c t" . vterm-toggle-cd)
+
+  :config
+  (define-key vterm-mode-map [(control return)]   #'vterm-toggle-insert-cd)
+  (define-key vterm-copy-mode-map [(control return)]   #'vterm-toggle-insert-cd)
+
+  ;; :config
+  ;; (setq vterm-toggle-fullscreen-p nil)
+  ;; (add-to-list 'display-buffer-alist
+  ;;              '((lambda (buffer-or-name _)
+  ;;                  (let ((buffer (get-buffer buffer-or-name)))
+  ;;                    (with-current-buffer buffer
+  ;;                      (or (equal major-mode 'vterm-mode)
+  ;;                          (string-prefix-p vterm-buffer-name (buffer-name buffer))))))
+  ;;                (display-buffer-reuse-window display-buffer-at-bottom)
+  ;;                ;;(display-buffer-reuse-window display-buffer-in-direction)
+  ;;                ;;display-buffer-in-direction/direction/dedicated is added in emacs27
+  ;;                ;;(direction . bottom)
+  ;;                ;;(dedicated . t) ;dedicated is supported in emacs27
+  ;;                (reusable-frames . visible)
+  ;;                (window-height . 0.3)))
+  )
