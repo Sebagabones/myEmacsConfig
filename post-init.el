@@ -444,33 +444,34 @@
   :commands (org-mode org-version)
   :mode
   ("\\.org\\'" . org-mode)
-  :hook (org-mode . visual-line-mode)
+  :hook
+  (org-mode . visual-line-mode)
+  ;; (org-mode . olivetti-mode)
+  (org-mode . org-indent-mode)
+  ;; (org-mode . org-modern-indent-mode)
+
   :config
   (setq org-directory "~/Org/")
   ;; lualatex setup from https://stackoverflow.com/questions/41568410/configure-org-mode-to-use-lualatex
   (setq org-latex-pdf-process
         '("lualatex -shell-escape -interaction nonstopmode %f"
           "lualatex -shell-escape -interaction nonstopmode %f"))
-  (setq luamagick '(luamagick :programs ("lualatex" "convert")
-                              :description "pdf > png"
-                              :message "you need to install lualatex and imagemagick."
-                              :use-xcolor t
-                              :image-input-type "pdf"
-                              :image-output-type "png"
-                              :image-size-adjust (1.0 . 1.0)
-                              :latex-compiler ("lualatex -interaction nonstopmode -output-directory %o %f")
-                              :image-converter ("convert -density %D -trim -antialias %f -quality 100 %O")))
 
-  (add-to-list 'org-preview-latex-process-alist luamagick)
-  (setq org-html-validation-link nil)
+  (setq luasvg '(luasvg :programs ("dvilualatex""dvisvgm") :description "dvi > svg" :message
+                        "you need to install the programs: lualatex and dvisvgm."
+                        :image-input-type "dvi" :image-output-type "svg" :image-size-adjust
+                        (1.7 . 1.5) :latex-compiler
+                        ("dvilualatex -interaction nonstopmode -output-directory %o %f")
+                        :image-converter
+                        ("dvisvgm %f --no-fonts --exact-bbox --scale=%S --output=%O")))
 
-  ;; (setq org-preview-latex-default-process 'luamagick)
+  (add-to-list 'org-preview-latex-process-alist luasvg)
 
   :custom
-  (org-preview-latex-default-process 'luamagick)
+  (org-preview-latex-default-process 'luasvg)
   (org-hide-leading-stars t)
+  (org-html-validation-link nil)
   (org-startup-indented t)
-  (org-adapt-indentation nil)
   (org-edit-src-content-indentation 0)
   (org-link-search-must-match-exact-headline nil)
   (org-fontify-done-headline t)
