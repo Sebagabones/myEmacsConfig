@@ -740,6 +740,28 @@
   (setf (alist-get 'python-ts-mode apheleia-mode-alist)
         '(ruff-isort ruff)))
 
+;; Enables automatic indentation of code while typing
+(use-package aggressive-indent
+  :ensure t
+  :commands aggressive-indent-mode
+  :hook
+  (emacs-lisp-mode . aggressive-indent-mode))
+
+;; Highlights function and variable definitions in Emacs Lisp mode
+(use-package highlight-defined
+  :ensure t
+  :commands highlight-defined-mode
+  :hook
+  (emacs-lisp-mode . highlight-defined-mode))
+
+;; Prevent parenthesis imbalance
+(use-package paredit
+  :ensure t
+  :commands paredit-mode
+  :hook
+  (emacs-lisp-mode . paredit-mode)
+  :config
+  (define-key paredit-mode-map (kbd "RET") nil))
 
 ;; Helpful is an alternative to the built-in Emacs help that provides much more
 ;; contextual information.
