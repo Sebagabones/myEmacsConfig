@@ -1846,6 +1846,7 @@ In addition to *minimal-emacs.d*, startup speed is influenced by your computer's
     - [Enhancing the Elisp development experience](#enhancing-the-elisp-development-experience)
     - [Showing the tab-bar](#showing-the-tab-bar)
     - [Changing the Default Font](#changing-the-default-font)
+    - [Persist Text Scale](#persist-text-scale)
     - [Loading the custom.el file](#loading-the-customel-file)
     - [Which other customizations can be interesting to add?](#which-other-customizations-can-be-interesting-to-add)
   - [Customizations: pre-early-init.el](#customizations-pre-early-initel)
@@ -1985,7 +1986,7 @@ Native compilation enhances Emacs performance by converting Elisp code into nati
    ```
    (A non-nil result indicates that native compilation is active.)
 
-2. Ensure all libraries are byte-compiled and native-compiled using [compile-angel.el](https://github.com/jamescherti/compile-angel.el). To install compile-angel, add the following code at the very beginning of your `~/.emacs.d/post-init.el` file, before all other packages:
+2. Ensure all libraries are byte-compiled and native-compiled using [compile-angel.el](https://github.com/jamescherti/compile-angel.el). To install compile-angel, add the following code to the `~/.emacs.d/post-init.el` file:
 ```emacs-lisp
 ;; Native compilation enhances Emacs performance by converting Elisp code into
 ;; native machine code, resulting in faster execution and improved
@@ -1995,7 +1996,6 @@ Native compilation enhances Emacs performance by converting Elisp code into nati
 ;; of your `~/.emacs.d/post-init.el` file, before all other packages.
 (use-package compile-angel
   :ensure t
-  :demand t
   :custom
   ;; Set `compile-angel-verbose` to nil to suppress output from compile-angel.
   ;; Drawback: The minibuffer will not display compile-angel's actions.
@@ -2018,8 +2018,10 @@ Native compilation enhances Emacs performance by converting Elisp code into nati
   ;; A local mode that compiles .el files whenever the user saves them.
   ;; (add-hook 'emacs-lisp-mode-hook #'compile-angel-on-save-local-mode)
 
-  ;; A global mode that compiles .el files before they are loaded.
-  (compile-angel-on-load-mode))
+  ;; A global mode that compiles .el files prior to loading them via `load' or
+  ;; `require'. Additionally, it compiles all packages that were loaded before
+  ;; the mode `compile-angel-on-load-mode' was activated.
+  (compile-angel-on-load-mode 1))
 ```
 
 ### How to activate recentf, savehist, saveplace, and auto-revert?
@@ -2137,7 +2139,7 @@ This is different from `auto-save-mode`: `auto-save-mode` periodically saves all
 
 [Corfu](https://github.com/minad/corfu) enhances in-buffer completion by displaying a compact popup with current candidates, positioned either below or above the point. Candidates can be selected by navigating up or down.
 
-Cape, or Completion At Point Extensions, extends the capabilities of in-buffer completion. It integrates with Corfu or the default completion UI, by providing additional backends through completion-at-point-functions.
+[Cape](https://github.com/minad/cape), or Completion At Point Extensions, extends the capabilities of in-buffer completion. It integrates with Corfu or the default completion UI, by providing additional backends through completion-at-point-functions.
 
 ![](https://github.com/minad/corfu/blob/screenshots/popupinfo-dark.png?raw=true)
 
@@ -3274,6 +3276,29 @@ On Linux, you can display a comprehensive list of all installed font families by
 fc-list : family | sed 's/,/\n/g' | sort -u
 ```
 
+### Persist Text Scale
+
+The [persist-text-scale](https://github.com/jamescherti/persist-text-scale.el) Emacs package provides `persist-text-scale-mode`, which ensures that all adjustments made with `text-scale-increase` and `text-scale-decrease` are persisted and restored across sessions. As a result, the text size in each buffer remains consistent, even after restarting Emacs.
+
+This package also facilitates grouping buffers into categories, allowing buffers within the same category to share a consistent text scale. This ensures uniform font sizes when adjusting text scaling. By default:
+- Each file-visiting buffer has its own independent text scale.
+- Special buffers, identified by their buffer names, each retain their own text scale setting.
+- All Dired buffers maintain the same font size, treating Dired as a unified "file explorer" where the text scale remains consistent across different buffers.
+
+This category-based behavior can be further customized by assigning a function to the `persist-text-scale-buffer-category-function` variable. The function determines how buffers are categorized by returning a category identifier (string) based on the buffer's context. Buffers within the same category will share the same text scale.
+
+To configure the *persist-text-scale* package, add the following to your `~/.emacs.d/post-init.el`:
+```elisp
+(use-package persist-text-scale
+  :commands (persist-text-scale-mode
+             persist-text-scale-restore)
+
+  :hook (after-init . persist-text-scale-mode)
+
+  :custom
+  (text-scale-mode-step 1.07))
+```
+
 ### Loading the custom.el file
 
 **NOTE:** The author advises against loading `custom.el`. To disable it, set `custom-file` to the null device using `(setq custom-file null-device)`. Users are instead encouraged to define their configuration programmatically in files such as `post-init.el`. Maintaining configuration programmatically offers several advantages: it ensures reproducibility and facilitates version control. This makes it easier to understand, audit, and evolve the configuration over time.
@@ -3707,6 +3732,7 @@ A drawback of using the early-init phase instead of init is that if a package fa
 ### Comments from users
 
 - [JamesBrickley (Shout out to this starter-kit: Minimal-Emacs )](https://www.reddit.com/r/emacs/comments/1epz7qn/shout_out_to_this_starterkit_minimalemacs/) appreciates that *minimal-emacs.d* provides an optimized *early-init.el* and *init.el* for fast startup times and sensible default settings. He highlights that the project includes all the essential configurations needed for a well-tuned Emacs setup, eliminating the need to sift through conflicting advice on topics like garbage collection optimization. While he has encountered similar settings before, he also discovered new optimizations he had not seen elsewhere.
+- [Brandon Schneider (skarekrow)](https://github.com/skarekrow): "...the minimal-emacs project is incredible. I love how documented it is as a beginner to learn from. Thank you for all the effort you've put into that and the other packages you maintain. It's a huge boon to new users."
 - [Leading_Ad6415 commented on Reddit](https://www.reddit.com/r/emacs/comments/1feaf37/comment/lmw7ijd/) that after switching to *minimal-emacs.d*, their configuration execution time decreased from 3 seconds to just 1 second by simply replacing their `init.el` and `early-init.el` files with those from the project.
 - [Another user commented on Reddit](https://www.reddit.com/r/emacs/comments/1feaf37/comment/lrsfd64/), highlighting how a minimal-emacs.d significantly enhanced their Emacs performance. They reported substantial startup time reductions on both their main machine (from ~2.25 to ~0.95 seconds) and an older laptop (from ~2.95 to ~1.27 seconds) while also experiencing a generally snappier performance within Emacs. The user expressed gratitude for the project, calling it fantastic.
 - [Cyneox commented on Reddit](https://www.reddit.com/r/emacs/comments/1gh687a/comment/lwdv18t/), expressing gratitude for the resource and sharing their experience. They mentioned it was their fourth attempt to set up a vanilla configuration and highlighted that they had been using the repository as a foundation for their customizations over the past few days. They appreciated the absence of unexplained behavior and the clear instructions on where to place files. The user reported successful testing on both Linux and macOS, noting that everything functioned smoothly, including in the terminal.
