@@ -790,6 +790,9 @@
 ;; Prevent Emacs from saving customization information to a custom file
 (setq custom-file null-device)
 
+(use-package nerd-icons
+  :ensure t)
+
 (set-face-attribute 'default nil :font "JetBrainsMono NFM 12")
 
 (set-frame-font "JetBrainsMono NFM 12" nil t)
@@ -810,6 +813,7 @@
                                        ":?" ":?>" "//" "///" "/*" "*/" "/=" "//=" "/==" "@_" "__" "???"
                                        "<:<" ";;;"))
   (global-ligature-mode t))
+
 
 
 
