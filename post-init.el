@@ -432,7 +432,27 @@
   (org-agenda-finalize . org-modern-agenda)
   (org-mode . global-org-modern-mode))
 
+(use-package org-appear
+  :commands (org-appear-mode)
+  :hook     (org-mode . org-appear-mode)
+  :config
+  (setq org-hide-emphasis-markers t)  ;; Must be activated for org-appear to work
+  (setq org-appear-autoemphasis   t   ;; Show bold, italics, verbatim, etc.
+        org-appear-autolinks      t   ;; Show links
+        org-appear-autosubmarkers t)) ;; Show sub- and superscripts
 
+(use-package org-fragtog
+  :after org
+  :hook (org-mode . org-fragtog-mode))
+
+(use-package org-attach-screenshot
+  :bind ("C-c C-x s" . org-attach-screenshot)
+  :config (setq org-attach-screenshot-dirfunction
+		        (lambda ()
+		          (progn (cl-assert (buffer-file-name))
+			             (concat (file-name-sans-extension (buffer-file-name))
+				                 "-att")))
+		        org-attach-screenshot-command-line "gnome-screenshot -a -f %f"))
 
 ;; Org mode is a major mode designed for organizing notes, planning, task
 ;; management, and authoring documents using plain text with a simple and
@@ -466,7 +486,14 @@
                         ("dvisvgm %f --no-fonts --exact-bbox --scale=%S --output=%O")))
 
   (add-to-list 'org-preview-latex-process-alist luasvg)
-
+  (defun org-html--format-image (source attributes info) ;base64 encodes images on export to HTML
+    (format "<img src=\"data:image/%s;base64,%s\"%s />"
+            (or (file-name-extension source) "")
+            (base64-encode-string
+             (with-temp-buffer
+	           (insert-file-contents-literally source)
+	           (buffer-string)))
+            (file-name-nondirectory source)))
   :custom
   (org-preview-latex-default-process 'luasvg)
   (org-hide-leading-stars t)
