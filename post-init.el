@@ -386,8 +386,8 @@
 ;;   (setq olivetti-style t))
 
 (use-package org-modern-indent
-  :ensure t
   :straight (org-modern-indent :type git :host github :repo "jdtsmith/org-modern-indent")
+  :ensure t
   :hook org-mode)
 
 (use-package org-bullets-mode
@@ -755,13 +755,13 @@
   (emacs-lisp-mode . highlight-defined-mode))
 
 ;; Prevent parenthesis imbalance
-(use-package paredit
-  :ensure t
-  :commands paredit-mode
-  :hook
-  (emacs-lisp-mode . paredit-mode)
-  :config
-  (define-key paredit-mode-map (kbd "RET") nil))
+;; (use-package paredit
+;;   :ensure t
+;;   :commands paredit-mode
+;;   :hook
+;;   (emacs-lisp-mode . paredit-mode)
+;;   :config
+;;   (define-key paredit-mode-map (kbd "RET") nil))
 
 ;; Helpful is an alternative to the built-in Emacs help that provides much more
 ;; contextual information.
@@ -793,9 +793,10 @@
 (use-package nerd-icons
   :ensure t)
 
-(set-face-attribute 'default nil :font "JetBrainsMono NFM 12")
+(add-to-list 'default-frame-alist '(font . "JetBrainsMono NFM 12"))
+;; (set-face-attribute 'default nil :font "JetBrainsMono NFM 12")
 
-(set-frame-font "JetBrainsMono NFM 12" nil t)
+;; (set-frame-font "JetBrainsMono NFM 12" nil t)
 (use-package ligature
   :ensure t
   :config
@@ -925,7 +926,6 @@
 
 
 (setq visible-bell t)
-(use-package nerd-icons)
 
 (use-package transient)
 
@@ -1284,6 +1284,16 @@ function that sets `deactivate-mark' to t."
   :config
   (buffer-terminator-mode 1))
 
+;; (use-package numpydoc
+;;   :ensure t
+;;   :bind( (:map python-mode-map
+;;                ("C-c C-n" . numpydoc-generate))
+;;          (:map python-ts-mode-map
+;;                ("C-c C-n" . numpydoc-generate))))
+(use-package numpydoc
+  :ensure t
+  :after python
+  :bind ("C-c C-n" . numpydoc-generate))
 
 ;; ELEC3020
 (use-package platformio-mode
