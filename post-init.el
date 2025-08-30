@@ -122,7 +122,8 @@
   :config
   ;; Free the RET key for less intrusive behavior.
   (keymap-unset corfu-map "RET")
-  (global-corfu-mode))
+  (global-corfu-mode)
+  )
 
 ;; Cape, or Completion At Point Extensions, extends the capabilities of
 ;; in-buffer completion. It integrates with Corfu or the default completion UI,
