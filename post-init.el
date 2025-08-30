@@ -455,7 +455,36 @@
 				                 "-att")))
 		        org-attach-screenshot-command-line "gnome-screenshot -a -f %f"))
 
-;; Org mode is a major mode designed for organizing notes, planning, task
+(use-package ox-chameleon
+  :straight (:type git :host nil :repo "https://code.tecosaur.net/tec/ox-chameleon.git")
+  :ensure t
+  :init
+  (eval-after-load "org"
+    '(require 'ox-chameleon nil t))
+  ;; (setq org-latex-default-class "chameleon")
+  )
+
+
+(use-package engrave-faces
+  :ensure t
+  :init
+  (setq org-latex-src-block-backend 'engraved
+        org-latex-engraved-theme 'doom-tokyo-night))
+
+
+(use-package simple-comment-markup
+  :straight (:type git :host nil :repo "https://code.tecosaur.net/tec/simple-comment-markup.git")
+  :hook (prog-mode . simple-comment-markup-mode)
+  )
+
+
+(use-package org-pandoc-import
+  :straight (:host github
+                   :repo "tecosaur/org-pandoc-import"
+                   :files ("*.el" "filters" "preprocessors"))
+  :hook(elpaca-after-init . org-pandoc-import-transient-mode)
+  )
+;; org mode is a major mode designed for organizing notes, planning, task
 ;; management, and authoring documents using plain text with a simple and
 ;; expressive markup syntax. It supports hierarchical outlines, TODO lists,
 ;; scheduling, deadlines, time tracking, and exporting to multiple formats
@@ -487,6 +516,19 @@
                         ("dvisvgm %f --no-fonts --exact-bbox --scale=%S --output=%O")))
 
   (add-to-list 'org-preview-latex-process-alist luasvg)
+  (require 'ox-latex)
+  (add-to-list 'org-latex-packages-alist '("" "scrextend" nil)) ;Org Chameleon
+  (add-to-list 'org-latex-packages-alist '("" "xcolor" nil))
+  (add-to-list 'org-latex-packages-alist '("" "fvextra" nil))
+  (add-to-list 'org-latex-packages-alist '("" "upquote" nil))
+  ;; (add-to-list 'org-latex-packages-alist '("" "lineno" nil))
+  (add-to-list 'org-latex-packages-alist '("" "tcolorbox" nil))
+
+  ;; (add-to-list 'org-latex-packages-alist '("" "hyperref" nil))
+  ;; (add-to-list 'org-latex-packages-alist '("" "geometry" nil))
+  ;; (customize-set-variable 'org-format-latex-header
+  ;;                         (concat org-format-latex-header "\n\\setlength{\\parindent}{0pt}\n\\hypersetup{colorlinks=false, hidelinks=true}\n\\newgeometry{vmargin={15mm}, hmargin={17mm,17mm}}"))
+
   (defun org-html--format-image (source attributes info) ;base64 encodes images on export to HTML
     (format "<img src=\"data:image/%s;base64,%s\"%s />"
             (or (file-name-extension source) "")
