@@ -1023,6 +1023,12 @@
         (lsp-mode . lsp-enable-which-key-integration))
   :commands  (lsp lsp-deferred))
 
+(use-package lsp-pyright
+  :ensure t
+  :custom (lsp-pyright-langserver-command "basedpyright") ;; or pyright
+  :hook ((python-mode python-ts-mode) . (lambda ()
+                                          (require 'lsp-pyright)
+                                          (lsp-deferred))))  ; or lsp
 
 (use-package lsp-ui
   :defer t
@@ -1030,7 +1036,9 @@
   :bind (("C-c c l f" . lsp-ui-doc-focus-frame)
          ("C-c c l u" . lsp-ui-doc-unfocus-frame))
   ;;:commands lsp-ui-mode                 ;
+
   :config
+  (lsp-ui-peek-mode)
   (setq lsp-ui-doc-enable t
         lsp-ui-doc-header t
         lsp-ui-imenu t
