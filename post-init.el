@@ -834,7 +834,7 @@
 (use-package nerd-icons
   :ensure t)
 
-(add-to-list 'default-frame-alist '(font . "JetBrainsMono NFM 12"))
+;; (add-to-list 'default-frame-alist '(font . "JetBrainsMono NFM 12"))
 ;; (set-face-attribute 'default nil :font "JetBrainsMono NFM 12")
 
 ;; (set-frame-font "JetBrainsMono NFM 12" nil t)
@@ -856,7 +856,7 @@
 ;;                                        "<:<" ";;;"))
 ;;   (global-ligature-mode t))
 (use-package fira-code-mode
-  :custom (fira-code-mode-disabled-ligatures '("[]" "x"))  ; ligatures you don't want
+  :custom (fira-code-mode-disabled-ligatures '("[]" "x" "//" "||" "lambda"))  ; ligatures you don't want
   :hook (prog-mode org-mode))                                         ; mode to enable fira-code-mode in
 
 
