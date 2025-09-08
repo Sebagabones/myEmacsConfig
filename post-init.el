@@ -1414,11 +1414,15 @@ function that sets `deactivate-mark' to t."
           :state    #'consult--buffer-state
           :default  t
           :items    (lambda () (consult--buffer-query
-                           :predicate #'tabspaces--local-buffer-p
-                           :sort 'visibility
-                           :as #'buffer-name)))
+                                :predicate #'tabspaces--local-buffer-p
+                                :sort 'visibility
+                                :as #'buffer-name)))
 
     "Set workspace buffer list for consult-buffer.")
   (add-to-list 'consult-buffer-sources 'consult--source-workspace))
 
+(use-package simple-comment-markup
+  :straight (:type git :host nil :repo "https://code.tecosaur.net/tec/simple-comment-markup.git")
+  :hook (prog-mode . simple-comment-markup-mode)
+  )
 ;;
