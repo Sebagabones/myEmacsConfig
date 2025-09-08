@@ -1360,6 +1360,10 @@ function that sets `deactivate-mark' to t."
   :after python
   :bind ("C-c C-n" . numpydoc-generate))
 
+(use-package pyvenv
+  :ensure t
+  :after python)
+
 ;; ELEC3020
 (use-package platformio-mode
   :ensure t
