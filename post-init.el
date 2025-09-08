@@ -1050,6 +1050,19 @@
   :after flycheck
   :hook (flycheck-mode . flycheck-inline-mode))
 
+(use-package scad-mode
+  :ensure t)
+
+(use-package scad-preview
+  :after scad-mode
+  :ensure t
+  :straight (:host github :repo "zk-phi/scad-preview" :branch "master")
+  )
+
+(use-package scad-dbus
+  :after scad-mode
+  :straight (:host github :repo "Lenbok/scad-dbus" :branch "master")
+  :bind (:map scad-mode-map ("C-c o" . 'hydra-scad-dbus/body)))
 
 ;; LSP setup from https://emacs-lsp.github.io/lsp-mode/page/installation/
 (use-package lsp-mode
@@ -1061,7 +1074,7 @@
         (nix-mode . lsp-deferred)
         (c-mode . lsp-deferred)
         (c++-mode . lsp-deferred)
-
+        (scad-mode . lsp-deferred)
         ;; Add more major modes here
         (lsp-mode . lsp-enable-which-key-integration))
   :commands  (lsp lsp-deferred))
