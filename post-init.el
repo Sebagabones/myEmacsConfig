@@ -446,6 +446,14 @@
   :after org
   :hook (org-mode . org-fragtog-mode))
 
+(use-package engrave-faces
+  :ensure t
+  :after ox-latex
+  :init
+  (setq org-latex-src-block-backend 'engraved
+        org-latex-engraved-theme 'doom-tokyo-night))
+
+
 (use-package org-attach-screenshot
   :bind ("C-c C-x s" . org-attach-screenshot)
   :config (setq org-attach-screenshot-dirfunction
@@ -455,34 +463,9 @@
 				                 "-att")))
 		        org-attach-screenshot-command-line "gnome-screenshot -a -f %f"))
 
-(use-package ox-chameleon
-  :straight (:type git :host nil :repo "https://code.tecosaur.net/tec/ox-chameleon.git")
+(use-package org-sidebar
+  :straight (:type git :host github :repo "alphapapa/org-sidebar")
   :ensure t
-  :init
-  (eval-after-load "org"
-    '(require 'ox-chameleon nil t))
-  ;; (setq org-latex-default-class "chameleon")
-  )
-
-
-(use-package engrave-faces
-  :ensure t
-  :init
-  (setq org-latex-src-block-backend 'engraved
-        org-latex-engraved-theme 'doom-tokyo-night))
-
-
-(use-package simple-comment-markup
-  :straight (:type git :host nil :repo "https://code.tecosaur.net/tec/simple-comment-markup.git")
-  :hook (prog-mode . simple-comment-markup-mode)
-  )
-
-
-(use-package org-pandoc-import
-  :straight (:host github
-                   :repo "tecosaur/org-pandoc-import"
-                   :files ("*.el" "filters" "preprocessors"))
-  :hook(elpaca-after-init . org-pandoc-import-transient-mode)
   )
 ;; org mode is a major mode designed for organizing notes, planning, task
 ;; management, and authoring documents using plain text with a simple and
@@ -503,9 +486,12 @@
   :config
   (setq org-directory "~/Org/")
   ;; lualatex setup from https://stackoverflow.com/questions/41568410/configure-org-mode-to-use-lualatex
+
   (setq org-latex-pdf-process
-        '("lualatex -shell-escape -interaction nonstopmode %f"
-          "lualatex -shell-escape -interaction nonstopmode %f"))
+        '("latexmk -lualatex -shell-escape -interaction=nonstopmode  %f"))
+  ;; (setq org-latex-pdf-process
+  ;;       '("lualatex -pdflatex=-shell-escape -interaction nonstopmode %f"
+  ;;         "lualatex -shell-escape -interaction nonstopmode %f"))
 
   (setq luasvg '(luasvg :programs ("dvilualatex""dvisvgm") :description "dvi > svg" :message
                         "you need to install the programs: lualatex and dvisvgm."
@@ -517,12 +503,24 @@
 
   (add-to-list 'org-preview-latex-process-alist luasvg)
   (require 'ox-latex)
-  (add-to-list 'org-latex-packages-alist '("" "scrextend" nil)) ;Org Chameleon
-  (add-to-list 'org-latex-packages-alist '("" "xcolor" nil))
+  ;; (add-to-list 'org-latex-packages-alist '("" "minted" nil))
+  ;; (setq org-latex-src-block-backend 'minted)
+  ;; (setq org-latex-minted-options
+  ;;       '(("frame" "leftline")
+  ;;         ("linenos" "false")
+  ;;         ("numberblanklines" "false")
+  ;;         ("showspaces" "false")
+  ;;         ("breaklines" "true")
+  ;;         ("style" "dracula")
+  ;;         ("bgcolor" "{CtpMantle}")
+  ;;         ))
+  (setq org-latex-src-block-backend 'engraved)
+
+  ;; (add-to-list 'org-latex-packages-alist '("" "xcolor" nil))
   (add-to-list 'org-latex-packages-alist '("" "fvextra" nil))
   (add-to-list 'org-latex-packages-alist '("" "upquote" nil))
   ;; (add-to-list 'org-latex-packages-alist '("" "lineno" nil))
-  (add-to-list 'org-latex-packages-alist '("" "tcolorbox" nil))
+  ;; (add-to-list 'org-latex-packages-alist '("" "tcolorbox" nil))
 
   ;; (add-to-list 'org-latex-packages-alist '("" "hyperref" nil))
   ;; (add-to-list 'org-latex-packages-alist '("" "geometry" nil))
