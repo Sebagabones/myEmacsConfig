@@ -37,14 +37,18 @@
 ;;My themeing
 (mapc #'disable-theme custom-enabled-themes)  ; Disable all active themes
 
+
 (use-package doom-themes
   :ensure t
+  ;;  :hook  solaire-mode
   :custom
   ;; Global settings (defaults)
   (doom-themes-enable-bold t)   ; if nil, bold is universally disabled
   (doom-themes-enable-italic t) ; if nil, italics is universally disabled
   ;; for treemacs users
-  ;;(doom-themes-treemacs-theme "doom-tokyo-night") ; use "doom-colors" for less minimal icon theme
+  (doom-themes-treemacs-theme "doom-tokyo-night") ; use "doom-colors" for less minimal icon theme
+
+
   :config
   (load-theme 'doom-tokyo-night t)
 
@@ -56,7 +60,21 @@
   ;; Corrects (and improves) org-mode's native fontification.
   (doom-themes-org-config))
 
+;; (use-package catppuccin-theme
+;;   :ensure t
+;;   :config
+;;   (setq catppuccin-flavor 'latte) ;; or 'latte, 'macchiato, or 'mocha
+;;   ;; (load-theme 'catppuccin :no-confirm)
+;;   ;; ;; (catppuccin-reload)
+;;   )
 
+(use-package  solaire-mode
+  :ensure t
+  :config
+  ;; (add-to-list 'solaire-mode-themes-to-face-swap "doom-tokyo-night")
+  :custom
+  (solaire-global-mode +1)
+  )
 ;; Auto-revert in Emacs is a feature that automatically updates the
 ;; contents of a buffer to reflect changes made to the underlying file
 ;; on disk.
@@ -451,7 +469,9 @@
   :after ox-latex
   :init
   (setq org-latex-src-block-backend 'engraved
-        org-latex-engraved-theme 'doom-tokyo-night))
+        ;; org-latex-engraved-theme 'doom-tokyo-night))
+        ))
+
 
 
 (use-package org-attach-screenshot
@@ -1316,7 +1336,8 @@ function that sets `deactivate-mark' to t."
   :config
   (define-fringe-bitmap 'git-gutter-fr:added [224] nil nil '(center repeated))
   (define-fringe-bitmap 'git-gutter-fr:modified [224] nil nil '(center repeated))
-  (define-fringe-bitmap 'git-gutter-fr:deleted [128 192 224 240] nil nil 'bottom))
+  (define-fringe-bitmap 'git-gutter-fr:deleted [128 192 224 240] nil nil 'bottom)
+  )
 
 
 (use-package vundo
@@ -1429,4 +1450,10 @@ function that sets `deactivate-mark' to t."
   :straight (:type git :host nil :repo "https://code.tecosaur.net/tec/simple-comment-markup.git")
   :hook (prog-mode . simple-comment-markup-mode)
   )
+
+(use-package rainbow-delimiters
+  :ensure t
+  :hook (prog-mode-hook . rainbow-delimiters-mode)
+  )
+
 ;;
