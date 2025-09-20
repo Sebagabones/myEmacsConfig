@@ -539,8 +539,9 @@
   ;; (add-to-list 'org-latex-packages-alist '("" "xcolor" nil))
   (add-to-list 'org-latex-packages-alist '("" "fvextra" nil))
   (add-to-list 'org-latex-packages-alist '("" "upquote" nil))
+  (add-to-list 'org-latex-packages-alist '("" "booktabs" nil))
+
   ;; (add-to-list 'org-latex-packages-alist '("" "lineno" nil))
-  ;; (add-to-list 'org-latex-packages-alist '("" "tcolorbox" nil))
 
   ;; (add-to-list 'org-latex-packages-alist '("" "hyperref" nil))
   ;; (add-to-list 'org-latex-packages-alist '("" "geometry" nil))
@@ -573,6 +574,8 @@
   (org-pretty-entities t)
   (org-agenda-tags-column 0)
   (org-ellipsis "…")
+  (org-latex-tables-booktabs t)
+  (org-footnote-auto-adjust t)
   (org-lowest-priority ?F "Gives us priorities A through F")  ;;Gives us priorities A through F
   (org-default-priority ?E "If an item has no priority, it is considered [#E]") ;; If an item has no priority, it is considered [#E].
   ;; (setq org-preview-latex-default-process 'dvisvgm))
@@ -876,7 +879,7 @@
 ;;                                        "<:<" ";;;"))
 ;;   (global-ligature-mode t))
 (use-package fira-code-mode
-  :custom (fira-code-mode-disabled-ligatures '("[]" "x" "//" "||" "lambda"))  ; ligatures you don't want
+  :custom (fira-code-mode-disabled-ligatures '("[]" "x" "//" "||" "lambda" "or" "and"))  ; ligatures you don't want
   :hook (prog-mode org-mode))                                         ; mode to enable fira-code-mode in
 
 
