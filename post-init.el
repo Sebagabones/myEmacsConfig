@@ -525,15 +525,13 @@
   (require 'ox-latex)
   ;; (add-to-list 'org-latex-packages-alist '("" "minted" nil))
   ;; (setq org-latex-src-block-backend 'minted)
-  ;; (setq org-latex-minted-options
-  ;;       '(("frame" "leftline")
-  ;;         ("linenos" "false")
-  ;;         ("numberblanklines" "false")
-  ;;         ("showspaces" "false")
-  ;;         ("breaklines" "true")
-  ;;         ("style" "dracula")
-  ;;         ("bgcolor" "{CtpMantle}")
-  ;;         ))
+  (setq org-engraved-minted-options
+        '(("frame" "leftline")
+          ("linenos" "true")
+          ("numberblanklines" "false")
+          ("showspaces" "false")
+          ("breaklines" "true")
+          ))
   (setq org-latex-src-block-backend 'engraved)
 
   ;; (add-to-list 'org-latex-packages-alist '("" "xcolor" nil))
@@ -980,6 +978,10 @@
 (setq kept-old-versions 10)
 (setq kept-new-versions 10)
 
+(setq epg-gpg-program "gpg2")
+(setenv "GPG_AGENT_INFO" nil)
+
+(setq auth-sources '("~/.authinfo.gpg"))
 ;; Improve Emacs responsiveness by deferring fontification during input
 ;;
 ;; NOTE: This may cause delayed syntax highlighting in certain cases
