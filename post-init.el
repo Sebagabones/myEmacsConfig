@@ -640,18 +640,18 @@
   (:map markdown-mode-map
         ("C-c C-e" . markdown-do)))
 
-;; Tree-sitter in Emacs is an incremental parsing system introduced in Emacs 29
-;; that provides precise, high-performance syntax highlighting. It supports a
-;; broad set of programming languages, including Bash, C, C++, C#, CMake, CSS,
-;; Dockerfile, Go, Java, JavaScript, JSON, Python, Rust, TOML, TypeScript, YAML,
-;; Elisp, Lua, Markdown, and many others.
-(use-package treesit-auto
-  :ensure t
-  :custom
-  (treesit-auto-install 'prompt)
-  :config
-  (treesit-auto-add-to-auto-mode-alist 'all)
-  (global-treesit-auto-mode))
+;; ;; Tree-sitter in Emacs is an incremental parsing system introduced in Emacs 29
+;; ;; that provides precise, high-performance syntax highlighting. It supports a
+;; ;; broad set of programming languages, including Bash, C, C++, C#, CMake, CSS,
+;; ;; Dockerfile, Go, Java, JavaScript, JSON, Python, Rust, TOML, TypeScript, YAML,
+;; ;; Elisp, Lua, Markdown, and many others.
+;; (use-package treesit-auto
+;;   :ensure t
+;;   :custom
+;;   (treesit-auto-install 'prompt)
+;;   :config
+;;   (treesit-auto-add-to-auto-mode-alist 'all)
+;;   (global-treesit-auto-mode))
 
 ;; A file and project explorer for Emacs that displays a structured tree
 ;; layout, similar to file browsers in modern IDEs. It functions as a sidebar
@@ -806,7 +806,7 @@
   ;; Replace default (black) to use ruff for sorting import and formatting.
   (setf (alist-get 'python-mode apheleia-mode-alist)
         '(ruff-isort ruff))
-  (setf (alist-get 'python-ts-mode apheleia-mode-alist)
+  (setf (alist-get 'python-mode apheleia-mode-alist)
         '(ruff-isort ruff)))
 
 ;; Enables automatic indentation of code while typing
@@ -1102,7 +1102,7 @@
   (setq lsp-keymap-prefix "C-c l")
   :ensure t
   :hook(
-        (python-ts-mode . lsp-deferred)
+        (python-mode . lsp-deferred)
         (nix-mode . lsp-deferred)
         (c-mode . lsp-deferred)
         (c++-mode . lsp-deferred)
