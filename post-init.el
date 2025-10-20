@@ -1003,7 +1003,8 @@
 
 (setq visible-bell t)
 
-(use-package transient)
+(use-package transient
+  :ensure t)
 
 (use-package magit
   :after transient
