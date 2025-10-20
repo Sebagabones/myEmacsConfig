@@ -71,7 +71,9 @@
 ;;   ;; (load-theme 'catppuccin :no-confirm)
 ;;   ;; ;; (catppuccin-reload)
 ;;   )
-
+(use-package base16-theme
+  :ensure t
+  )
 (use-package  solaire-mode
   :ensure t
   :config
