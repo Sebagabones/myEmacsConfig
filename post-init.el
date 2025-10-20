@@ -1011,6 +1011,12 @@
   ;; :after
   ;; (setq magit-diff-refine-hunk 't))
   )
+(use-package forge
+  :after magit
+  :ensure t)
+;; :straight (:host github :repo "magit/forge" :branch "main" ))
+
+
 (use-package difftastic
   :demand t
   :bind (:map magit-blame-read-only-mode-map
