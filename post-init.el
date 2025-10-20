@@ -1426,7 +1426,9 @@ function that sets `deactivate-mark' to t."
 
 (use-package color-identifiers-mode
   :ensure t
-  :hook (elpaca-after-init . global-color-identifiers-mode))
+  :hook (elpaca-after-init . global-color-identifiers-mode)
+  :config
+  (setq color-identifiers:extra-face-attributes '(:weight bold)))
 
 (use-package buffer-terminator
   :ensure t
