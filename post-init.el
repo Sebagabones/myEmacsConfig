@@ -1576,4 +1576,15 @@ function that sets `deactivate-mark' to t."
      )))
 
 
+(define-derived-mode irc-log-mode fundamental-mode "IRC Log"
+  "Major mode for viewing IRC-style logs - mostly for org mode."
+  (setq font-lock-defaults
+        '((
+           ("^\\[\\([0-9:]+\\)\\]" 1 'font-lock-comment-face)   ; timestamps
+           ("Seb" 0 'font-lock-keyword-face)       ; nicknames
+           ("<\\([^>]+\\)>" 1 'font-lock-constant-face)       ; nicknames
+           ("\\*\\*\\(.*?\\)\\*\\*" 1 'org-macro-face)     ; actions
+           ("\\(https?://[^ ]+\\)" 1 'button-face)))))  ; URLs
+
+(with-eval-after-load 'org-src(add-to-list 'org-src-lang-modes '("irc-log" . irc-log)))
 ;;
