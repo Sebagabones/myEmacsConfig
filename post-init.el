@@ -1503,6 +1503,8 @@ function that sets `deactivate-mark' to t."
   (tabspaces-session-auto-restore nil)
   (tab-bar-new-tab-choice "*scratch*"))
 ;; Filter Buffers for Consult-Buffer
+;; Define a helper for clarity
+
 
 (with-eval-after-load 'consult
   ;; hide full buffer list (still available with "b" prefix)
@@ -1516,7 +1518,7 @@ function that sets `deactivate-mark' to t."
           :state    #'consult--buffer-state
           :default  t
           :items    (lambda () (consult--buffer-query
-                                :predicate #'tabspaces--local-buffer-p
+                                ;; :predicate #'tabspaces--local-buffer-p
                                 :sort 'visibility
                                 :as #'buffer-name)))
 
