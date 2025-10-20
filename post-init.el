@@ -1482,4 +1482,45 @@ function that sets `deactivate-mark' to t."
   :hook (prog-mode-hook . rainbow-delimiters-mode)
   )
 
+
+(use-package doxymacs
+  :straight (doxymacs :type git :host github :repo "pniedzielski/doxymacs")
+  :hook (c-mode-common . doxymacs-mode)
+  :bind (:map c-mode-base-map
+              ;; Lookup documentation for the symbol at point.
+              ("C-c d ?" . doxymacs-lookup)
+              ;; Rescan your Doxygen tags file.
+              ("C-c d r" . doxymacs-rescan-tags)
+              ;; Prompt you for a Doxygen command to enter, and its
+              ;; arguments.
+              ("C-c d RET" . doxymacs-insert-command)
+              ;; Insert a Doxygen comment for the next function.
+              ("C-c d f" . doxymacs-insert-function-comment)
+              ;; Insert a Doxygen comment for the current file.
+              ("C-c d i" . doxymacs-insert-file-comment)
+              ;; Insert a Doxygen comment for the current member.
+              ("C-c d ;" . doxymacs-insert-member-comment)
+              ;; Insert a blank multi-line Doxygen comment.
+              ("C-c d m" . doxymacs-insert-blank-multiline-comment)
+              ;; Insert a blank single-line Doxygen comment.
+              ("C-c d s" . doxymacs-insert-blank-singleline-comment)
+              ;; Insert a grouping comments around the current region.
+              ("C-c d @" . doxymacs-insert-grouping-comments))
+  :custom
+  ;; Configure source code <-> Doxygen tag file <-> Doxygen HTML
+  ;; documentation mapping:
+  ;;   - Files in /home/me/project/foo/ have their tag file at
+  ;;     http://someplace.com/doc/foo/foo.xml, and HTML documentation
+  ;;     at http://someplace.com/doc/foo/.
+  ;;   - Files in /home/me/project/bar/ have their tag file at
+  ;;     ~/project/bar/doc/bar.xml, and HTML documentation at
+  ;;     file:///home/me/project/bar/doc/.
+  ;; This must be configured for Doxymacs to function!
+  (doxymacs-doxygen-dirs
+   '(("^/home/bones/Storage/Uniwork/.gitJankness/ELEC3020_Project/"
+      "~/home/bones/Storage/Uniwork/.gitJankness/ELEC3020_Project/project.xml"
+      "file::///home/bones/Storage/Uniwork/.gitJankness/ELEC3020_Project/doc/")
+     )))
+
+
 ;;
