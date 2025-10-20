@@ -1475,16 +1475,16 @@ function that sets `deactivate-mark' to t."
 ;;          (lambda () (require 'ccls) (lsp))))
 ;;
 
-;; (use-package vterm-toggle
-;;   :ensure t
-;;   ;; :hook (elpaca-after-init . vterm-toggle)
-;;   :bind
-;;   ("C-c t" . vterm-toggle-cd)
-;;
-;;   :config
-;;   (define-key vterm-mode-map [(control return)]   #'vterm-toggle-insert-cd)
-;;   (define-key vterm-copy-mode-map [(control return)]   #'vterm-toggle-insert-cd)
-;;   )
+(use-package vterm-toggle
+  :ensure t
+  ;; :hook (elpaca-after-init . vterm-toggle)
+  :bind
+  ("C-c t" . vterm-toggle-cd)
+
+  :config
+  (define-key vterm-mode-map [(control return)]   #'vterm-toggle-insert-cd)
+  (define-key vterm-copy-mode-map [(control return)]   #'vterm-toggle-insert-cd)
+  )
 
 (use-package tabspaces
   ;; use this next line only if you also use straight, otherwise ignore it.
