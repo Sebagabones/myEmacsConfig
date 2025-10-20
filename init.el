@@ -120,6 +120,10 @@
 ;; Disable auto-adding a new line at the bottom when scrolling.
 (setq next-line-add-newlines nil)
 
+;; This setting forces Emacs to save bookmarks immediately after each change.
+;; Benefit: you never lose bookmarks if Emacs crashes.
+(setq bookmark-save-flag 1)
+
 ;;; Files
 
 ;; Delete by moving to trash in interactive mode
@@ -218,9 +222,7 @@
 (setq recentf-max-saved-items 300) ; default is 20
 (setq recentf-max-menu-items 15)
 (setq recentf-auto-cleanup 'mode)
-
-;; Update recentf-exclude
-(setq recentf-exclude (list "^/\\(?:ssh\\|su\\|sudo\\)?:"))
+(setq recentf-exclude nil)
 
 ;;; saveplace
 
@@ -272,9 +274,10 @@
 ;; Keep screen position if scroll command moved it vertically out of the window.
 (setq scroll-preserve-screen-position t)
 
-;; If `scroll-conservatively' is set above 100, the window is never
-;; automatically recentered, which decreases the time spend recentering.
-(setq scroll-conservatively 101)
+;; Emacs recenters the window when the cursor moves past `scroll-conservatively'
+;; lines beyond the window edge. A value over 101 disables recentering; the
+;; default (0) is too eager. Here it is set to 20 for a balanced behavior.
+(setq scroll-conservatively 20)
 
 ;; 1. Preventing automatic adjustments to `window-vscroll' for long lines.
 ;; 2. Resolving the issue of random half-screen jumps during scrolling.
@@ -549,8 +552,6 @@
 (when (fboundp 'minimal-emacs-load-user-init)
   (minimal-emacs-load-user-init "post-init.el"))
 (setq minimal-emacs--success t)
-
-(provide 'init)
 
 ;; Local variables:
 ;; byte-compile-warnings: (not obsolete free-vars)
