@@ -1462,6 +1462,10 @@ function that sets `deactivate-mark' to t."
   :ensure t
   :after python)
 
+(use-package uv
+  :straight (uv :type git :host github :repo "johannes-mueller/uv.el")
+  :bind ("C-c C-U" . uv))
+
 ;; ELEC3020
 (use-package platformio-mode
   :ensure t
