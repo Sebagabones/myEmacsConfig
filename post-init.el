@@ -618,27 +618,27 @@
         ("org" :components ("org-notes" "org-static")))
       )
 
-(use-package htmlize
-  :defer t)
+(use-nix-package htmlize
+                 :defer t)
 
 ;; The markdown-mode package provides a major mode for Emacs for syntax
 ;; highlighting, editing commands, and preview support for Markdown documents.
 ;; It supports core Markdown syntax as well as extensions like GitHub Flavored
 ;; Markdown (GFM).
-(use-package markdown-mode
-  :commands (gfm-mode
-             gfm-view-mode
-             markdown-mode
-             markdown-view-mode)
-  :mode (("\\.markdown\\'" . markdown-mode)
-         ("\\.md\\'" . markdown-mode)
-         ("README\\.md\\'" . gfm-mode))
-  :init
-  (setq markdown-command "multimarkdown")
+(use-nix-package markdown-mode
+                 :commands (gfm-mode
+                            gfm-view-mode
+                            markdown-mode
+                            markdown-view-mode)
+                 :mode (("\\.markdown\\'" . markdown-mode)
+                        ("\\.md\\'" . markdown-mode)
+                        ("README\\.md\\'" . gfm-mode))
+                 :init
+                 (setq markdown-command "multimarkdown")
 
-  :bind
-  (:map markdown-mode-map
-        ("C-c C-e" . markdown-do)))
+                 :bind
+                 (:map markdown-mode-map
+                       ("C-c C-e" . markdown-do)))
 
 ;; ;; Tree-sitter in Emacs is an incremental parsing system introduced in Emacs 29
 ;; ;; that provides precise, high-performance syntax highlighting. It supports a
