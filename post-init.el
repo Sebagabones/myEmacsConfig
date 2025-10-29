@@ -1881,4 +1881,10 @@ function that sets `deactivate-mark' to t."
 
         (org-mode)
         (switch-to-buffer buffer)))))
+
+
+(use-package cicode-mode
+  :straight (cicode-mode :type git :host github :repo "Sebagabones/cicode-mode.el")
+  :ensure t  )
+
 ;;
