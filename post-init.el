@@ -1649,4 +1649,232 @@ function that sets `deactivate-mark' to t."
            ("\\(https?://[^ ]+\\)" 1 'button-face)))))  ; URLs
 
 (with-eval-after-load 'org-src(add-to-list 'org-src-lang-modes '("irc-log" . irc-log)))
+
+;; Work Specific Configuration
+
+
+(setq org-agenda-custom-commands
+      '(("w" "Tasks marked DONE this week"
+         ((agenda ""
+                  ((org-agenda-span 'week)
+                   (org-agenda-files '("~/TODO.org"))
+                   (org-agenda-start-on-weekday 1)
+                   (org-agenda-entry-types '(:state))
+                   (org-agenda-show-log t)
+                   (org-agenda-log-mode-items '(state))
+                   (org-agenda-time-grid nil)
+                   ;; (org-agenda-prefix-format "  %-10t  %s")
+                   (org-agenda-prefix-format "  %-10t  ")
+                   (org-agenda-skip-function
+                    '(org-agenda-skip-entry-if 'notregexp "DONE")))))
+         nil)))
+
+
+
+(defun export-done-tasks-for-current-week ()
+  "Export DONE tasks for the current week (Monday to Sunday) to an org table with time tracking columns.
+   Also includes detailed task information with hyperlinks."
+  (interactive)
+  (let* ((tasks-by-date (make-hash-table :test 'equal))
+         (all-tasks '())  ;; Store all tasks for detailed listing
+         (buffer (get-buffer-create "*Done Tasks This Week*"))
+         ;; (today (current-time))
+         (today (org-read-date nil 'to-time nil "Date:  "))
+         (day-of-week (string-to-number (format-time-string "%u" today))) ;; 1=Monday, 7=Sunday
+         (days-to-monday (1- day-of-week))
+         (monday-this-week (time-subtract today (days-to-time days-to-monday)))
+         (monday-date-str (format-time-string "%Y-%m-%d" monday-this-week))
+         (task-counter 0)) ;; Counter for creating unique anchor IDs
+
+    ;; Create list of days for this week (Monday to Sunday)
+    (let ((week-days '()))
+      (dotimes (i 7)
+        (let* ((date (time-add monday-this-week (days-to-time i)))
+               (date-key (format-time-string "%Y-%m-%d" date))
+               (date-display (format-time-string "%e %B %Y" date))
+               (day-name (format-time-string "%A" date)))
+          (puthash date-key
+                   (list (list date-display day-name "" "No tasks completed" nil))
+                   tasks-by-date)
+          (push date-key week-days)))
+      (setq week-days (sort week-days 'string<)))
+    ;; Collect tasks by date
+    (org-map-entries
+     (lambda ()
+       (let* ((state (org-get-todo-state))
+              (closed-time (org-entry-get (point) "CLOSED"))
+              (task-title (org-get-heading t t t t))
+              (task-body (org-get-entry))
+              (tags (org-get-tags))
+              (priority (org-entry-get (point) "PRIORITY"))
+              (effort (org-entry-get (point) "Effort"))
+              (properties (org-entry-properties))
+              (task-id nil))
+         (when (and (or (equal state "DONE") (equal state "WAIT") (equal state "CANCELED")) closed-time)
+           (let* ((closed-date (date-to-time closed-time))
+                  (date-key (format-time-string "%Y-%m-%d" closed-date))
+                  (date-display (format-time-string "%e %B %Y" closed-date))
+                  (day-name (format-time-string "%A" closed-date))
+                  (time-finished (format-time-string "%H:%M" closed-date)))
+             ;; Only include tasks from this week
+             (when (and (not (string< date-key monday-date-str))
+                        (string< date-key (format-time-string "%Y-%m-%d"
+                                                              (time-add monday-this-week (days-to-time 7)))))
+               ;; Create unique ID for this task
+               (setq task-counter (1+ task-counter))
+               (setq task-id (format "task-%d" task-counter))
+
+               ;; Store full task details for the detailed section
+               (push (list task-id
+                           date-display
+                           day-name
+                           time-finished
+                           task-title
+                           task-body
+                           tags
+                           priority
+                           effort
+                           properties)
+                     all-tasks)
+
+               ;; Store task in date hash with its ID
+               (puthash date-key
+                        (cons (list date-display day-name time-finished
+                                    (format "[[#%s][%s]]" task-id task-title) task-id)
+                              (remq (assoc "No tasks completed" (gethash date-key tasks-by-date))
+                                    (gethash date-key tasks-by-date)))
+                        tasks-by-date))))))
+     nil 'agenda)
+
+    ;; Create buffer with table
+    (with-current-buffer buffer
+      (erase-buffer)
+      (let ((week-range (format "%s - %s"
+                                (format-time-string "%e %B %Y" monday-this-week)
+                                (format-time-string "%e %B %Y" (time-add monday-this-week (days-to-time 6))))))
+        (insert (format "#+TITLE: TimeSheet for (%s)\n" week-range)))
+      (insert "#+SETUPFILE: todo.css.org\n")
+      (insert "#+OPTIONS: toc:nil\n\n")
+      (insert "* Weekly Timesheet\n\n")
+      (insert "| Date | Day | Time Completed | Tasks Done | Start | Break | End | Hours |\n")
+      (insert "|------|-----|------|-----------|-------|-------|-----|-------|\n")
+
+      ;; Insert rows for each day of the week (Monday to Sunday)
+      (let ((dates (sort (hash-table-keys tasks-by-date) 'string<)))
+        (dolist (date-key dates)
+          (let* ((entries (sort (gethash date-key tasks-by-date)
+                                (lambda (a b)
+                                  (string< (or (nth 2 a) "") (or (nth 2 b) "")))))
+                 (first-entry (car entries)))
+
+            ;; First task for this date
+            (insert (format "| %s | %s | | | | | | 0 |\n"
+                            (nth 0 first-entry)  ;; Date
+                            (nth 1 first-entry)))  ;; Day name
+
+
+            ;; Remaining tasks for this date (reuse the date and day)
+            (dolist (entry (cdr entries))
+              (insert (format "| | | %s | %s | | | | |\n"
+                              (or (nth 2 entry) "")  ;; Time finished
+                              (nth 3 entry)))))  ;; Task with hyperlink
+          ;; Insert horizontal separator between days
+          (insert "|------|-----|------|-----------|-------|-------|-----|-------|\n"))
+
+        ;; Add total hours row at the bottom
+        (insert "| | | | | | | | |\n")
+        (insert "| | | | *Total Hours:* | | | | :=vsum(@2$8..@-1$8) |\n")
+        (insert "|------|-----|------|-----------|-------|-------|-----|-------|\n")
+
+        (org-table-align)
+
+        ;; Add instructions for manual time tracking
+        (insert "\n\n#+BEGIN_COMMENT\n")
+        (insert "Instructions for Time Tracking\n")
+        (insert "1. Fill in the Start, Break, End columns manually\n")
+        (insert "2. To calculate Total Hours for a row - do it manually for now\n")
+        (insert "3. The Total Hours column will automatically sum all entries\n")
+        (insert "4. After editing, press C-c C-c on the TBLFM (or if in table, C-u C-c *) to update total hours\n")
+        (insert "5. Make sure to run the sum of total hours (C-c C-c on the formula in row)\n")
+        (insert "6. Export this to a HTML file, and save it in ~TimeSheets/generatedHtml/~ as timeSheet<weekNumber>~\n")
+        (insert "7. Go to the table, and run ~org-table-export~ and save it to ~/TimeSheets/csvFilesAndScript/timesheet<weekNumber>\n")
+        (insert "8. Then under Windows, go to ~/c/Users/SebastianGazey/MainFolder/timesheet~ and run ~python3 TimeSheetGenerator.py timesheet<weekNumber>.csv~ \n")
+        (insert "9. Check the output. then send both files to Dan and Allen\n")
+        (insert "#+END_COMMENT\n\n")
+        ;; Add detailed tasks section
+        (insert "* Task Details\n\n")
+
+        ;; Sort all tasks by date and time
+        (setq all-tasks (sort all-tasks
+                              (lambda (a b)
+                                (or (string< (nth 1 a) (nth 1 b))
+                                    (and (string= (nth 1 a) (nth 1 b))
+                                         (string< (nth 3 a) (nth 3 b)))))))
+
+        ;; Output detailed tasks
+        (dolist (task all-tasks)
+          (let ((task-id (nth 0 task))
+                (date (nth 1 task))
+                (day (nth 2 task))
+                (time (nth 3 task))
+                (title (nth 4 task))
+                (body (nth 5 task))
+                (tags (nth 6 task))
+                (priority (nth 7 task))
+                (effort (nth 8 task))
+                (properties (nth 9 task)))
+
+            ;; Create an anchor and heading for the task
+            ;; (insert (format "** [[#%s][%s]] ::%s::\n" task-id title task-id))
+
+            (insert (format "** %s \n" title ))
+            (insert ":PROPERTIES:\n")
+            (insert (format ":CUSTOM_ID: %s\n" task-id))
+            (insert ":END:\n")
+
+            ;; Add task metadata
+            ;; (insert (format "*** Metadata\n"))
+            (insert (format "*Completed on:* %s (%s) at %s\n" date day time))
+
+            ;; ;; Display priority if available
+            ;; (when priority
+            ;;   (insert (format "- *Priority:* %s\n" priority)))
+
+            ;; ;; Display effort if available
+            ;; (when effort
+            ;;   (insert (format "- *Effort:* %s\n" effort)))
+
+            ;; ;; Display tags if available
+            ;; (when tags
+            ;;   (insert (format "- *Tags:* %s\n" (mapconcat 'identity tags ", "))))
+
+            ;; ;; Display relevant properties
+            ;; (insert "- *Properties:*\n")
+            ;; (dolist (prop properties)
+            ;;   (when (and (not (string= (car prop) "CATEGORY"))
+            ;;              (not (string= (car prop) "ALLTAGS"))
+            ;;              (not (string= (car prop) "BLOCKED"))
+            ;;              (not (string= (car prop) "PRIORITY"))
+            ;;              (not (string= (car prop) "ITEM")))
+            ;;     (insert (format "  + %s: %s\n" (car prop) (cdr prop)))))
+
+            ;; Add task content section
+            (insert "*** Content\n")
+
+            ;; Clean up the body content
+            (let ((clean-body (replace-regexp-in-string "^\\*+ .*\n" "" body)))
+              (setq clean-body (replace-regexp-in-string "^:PROPERTIES:.*:END:\n" "" clean-body t))
+              (setq clean-body (replace-regexp-in-string "^\s*CLOSED:.*\n" "" clean-body))
+              (setq clean-body (replace-regexp-in-string "^\n+" "" clean-body))
+
+              ;; Insert cleaned body if not empty
+              (if (string-empty-p (string-trim clean-body))
+                  (insert "  /No additional content/\n\n")
+                (insert clean-body "\n\n")))
+
+            ;; Add a separator between tasks
+            (insert "-----\n\n")))
+
+        (org-mode)
+        (switch-to-buffer buffer)))))
 ;;
