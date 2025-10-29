@@ -1534,6 +1534,28 @@ function that sets `deactivate-mark' to t."
   :hook (prog-mode . simple-comment-markup-mode)
   )
 
+(use-package screenshot
+  :straight (:type git :host github :repo "tecosaur/screenshot")
+
+  :config
+  (setq screenshot-line-numbers-p 't)
+  (setq screenshot-relative-line-numbers-p 't)
+  (setq screenshot-min-width 80)
+  (setq screenshot-max-width 80)
+  (setq screenshot-truncate-lines-p nil)
+
+  (setq screenshot-text-only-p nil)
+
+  ;; (setq screenshot-font-family "FiraCode")
+  ;; (setq screenshot-font-size 12)
+
+  (setq screenshot-border-width 10)
+  (setq screenshot-radius 0)
+
+  (setq screenshot-shadow-radius 0)
+  (setq screenshot-shadow-offset-horizontal 0)
+  (setq screenshot-shadow-offset-vertical 0))
+
 (use-package rainbow-delimiters
   :ensure t
   :hook (prog-mode . rainbow-delimiters-mode)
