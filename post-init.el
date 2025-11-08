@@ -1002,6 +1002,8 @@
 
 
 (setq visible-bell t)
+(electric-pair-mode)
+(electric-quote-mode)
 
 (use-package transient
   :ensure t)
