@@ -1096,6 +1096,25 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
                                      (unpackaged/smerge-hydra/body)))))
 
 
+(use-package hl-todo
+  :hook (elpaca-after-init . global-hl-todo-mode)
+  :config (setq hl-todo-keyword-faces
+                '(("TODO"   . nerd-icons-green)
+                  ("HACK"  . nerd-icons-orange)
+                  ("NOTE" . nerd-icons-maroon)
+                  ("FIXME:" . nerd-icons-lred)
+                  ("WARN"   . nerd-icons-red)
+                  ("HERE"   . nerd-icons-blue-alt)
+                  ))
+  )
+
+(use-package consult-todo :demand t)
+
+(use-package magit-todos
+  :after magit
+  :config (magit-todos-mode 1)
+  )
+
 (use-package exec-path-from-shell
   :defer t
   :init
