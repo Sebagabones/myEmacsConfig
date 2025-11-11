@@ -996,6 +996,8 @@
 
 
 (setq visible-bell t)
+(electric-pair-mode)
+(electric-quote-mode)
 
 (use-package transient
   :ensure t)
@@ -1087,6 +1089,25 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
                                    (when smerge-mode
                                      (unpackaged/smerge-hydra/body)))))
 
+
+(use-package hl-todo
+  :hook (elpaca-after-init . global-hl-todo-mode)
+  :config (setq hl-todo-keyword-faces
+                '(("TODO"   . nerd-icons-green)
+                  ("HACK"  . nerd-icons-orange)
+                  ("NOTE" . nerd-icons-maroon)
+                  ("FIXME:" . nerd-icons-lred)
+                  ("WARN"   . nerd-icons-red)
+                  ("HERE"   . nerd-icons-blue-alt)
+                  ))
+  )
+
+(use-package consult-todo :demand t)
+
+(use-package magit-todos
+  :after magit
+  :config (magit-todos-mode 1)
+  )
 
 (use-package exec-path-from-shell
   :defer t
@@ -1217,12 +1238,6 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   (setq tooltip-mode t)
   )
 
-;; (use-package avy
-;;   :commands avy
-;;   :bind
-;;   ("C-c SPC" . avy-goto-char)           ;
-;;   ;; ("C-c o" . avy-select-window)
-;;   )
 ;; Yes ace is unmaintained, but it just is nicer imo
 (use-package ace-jump-mode
   :commands ace-jump-mode
@@ -1526,6 +1541,28 @@ function that sets `deactivate-mark' to t."
   :straight (:type git :host nil :repo "https://code.tecosaur.net/tec/simple-comment-markup.git")
   :hook (prog-mode . simple-comment-markup-mode)
   )
+
+(use-package screenshot
+  :straight (:type git :host github :repo "tecosaur/screenshot")
+
+  :config
+  (setq screenshot-line-numbers-p 't)
+  (setq screenshot-relative-line-numbers-p 't)
+  (setq screenshot-min-width 80)
+  (setq screenshot-max-width 80)
+  (setq screenshot-truncate-lines-p nil)
+
+  (setq screenshot-text-only-p nil)
+
+  ;; (setq screenshot-font-family "FiraCode")
+  ;; (setq screenshot-font-size 12)
+
+  (setq screenshot-border-width 10)
+  (setq screenshot-radius 0)
+
+  (setq screenshot-shadow-radius 0)
+  (setq screenshot-shadow-offset-horizontal 0)
+  (setq screenshot-shadow-offset-vertical 0))
 
 (use-package rainbow-delimiters
   :ensure t
