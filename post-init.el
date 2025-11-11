@@ -1245,12 +1245,6 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   (setq tooltip-mode t)
   )
 
-;; (use-package avy
-;;   :commands avy
-;;   :bind
-;;   ("C-c SPC" . avy-goto-char)           ;
-;;   ;; ("C-c o" . avy-select-window)
-;;   )
 ;; Yes ace is unmaintained, but it just is nicer imo
 (use-package ace-jump-mode
   :commands ace-jump-mode
