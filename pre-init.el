@@ -46,8 +46,6 @@
 ;; https://github.com/jamescherti/minimal-emacs.d/issues/54
 ;;
 (elpaca elpaca-use-package
-  (elpaca-use-package-mode)
-  )
-(setq elpaca-use-package-by-default t)
+  (elpaca-use-package-mode))
 ;;; (straight-use-package-mode 1)
 ;;;
