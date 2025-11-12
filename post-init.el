@@ -152,24 +152,24 @@
 ;; Cape, or Completion At Point Extensions, extends the capabilities of
 ;; in-buffer completion. It integrates with Corfu or the default completion UI,
 ;; by providing additional backends through completion-at-point-functions.
-(use-nix-package cape
-                 :ensure t
-                 :commands (cape-file cape-elisp-block)
-                 :bind ("C-c p" . cape-prefix-map)
-                 :init
-                 ;; Add to the global default value of `completion-at-point-functions' which is
-                 ;; used by `completion-at-point'.
-                 ;; (add-hook 'completion-at-point-functions #'cape-dabbrev)
-                 (add-hook 'completion-at-point-functions #'cape-file)
-                 (add-hook 'completion-at-point-functions #'cape-elisp-block))
+(use-package cape
+  :ensure t
+  :commands (cape-file cape-elisp-block)
+  :bind ("C-c p" . cape-prefix-map)
+  :init
+  ;; Add to the global default value of `completion-at-point-functions' which is
+  ;; used by `completion-at-point'.
+  ;; (add-hook 'completion-at-point-functions #'cape-dabbrev)
+  (add-hook 'completion-at-point-functions #'cape-file)
+  (add-hook 'completion-at-point-functions #'cape-elisp-block))
 
 ;; Vertico provides a vertical completion interface, making it easier to
 ;; navigate and select from completion candidates (e.g., when `M-x` is pressed).
-(use-nix-package vertico
-                 ;; (Note: It is recommended to also enable the savehist package.)
-                 :ensure t
-                 :config
-                 (vertico-mode))
+(use-package vertico
+  ;; (Note: It is recommended to also enable the savehist package.)
+  :ensure t
+  :config
+  (vertico-mode))
 
 
 ;; Vertico leverages Orderless' flexible matching capabilities, allowing users
@@ -908,15 +908,15 @@
 (dolist (hook '(prog-mode-hook text-mode-hook conf-mode-hook))
   (add-hook hook #'display-line-numbers-mode))
 
-(use-package which-key
-  :ensure nil ; builtin
-  :commands which-key-mode
-  :hook (elpaca-after-init . which-key-mode)
-  :custom
-  (which-key-idle-delay 1.5)
-  (which-key-idle-secondary-delay 0.25)
-  (which-key-add-column-padding 1)
-  (which-key-max-description-length 40))
+(use-nix-package which-key
+                 :ensure nil ; builtin
+                 :commands which-key-mode
+                 :hook (elpaca-after-init . which-key-mode)
+                 :custom
+                 (which-key-idle-delay 1.5)
+                 (which-key-idle-secondary-delay 0.25)
+                 (which-key-add-column-padding 1)
+                 (which-key-max-description-length 40))
 
 (unless (and (eq window-system 'mac)
              (bound-and-true-p mac-carbon-version-string))
@@ -995,7 +995,7 @@
 (setq redisplay-skip-fontification-on-input t)
 
 
-;; my custom junk that will probably slowww this down
+
 (use-package doom-modeline
   :ensure t
   :init (doom-modeline-mode 1))
@@ -1005,42 +1005,42 @@
 (electric-pair-mode)
 (electric-quote-mode)
 
-(use-package transient
-  :ensure t)
+(use-nix-package transient
+                 :ensure t)
 
-(use-package magit
-  :after transient
-  :ensure t
-  ;; :after
-  ;; (setq magit-diff-refine-hunk 't))
-  )
-(use-package forge
-  :after magit
-  :ensure t)
+(use-nix-package magit
+                 :after transient
+                 :ensure t
+                 ;; :after
+                 ;; (setq magit-diff-refine-hunk 't))
+                 )
+(use-nix-package forge
+                 :after magit
+                 :ensure t)
 ;; :straight (:host github :repo "magit/forge" :branch "main" ))
 
 
-(use-package difftastic
-  :demand t
-  :bind (:map magit-blame-read-only-mode-map
-              ("D" . difftastic-magit-show)
-              ("S" . difftastic-magit-show))
-  :config
-  (eval-after-load 'magit-diff
-    '(transient-append-suffix 'magit-diff '(-1 -1)
-       [("D" "Difftastic diff (dwim)" difftastic-magit-diff)
-        ("S" "Difftastic show" difftastic-magit-show)])))
+(use-nix-package difftastic
+                 :demand t
+                 :bind (:map magit-blame-read-only-mode-map
+                             ("D" . difftastic-magit-show)
+                             ("S" . difftastic-magit-show))
+                 :config
+                 (eval-after-load 'magit-diff
+                   '(transient-append-suffix 'magit-diff '(-1 -1)
+                      [("D" "Difftastic diff (dwim)" difftastic-magit-diff)
+                       ("S" "Difftastic show" difftastic-magit-show)])))
 
-(use-package magit-delta
-  :after transient
-  :hook (magit-mode . magit-delta-mode)
-  :config
-  (setq magit-delta-delta-args
-        `("--syntax-theme" "tokyoNightNight"
-          ;; `("--syntax-theme" "Dracula"
-          "--max-line-distance" "0.6"
-          "--true-color" "always"
-          "--color-only")))
+(use-nix-package magit-delta
+                 :after transient
+                 :hook (magit-mode . magit-delta-mode)
+                 :config
+                 (setq magit-delta-delta-args
+                       `("--syntax-theme" "tokyoNightNight"
+                         ;; `("--syntax-theme" "Dracula"
+                         "--max-line-distance" "0.6"
+                         "--true-color" "always"
+                         "--color-only")))
 
 (defun myfun/toggle-magit-delta ()
   (interactive)
@@ -1096,17 +1096,17 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
                                      (unpackaged/smerge-hydra/body)))))
 
 
-(use-package hl-todo
-  :hook (elpaca-after-init . global-hl-todo-mode)
-  :config (setq hl-todo-keyword-faces
-                '(("TODO"   . nerd-icons-green)
-                  ("HACK"  . nerd-icons-orange)
-                  ("NOTE" . nerd-icons-maroon)
-                  ("FIXME:" . nerd-icons-lred)
-                  ("WARN"   . nerd-icons-red)
-                  ("HERE"   . nerd-icons-blue-alt)
-                  ))
-  )
+(use-nix-package hl-todo
+                 :hook (elpaca-after-init . global-hl-todo-mode)
+                 :config (setq hl-todo-keyword-faces
+                               '(("TODO"   . nerd-icons-green)
+                                 ("HACK"  . nerd-icons-orange)
+                                 ("NOTE" . nerd-icons-maroon)
+                                 ("FIXME:" . nerd-icons-lred)
+                                 ("WARN"   . nerd-icons-red)
+                                 ("HERE"   . nerd-icons-blue-alt)
+                                 ))
+                 )
 
 (use-package consult-todo :demand t)
 
@@ -1134,26 +1134,26 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   :init
   (projectile-mode))
 
-(use-package rg
-  :after transient
-  :defer t)
+(use-nix-package rg
+                 :after transient
+                 :defer t)
 
-(use-package flycheck
-  :defer t
-  :hook (elpaca-after-init . global-flycheck-mode)
+(use-nix-package flycheck
+                 :defer t
+                 :hook (elpaca-after-init . global-flycheck-mode)
 
-  :config
-  (setq flycheck-highlighting-mode "lines")
-  (setq lsp-diagnostics-provider :none)
-  )
+                 :config
+                 (setq flycheck-highlighting-mode "lines")
+                 (setq lsp-diagnostics-provider :none)
+                 )
 
 
-(use-package flycheck-inline
-  :after flycheck
-  :hook (flycheck-mode . flycheck-inline-mode))
+(use-nix-package flycheck-inline
+                 :after flycheck
+                 :hook (flycheck-mode . flycheck-inline-mode))
 
-(use-package scad-mode
-  :ensure t)
+(use-nix-package scad-mode
+                 :ensure t)
 
 (use-package scad-preview
   :after scad-mode
@@ -1230,20 +1230,20 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 (use-nix-package treemacs-projectile :after (treemacs projectile))
 
 
-(use-package dap-mode
-  :defer t
-  :ensure t :after lsp-mode
-  :config
-  (require 'dap-python)
-  (require 'dap-ui)
+(use-nix-package dap-mode
+                 :defer t
+                 :ensure t :after lsp-mode
+                 :config
+                 (require 'dap-python)
+                 (require 'dap-ui)
 
-  (setq dap-mode t)
-  (setq dap-ui-mode t)
-  ;; enables mouse hover support
-  (setq dap-tooltip-mode t)
-  ;; if it is not enabled `dap-mode' will use the minibuffer.
-  (setq tooltip-mode t)
-  )
+                 (setq dap-mode t)
+                 (setq dap-ui-mode t)
+                 ;; enables mouse hover support
+                 (setq dap-tooltip-mode t)
+                 ;; if it is not enabled `dap-mode' will use the minibuffer.
+                 (setq tooltip-mode t)
+                 )
 
 ;; Yes ace is unmaintained, but it just is nicer imo
 (use-package ace-jump-mode
@@ -1394,40 +1394,40 @@ function that sets `deactivate-mark' to t."
 ;;            ;; enable autocompletion with company
 ;;            (setq company-idle-delay 0.1))
 
-(use-package nix-mode
-  :after lsp-mode
-  :ensure t
-  :hook
-  (nix-mode . lsp-deferred) ;; So that envrc mode will work
-  :custom
-  (lsp-disabled-clients '((nix-mode . nix-nil))) ;; Disable nil so that nixd will be used as lsp-server
-  :config
-  (setq lsp-nix-nixd-server-path "nixd"
-        lsp-nix-nixd-formatting-command [ "nixfmt" ]
-        lsp-nix-nixd-nixpkgs-expr "import <nixpkgs> { }"
-        lsp-nix-nixd-nixos-options-expr "(builtins.getFlake \"/home/nb/nixos\").nixosConfigurations.mnd.options"
-        lsp-nix-nixd-home-manager-options-expr "(builtins.getFlake \"/home/nb/nixos\").homeConfigurations.\"nb@mnd\".options"))
+(use-nix-package nix-mode
+                 :after lsp-mode
+                 :ensure t
+                 :hook
+                 (nix-mode . lsp-deferred) ;; So that envrc mode will work
+                 :custom
+                 (lsp-disabled-clients '((nix-mode . nix-nil))) ;; Disable nil so that nixd will be used as lsp-server
+                 :config
+                 (setq lsp-nix-nixd-server-path "nixd"
+                       lsp-nix-nixd-formatting-command [ "nixfmt" ]
+                       lsp-nix-nixd-nixpkgs-expr "import <nixpkgs> { }"
+                       lsp-nix-nixd-nixos-options-expr "(builtins.getFlake \"/home/nb/nixos\").nixosConfigurations.mnd.options"
+                       lsp-nix-nixd-home-manager-options-expr "(builtins.getFlake \"/home/nb/nixos\").homeConfigurations.\"nb@mnd\".options"))
 
 
-(use-package nix-modeline
-  :after nix-mode
-  :commands (nix-modeline-mode)
-  :config
-  (setq nix-modeline-idle-text ""))
+(use-nix-package nix-modeline
+                 :after nix-mode
+                 :commands (nix-modeline-mode)
+                 :config
+                 (setq nix-modeline-idle-text ""))
 
 
 ;; git gutter from https://ianyepan.github.io/posts/emacs-git-gutter/
-(use-package git-gutter
-  :hook (prog-mode . git-gutter-mode)
-  :config
-  (setq git-gutter:update-interval 0.02))
+(use-nix-package git-gutter
+                 :hook (prog-mode . git-gutter-mode)
+                 :config
+                 (setq git-gutter:update-interval 0.02))
 
-(use-package git-gutter-fringe
-  :config
-  (define-fringe-bitmap 'git-gutter-fr:added [224] nil nil '(center repeated))
-  (define-fringe-bitmap 'git-gutter-fr:modified [224] nil nil '(center repeated))
-  (define-fringe-bitmap 'git-gutter-fr:deleted [128 192 224 240] nil nil 'bottom)
-  )
+(use-nix-package git-gutter-fringe
+                 :config
+                 (define-fringe-bitmap 'git-gutter-fr:added [224] nil nil '(center repeated))
+                 (define-fringe-bitmap 'git-gutter-fr:modified [224] nil nil '(center repeated))
+                 (define-fringe-bitmap 'git-gutter-fr:deleted [128 192 224 240] nil nil 'bottom)
+                 )
 
 
 (use-package vundo
@@ -1473,9 +1473,9 @@ function that sets `deactivate-mark' to t."
   :after python
   :bind ("C-c C-n" . numpydoc-generate))
 
-(use-package pyvenv
-  :ensure t
-  :after python)
+(use-nix-package pyvenv
+                 :ensure t
+                 :after python)
 
 (use-package uv
   :straight (uv :type git :host github :repo "johannes-mueller/uv.el")
@@ -1494,33 +1494,33 @@ function that sets `deactivate-mark' to t."
 ;;          (lambda () (require 'ccls) (lsp))))
 ;;
 
-(use-package vterm-toggle
-  :ensure t
-  ;; :hook (elpaca-after-init . vterm-toggle)
-  :bind
-  ("C-c t" . vterm-toggle-cd)
+(use-nix-package vterm-toggle
+                 :ensure t
+                 ;; :hook (elpaca-after-init . vterm-toggle)
+                 :bind
+                 ("C-c t" . vterm-toggle-cd)
 
-  :config
-  (define-key vterm-mode-map [(control return)]   #'vterm-toggle-insert-cd)
-  (define-key vterm-copy-mode-map [(control return)]   #'vterm-toggle-insert-cd)
-  )
+                 :config
+                 (define-key vterm-mode-map [(control return)]   #'vterm-toggle-insert-cd)
+                 (define-key vterm-copy-mode-map [(control return)]   #'vterm-toggle-insert-cd)
+                 )
 
-(use-package tabspaces
-  ;; use this next line only if you also use straight, otherwise ignore it.
-  ;; :straight (:type git :host github :repo "mclear-tools/tabspaces")
-  :hook (elpaca-after-init-hook . tabspaces-mode) ;; use this only if you want the minor-mode loaded at startup.
-  :commands (tabspaces-switch-or-create-workspace
-             tabspaces-open-or-create-project-and-workspace)
-  :custom
-  (tabspaces-use-filtered-buffers-as-default t)
-  (tabspaces-default-tab "Default")
-  (tabspaces-remove-to-default t)
-  (tabspaces-include-buffers '("*scratch*"))
-  (tabspaces-initialize-project-with-todo nil)
-  ;; sessions
-  (tabspaces-session t)
-  (tabspaces-session-auto-restore nil)
-  (tab-bar-new-tab-choice "*scratch*"))
+(use-nix-package tabspaces
+                 ;; use this next line only if you also use straight, otherwise ignore it.
+                 ;; :straight (:type git :host github :repo "mclear-tools/tabspaces")
+                 :hook (elpaca-after-init-hook . tabspaces-mode) ;; use this only if you want the minor-mode loaded at startup.
+                 :commands (tabspaces-switch-or-create-workspace
+                            tabspaces-open-or-create-project-and-workspace)
+                 :custom
+                 (tabspaces-use-filtered-buffers-as-default t)
+                 (tabspaces-default-tab "Default")
+                 (tabspaces-remove-to-default t)
+                 (tabspaces-include-buffers '("*scratch*"))
+                 (tabspaces-initialize-project-with-todo nil)
+                 ;; sessions
+                 (tabspaces-session t)
+                 (tabspaces-session-auto-restore nil)
+                 (tab-bar-new-tab-choice "*scratch*"))
 ;; Filter Buffers for Consult-Buffer
 ;; Define a helper for clarity
 
