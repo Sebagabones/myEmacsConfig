@@ -1005,16 +1005,16 @@
 (electric-pair-mode)
 (electric-quote-mode)
 
-(use-nix-package transient
+(use-package transient
                  :ensure t)
 
-(use-nix-package magit
+(use-package magit
                  :after transient
                  :ensure t
                  ;; :after
                  ;; (setq magit-diff-refine-hunk 't))
                  )
-(use-nix-package forge
+(use-package forge
                  :after magit
                  :ensure t)
 ;; :straight (:host github :repo "magit/forge" :branch "main" ))
