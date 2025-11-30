@@ -1006,17 +1006,17 @@
 (electric-quote-mode)
 
 (use-package transient
-                 :ensure t)
+  :ensure t)
 
 (use-package magit
-                 :after transient
-                 :ensure t
-                 ;; :after
-                 ;; (setq magit-diff-refine-hunk 't))
-                 )
+  :after transient
+  :ensure t
+  ;; :after
+  ;; (setq magit-diff-refine-hunk 't))
+  )
 (use-package forge
-                 :after magit
-                 :ensure t)
+  :after magit
+  :ensure t)
 ;; :straight (:host github :repo "magit/forge" :branch "main" ))
 
 
