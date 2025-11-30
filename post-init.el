@@ -1576,6 +1576,9 @@ function that sets `deactivate-mark' to t."
   :hook (prog-mode . rainbow-delimiters-mode)
   )
 
+(use-package yaml-mode
+  :ensure t
+  )
 
 (use-package doxymacs
   :straight (doxymacs :type git :host github :repo "pniedzielski/doxymacs")
