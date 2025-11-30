@@ -1580,6 +1580,17 @@ function that sets `deactivate-mark' to t."
   :ensure t
   )
 
+(use-package ponylang-mode
+  :ensure t
+  :init
+  (setq ponylang-banner 2)
+  :config
+  :bind-keymap
+  ("C-c p" . ponylang-menu))
+(use-package flycheck-pony
+  :config
+  (setq create-lockfiles nil))
+
 (use-package doxymacs
   :straight (doxymacs :type git :host github :repo "pniedzielski/doxymacs")
   :hook (c-mode-common . doxymacs-mode)
