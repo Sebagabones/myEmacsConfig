@@ -512,6 +512,13 @@
                  :config
                  (setq org-directory "~/Org/")
                  ;; lualatex setup from https://stackoverflow.com/questions/41568410/configure-org-mode-to-use-lualatex
+                 (setq org-babel-latex-preamble
+                       (lambda (_)
+                         "\\documentclass[tikz]{standalone}"))
+
+                 (setq org-latex-create-formula-image-program 'dvisvgm)
+                 (org-babel-do-load-languages 'org-babel-load-languages '((latex . t)))
+                 (setq org-babel-latex-pdf-svg-process "pdf2svg %F %O")
 
                  (setq org-latex-pdf-process
                        '("latexmk -lualatex -shell-escape -interaction=nonstopmode  %f"))
@@ -1596,19 +1603,19 @@ function that sets `deactivate-mark' to t."
   :straight (:type git :host github :repo "tecosaur/screenshot")
 
   :config
-  (setq screenshot-line-numbers-p 't)
-  (setq screenshot-relative-line-numbers-p 't)
+  (setq screenshot-line-numbers-p nil)
+
   (setq screenshot-min-width 80)
-  (setq screenshot-max-width 80)
+  (setq screenshot-max-width 90)
   (setq screenshot-truncate-lines-p nil)
 
   (setq screenshot-text-only-p nil)
 
-  ;; (setq screenshot-font-family "FiraCode")
-  ;; (setq screenshot-font-size 12)
+  (setq screenshot-font-family "GoMono Nerd Font")
+  (setq screenshot-font-size 12)
 
-  (setq screenshot-border-width 10)
-  (setq screenshot-radius 0)
+  (setq screenshot-border-width 15)
+  (setq screenshot-radius 4)
 
   (setq screenshot-shadow-radius 0)
   (setq screenshot-shadow-offset-horizontal 0)
@@ -1909,4 +1916,8 @@ function that sets `deactivate-mark' to t."
   :straight (cicode-mode :type git :host github :repo "Sebagabones/cicode-mode.el")
   :ensure t  )
 
+(use-package dbml-mode
+  :config
+  (add-to-list 'auto-mode-alist
+               '("\\.dbml\\'" . dbml-mode)))
 ;;
