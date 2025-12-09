@@ -592,6 +592,82 @@
                  ;; (setq org-preview-latex-default-process 'dvisvgm))
                  )
 
+  :config
+  (setq org-directory "~/Org/")
+  ;; lualatex setup from https://stackoverflow.com/questions/41568410/configure-org-mode-to-use-lualatex
+  (setq org-babel-latex-preamble
+        (lambda (_)
+          "\\documentclass[tikz]{standalone}"))
+
+  (setq org-latex-create-formula-image-program 'dvisvgm)
+  (org-babel-do-load-languages 'org-babel-load-languages '((latex . t)))
+  (setq org-babel-latex-pdf-svg-process "pdf2svg %F %O")
+
+  (setq org-latex-pdf-process
+        '("lualatex --shell-escape -interaction=nonstopmode -output-directory=%o %f"
+          ;; "latexmk  -shell-escape -f -pdf -%latex -interaction=nonstopmode -output-directory=%o %f"
+          "lualatex --shell-escape -interaction=nonstopmode -output-directory=%o %f"
+          "lualatex --shell-escape -interaction=nonstopmode -output-directory=%o %f"))
+  ;; (setq org-latex-pdf-process
+  ;;       '("lualatex -pdflatex=-shell-escape -interaction nonstopmode %f"
+  ;;         "lualatex -shell-escape -interaction nonstopmode %f"))
+
+  (setq luasvg '(luasvg :programs ("dvilualatex""dvisvgm") :description "dvi > svg" :message
+                        "you need to install the programs: lualatex and dvisvgm."
+                        :image-input-type "dvi" :image-output-type "svg" :image-size-adjust
+                        (1.7 . 1.5) :latex-compiler
+                        ("dvilualatex -interaction nonstopmode -output-directory %o %f")
+                        :image-converter
+                        ("dvisvgm %f --no-fonts --exact-bbox --scale=%S --output=%O")))
+
+  (add-to-list 'org-preview-latex-process-alist luasvg)
+  (require 'ox-latex)
+  ;; (add-to-list 'org-latex-packages-alist '("" "minted" nil))
+  ;; (setq org-latex-src-block-backend 'minted)
+  (setq org-engraved-minted-options
+        '(("frame" "leftline")
+          ("linenos" "true")
+          ("numberblanklines" "false")
+          ("showspaces" "false")
+          ("breaklines" "true")
+          ))
+  (setq org-latex-src-block-backend 'engraved)
+
+  ;; (add-to-list 'org-latex-packages-alist '("" "xcolor" nil))
+  (add-to-list 'org-latex-packages-alist '("" "fvextra" nil))
+  (add-to-list 'org-latex-packages-alist '("" "upquote" nil))
+  (add-to-list 'org-latex-packages-alist '("" "booktabs" nil))
+
+
+
+  ;; (add-to-list 'org-latex-packages-alist '("" "lineno" nil))
+
+  ;; (add-to-list 'org-latex-packages-alist '("" "hyperref" nil))
+  ;; (add-to-list 'org-latex-packages-alist '("" "geometry" nil))
+  ;; (customize-set-variable 'org-format-latex-header
+  ;;                         (concat org-format-latex-header "\n\\setlength{\\parindent}{0pt}\n\\hypersetup{colorlinks=false, hidelinks=true}\n\\newgeometry{vmargin={15mm}, hmargin={17mm,17mm}}"))
+
+  (defun org-html--format-image (source attributes info) ;base64 encodes images on export to HTML
+    (format "<img src=\"data:image/%s;base64,%s\"%s />"
+            (or (file-name-extension source) "")
+            (base64-encode-string
+             (with-temp-buffer
+	           (insert-file-contents-literally source)
+	           (buffer-string)))
+            (file-name-nondirectory source)))
+  :custom
+  (org-preview-latex-default-process 'luasvg)
+  (org-hide-leading-stars t)
+  (org-html-validation-link nil)
+  (org-startup-indented t)
+  (org-edit-src-content-indentation 0)
+  (org-link-search-must-match-exact-headline nil)
+  (org-fontify-done-headline t)
+  (org-fontify-todo-headline t)
+  (org-fontify-whole-heading-line t)
+  (org-fontify-quote-and-verse-blocks t)
+  (org-startup-truncated t)
+
 (defun org-show-todo-tree ()
   "Create new indirect buffer with sparse tree of undone TODO items"
   (interactive)
