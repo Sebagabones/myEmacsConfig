@@ -532,7 +532,10 @@
                  (setq org-babel-latex-pdf-svg-process "pdf2svg %F %O")
 
                  (setq org-latex-pdf-process
-                       '("latexmk -lualatex -shell-escape -interaction=nonstopmode  %f"))
+                       '("lualatex --shell-escape -interaction=nonstopmode -output-directory=%o %f"
+                         ;; "latexmk  -shell-escape -f -pdf -%latex -interaction=nonstopmode -output-directory=%o %f"
+                         "lualatex --shell-escape -interaction=nonstopmode -output-directory=%o %f"
+                         "lualatex --shell-escape -interaction=nonstopmode -output-directory=%o %f"))
                  ;; (setq org-latex-pdf-process
                  ;;       '("lualatex -pdflatex=-shell-escape -interaction nonstopmode %f"
                  ;;         "lualatex -shell-escape -interaction nonstopmode %f"))
@@ -603,81 +606,6 @@
                  ;; (setq org-preview-latex-default-process 'dvisvgm))
                  )
 
-  :config
-  (setq org-directory "~/Org/")
-  ;; lualatex setup from https://stackoverflow.com/questions/41568410/configure-org-mode-to-use-lualatex
-  (setq org-babel-latex-preamble
-        (lambda (_)
-          "\\documentclass[tikz]{standalone}"))
-
-  (setq org-latex-create-formula-image-program 'dvisvgm)
-  (org-babel-do-load-languages 'org-babel-load-languages '((latex . t)))
-  (setq org-babel-latex-pdf-svg-process "pdf2svg %F %O")
-
-  (setq org-latex-pdf-process
-        '("lualatex --shell-escape -interaction=nonstopmode -output-directory=%o %f"
-          ;; "latexmk  -shell-escape -f -pdf -%latex -interaction=nonstopmode -output-directory=%o %f"
-          "lualatex --shell-escape -interaction=nonstopmode -output-directory=%o %f"
-          "lualatex --shell-escape -interaction=nonstopmode -output-directory=%o %f"))
-  ;; (setq org-latex-pdf-process
-  ;;       '("lualatex -pdflatex=-shell-escape -interaction nonstopmode %f"
-  ;;         "lualatex -shell-escape -interaction nonstopmode %f"))
-
-  (setq luasvg '(luasvg :programs ("dvilualatex""dvisvgm") :description "dvi > svg" :message
-                        "you need to install the programs: lualatex and dvisvgm."
-                        :image-input-type "dvi" :image-output-type "svg" :image-size-adjust
-                        (1.7 . 1.5) :latex-compiler
-                        ("dvilualatex -interaction nonstopmode -output-directory %o %f")
-                        :image-converter
-                        ("dvisvgm %f --no-fonts --exact-bbox --scale=%S --output=%O")))
-
-  (add-to-list 'org-preview-latex-process-alist luasvg)
-  (require 'ox-latex)
-  ;; (add-to-list 'org-latex-packages-alist '("" "minted" nil))
-  ;; (setq org-latex-src-block-backend 'minted)
-  (setq org-engraved-minted-options
-        '(("frame" "leftline")
-          ("linenos" "true")
-          ("numberblanklines" "false")
-          ("showspaces" "false")
-          ("breaklines" "true")
-          ))
-  (setq org-latex-src-block-backend 'engraved)
-
-  ;; (add-to-list 'org-latex-packages-alist '("" "xcolor" nil))
-  (add-to-list 'org-latex-packages-alist '("" "fvextra" nil))
-  (add-to-list 'org-latex-packages-alist '("" "upquote" nil))
-  (add-to-list 'org-latex-packages-alist '("" "booktabs" nil))
-
-
-
-  ;; (add-to-list 'org-latex-packages-alist '("" "lineno" nil))
-
-  ;; (add-to-list 'org-latex-packages-alist '("" "hyperref" nil))
-  ;; (add-to-list 'org-latex-packages-alist '("" "geometry" nil))
-  ;; (customize-set-variable 'org-format-latex-header
-  ;;                         (concat org-format-latex-header "\n\\setlength{\\parindent}{0pt}\n\\hypersetup{colorlinks=false, hidelinks=true}\n\\newgeometry{vmargin={15mm}, hmargin={17mm,17mm}}"))
-
-  (defun org-html--format-image (source attributes info) ;base64 encodes images on export to HTML
-    (format "<img src=\"data:image/%s;base64,%s\"%s />"
-            (or (file-name-extension source) "")
-            (base64-encode-string
-             (with-temp-buffer
-	           (insert-file-contents-literally source)
-	           (buffer-string)))
-            (file-name-nondirectory source)))
-  :custom
-  (org-preview-latex-default-process 'luasvg)
-  (org-hide-leading-stars t)
-  (org-html-validation-link nil)
-  (org-startup-indented t)
-  (org-edit-src-content-indentation 0)
-  (org-link-search-must-match-exact-headline nil)
-  (org-fontify-done-headline t)
-  (org-fontify-todo-headline t)
-  (org-fontify-whole-heading-line t)
-  (org-fontify-quote-and-verse-blocks t)
-  (org-startup-truncated t)
 
 (defun org-show-todo-tree ()
   "Create new indirect buffer with sparse tree of undone TODO items"
@@ -964,82 +892,6 @@
 
 
 ;; (set-fontset-font t nil "Fira Code Symbol" nil 'append)
-
-(add-to-list 'default-frame-alist '(font . "GoMono Nerd Font 12"))
-(set-face-attribute 'default nil :font "GoMono Nerd Font 12")
-
-(set-frame-font "GoMono Nerd Font 12" nil t)
-
-(use-package ligature ;setup for jetbrains
-  :ensure t
-  :config
-  ;; Enable the "www" ligature in every possible major mode
-  (ligature-set-ligatures 't '("www"))
-  ;; Enable traditional ligature support in eww-mode, if the
-  ;; `variable-pitch' face supports it
-  (ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
-  ;; Enable all Cascadia and Fira Code ligatures in programming modes
-  (ligature-set-ligatures 'prog-mode
-                          '(;; == === ==== => =| =>>=>=|=>==>> ==< =/=//=// =~
-                            ;; =:= =!=
-                            ("=" (rx (+ (or ">" "<" "|" "/" "~" ":" "!" "="))))
-                            ;; ;; ;;;
-                            (";" (rx (+ ";")))
-                            ;; && &&&
-                            ("&" (rx (+ "&")))
-                            ;; !! !!! !. !: !!. != !== !~
-                            ("!" (rx (+ (or "=" "!" "\." ":" "~"))))
-                            ;; ?? ??? ?:  ?=  ?.
-                            ("?" (rx (or ":" "=" "\." (+ "?"))))
-                            ;; %% %%%
-                            ("%" (rx (+ "%")))
-                            ;; |> ||> |||> ||||> |] |} || ||| |-> ||-||
-                            ;; |->>-||-<<-| |- |== ||=||
-                            ;; |==>>==<<==<=>==//==/=!==:===>
-                            ("|" (rx (+ (or ">" "<" "|" "/" ":" "!" "}" "\]"
-                                            "-" "=" ))))
-                            ;; \\ \\\ \/
-                            ("\\" (rx (or "/" (+ "\\"))))
-                            ;; ++ +++ ++++ +>
-                            ("+" (rx (or ">" (+ "+"))))
-                            ;; :: ::: :::: :> :< := :// ::=
-                            (":" (rx (or ">" "<" "=" "//" ":=" (+ ":"))))
-                            ;; // /// //// /\ /* /> /===:===!=//===>>==>==/
-                            ("/" (rx (+ (or ">"  "<" "|" "/" "\\" "\*" ":" "!"
-                                            "="))))
-                            ;; .. ... .... .= .- .? ..= ..<
-                            ("\." (rx (or "=" "-" "\?" "\.=" "\.<" (+ "\."))))
-                            ;; -- --- ---- -~ -> ->> -| -|->-->>->--<<-|
-                            ("-" (rx (+ (or ">" "<" "|" "~" "-"))))
-                            ;; *> */ *)  ** *** ****
-                            ("*" (rx (or ">" "/" ")" (+ "*"))))
-                            ;; www wwww
-                            ("w" (rx (+ "w")))
-                            ;; <> <!-- <|> <: <~ <~> <~~ <+ <* <$ </  <+> <*>
-                            ;; <$> </> <|  <||  <||| <|||| <- <-| <-<<-|-> <->>
-                            ;; <<-> <= <=> <<==<<==>=|=>==/==//=!==:=>
-                            ;; << <<< <<<<
-                            ("<" (rx (+ (or "\+" "\*" "\$" "<" ">" ":" "~"  "!"
-                                            "-"  "/" "|" "="))))
-                            ;; >: >- >>- >--|-> >>-|-> >= >== >>== >=|=:=>>
-                            ;; >> >>> >>>>
-                            (">" (rx (+ (or ">" "<" "|" "/" ":" "=" "-"))))
-                            ;; #: #= #! #( #? #[ #{ #_ #_( ## ### #####
-                            ("#" (rx (or ":" "=" "!" "(" "\?" "\[" "{" "_(" "_"
-                                         (+ "#"))))
-                            ;; ~~ ~~~ ~=  ~-  ~@ ~> ~~>
-                            ("~" (rx (or ">" "=" "-" "@" "~>" (+ "~"))))
-                            ;; __ ___ ____ _|_ __|____|_
-                            ("_" (rx (+ (or "_" "|"))))
-                            ;; Fira code: 0xFF 0x12
-                            ("0" (rx (and "x" (+ (in "A-F" "a-f" "0-9")))))
-                            ;; Fira code:
-                            "Fl"  "Tl"  "fi"  "fj"  "fl"  "ft"
-                            ;; The few not covered by the regexps.
-                            "{|"  "[|"  "]#"  "(*"  "}#"  "$>"  "^="))
-  (global-ligature-mode t))
-
-
 
 
 ;; Allow Emacs to upgrade built-in packages, such as Org mode
@@ -1426,13 +1278,18 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
                  (setq tooltip-mode t)
                  )
 
-;; Yes ace is unmaintained, but it just is nicer imo
-(use-package ace-jump-mode
-  :commands ace-jump-mode
+(use-package avy
   :bind
-  ("C-c SPC" . ace-jump-char-mode)
+  ("C-c SPC" . avy-goto-char)
+  :hook (elpaca-after-init . avy))
+
+
+(use-package ace-window
+  :bind
   ("C-c o" . ace-select-window)
-  )
+  :config
+  (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+  :hook (elpaca-after-init . ace-window))
 
 ;; (use-nix-package treemacs-nerd-icons
 ;;                  :config
@@ -1734,21 +1591,20 @@ function that sets `deactivate-mark' to t."
   :straight (:type git :host github :repo "tecosaur/screenshot")
 
   :config
-  (setq screenshot-line-numbers-p nil)
-
+  (setq screenshot-line-numbers-p 't)
+  (setq screenshot-relative-line-numbers-p 't)
   (setq screenshot-min-width 80)
-  (setq screenshot-max-width 90)
+  (setq screenshot-max-width 80)
   (setq screenshot-truncate-lines-p nil)
 
   (setq screenshot-text-only-p nil)
 
-  (setq screenshot-font-family "GoMono Nerd Font")
-  (setq screenshot-font-size 12)
+  ;; (setq screenshot-font-family "FireCode")
+  ;; (setq screenshot-font-size 12)
 
-  (setq screenshot-border-width 15)
-  (setq screenshot-radius 4)
-
-  (setq screenshot-shadow-radius 0)
+  (setq screenshot-border-width 10)
+  (setq screenshot-border-width 10)
+  (setq screenshot-radius 0)
   (setq screenshot-shadow-offset-horizontal 0)
   (setq screenshot-shadow-offset-vertical 0))
 
@@ -1829,242 +1685,6 @@ function that sets `deactivate-mark' to t."
 
 (with-eval-after-load 'org-src(add-to-list 'org-src-lang-modes '("irc-log" . irc-log)))
 
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Work Specific Configuration
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-
-(setq org-agenda-custom-commands
-      '(("w" "Tasks marked DONE this week"
-         ((agenda ""
-                  ((org-agenda-span 'week)
-                   (org-agenda-files '("~/TODO.org"))
-                   (org-agenda-start-on-weekday 1)
-                   (org-agenda-entry-types '(:state))
-                   (org-agenda-show-log t)
-                   (org-agenda-log-mode-items '(state))
-                   (org-agenda-time-grid nil)
-                   ;; (org-agenda-prefix-format "  %-10t  %s")
-                   (org-agenda-prefix-format "  %-10t  ")
-                   (org-agenda-skip-function
-                    '(org-agenda-skip-entry-if 'notregexp "DONE")))))
-         nil)))
-
-
-
-(defun export-done-tasks-for-current-week ()
-  "Export DONE tasks for the current week (Monday to Sunday) to an org table with time tracking columns.
-   Also includes detailed task information with hyperlinks."
-  (interactive)
-  (let* ((tasks-by-date (make-hash-table :test 'equal))
-         (all-tasks '())  ;; Store all tasks for detailed listing
-         (buffer (get-buffer-create "*Done Tasks This Week*"))
-         ;; (today (current-time))
-         (today (org-read-date nil 'to-time nil "Date:  "))
-         (day-of-week (string-to-number (format-time-string "%u" today))) ;; 1=Monday, 7=Sunday
-         (days-to-monday (1- day-of-week))
-         (monday-this-week (time-subtract today (days-to-time days-to-monday)))
-         (monday-date-str (format-time-string "%Y-%m-%d" monday-this-week))
-         (task-counter 0)) ;; Counter for creating unique anchor IDs
-
-    ;; Create list of days for this week (Monday to Sunday)
-    (let ((week-days '()))
-      (dotimes (i 7)
-        (let* ((date (time-add monday-this-week (days-to-time i)))
-               (date-key (format-time-string "%Y-%m-%d" date))
-               (date-display (format-time-string "%e %B %Y" date))
-               (day-name (format-time-string "%A" date)))
-          (puthash date-key
-                   (list (list date-display day-name "" "No tasks completed" nil))
-                   tasks-by-date)
-          (push date-key week-days)))
-      (setq week-days (sort week-days 'string<)))
-    ;; Collect tasks by date
-    (org-map-entries
-     (lambda ()
-       (let* ((state (org-get-todo-state))
-              (closed-time (org-entry-get (point) "CLOSED"))
-              (task-title (org-get-heading t t t t))
-              (task-body (org-get-entry))
-              (tags (org-get-tags))
-              (priority (org-entry-get (point) "PRIORITY"))
-              (effort (org-entry-get (point) "Effort"))
-              (properties (org-entry-properties))
-              (task-id nil))
-         (when (and (or (equal state "DONE") (equal state "WAIT") (equal state "CANCELED")) closed-time)
-           (let* ((closed-date (date-to-time closed-time))
-                  (date-key (format-time-string "%Y-%m-%d" closed-date))
-                  (date-display (format-time-string "%e %B %Y" closed-date))
-                  (day-name (format-time-string "%A" closed-date))
-                  (time-finished (format-time-string "%H:%M" closed-date)))
-             ;; Only include tasks from this week
-             (when (and (not (string< date-key monday-date-str))
-                        (string< date-key (format-time-string "%Y-%m-%d"
-                                                              (time-add monday-this-week (days-to-time 7)))))
-               ;; Create unique ID for this task
-               (setq task-counter (1+ task-counter))
-               (setq task-id (format "task-%d" task-counter))
-
-               ;; Store full task details for the detailed section
-               (push (list task-id
-                           date-display
-                           day-name
-                           time-finished
-                           task-title
-                           task-body
-                           tags
-                           priority
-                           effort
-                           properties)
-                     all-tasks)
-
-               ;; Store task in date hash with its ID
-               (puthash date-key
-                        (cons (list date-display day-name time-finished
-                                    (format "[[#%s][%s]]" task-id task-title) task-id)
-                              (remq (assoc "No tasks completed" (gethash date-key tasks-by-date))
-                                    (gethash date-key tasks-by-date)))
-                        tasks-by-date))))))
-     nil 'agenda)
-
-    ;; Create buffer with table
-    (with-current-buffer buffer
-      (erase-buffer)
-      (let ((week-range (format "%s - %s"
-                                (format-time-string "%e %B %Y" monday-this-week)
-                                (format-time-string "%e %B %Y" (time-add monday-this-week (days-to-time 6))))))
-        (insert (format "#+TITLE: TimeSheet for (%s)\n" week-range)))
-      (insert "#+SETUPFILE: todo.css.org\n")
-      (insert "#+OPTIONS: toc:nil\n\n")
-      (insert "* Weekly Timesheet\n\n")
-      (insert "| Date | Day | Time Completed | Tasks Done | Start | Break | End | Hours |\n")
-      (insert "|------|-----|------|-----------|-------|-------|-----|-------|\n")
-
-      ;; Insert rows for each day of the week (Monday to Sunday)
-      (let ((dates (sort (hash-table-keys tasks-by-date) 'string<)))
-        (dolist (date-key dates)
-          (let* ((entries (sort (gethash date-key tasks-by-date)
-                                (lambda (a b)
-                                  (string< (or (nth 2 a) "") (or (nth 2 b) "")))))
-                 (first-entry (car entries)))
-
-            ;; First task for this date
-            (insert (format "| %s | %s | | | | | | 0 |\n"
-                            (nth 0 first-entry)  ;; Date
-                            (nth 1 first-entry)))  ;; Day name
-
-
-            ;; Remaining tasks for this date (reuse the date and day)
-            (dolist (entry (cdr entries))
-              (insert (format "| | | %s | %s | | | | |\n"
-                              (or (nth 2 entry) "")  ;; Time finished
-                              (nth 3 entry)))))  ;; Task with hyperlink
-          ;; Insert horizontal separator between days
-          (insert "|------|-----|------|-----------|-------|-------|-----|-------|\n"))
-
-        ;; Add total hours row at the bottom
-        (insert "| | | | | | | | |\n")
-        (insert "| | | | *Total Hours:* | | | | :=vsum(@2$8..@-1$8) |\n")
-        (insert "|------|-----|------|-----------|-------|-------|-----|-------|\n")
-
-        (org-table-align)
-
-        ;; Add instructions for manual time tracking
-        (insert "\n\n#+BEGIN_COMMENT\n")
-        (insert "Instructions for Time Tracking\n")
-        (insert "1. Fill in the Start, Break, End columns manually\n")
-        (insert "2. To calculate Total Hours for a row - do it manually for now\n")
-        (insert "3. The Total Hours column will automatically sum all entries\n")
-        (insert "4. After editing, press C-c C-c on the TBLFM (or if in table, C-u C-c *) to update total hours\n")
-        (insert "5. Make sure to run the sum of total hours (C-c C-c on the formula in row)\n")
-        (insert "6. Export this to a HTML file, and save it in ~TimeSheets/generatedHtml/~ as timeSheet<weekNumber>~\n")
-        (insert "7. Go to the table, and run ~org-table-export~ and save it to ~/TimeSheets/csvFilesAndScript/timesheet<weekNumber>\n")
-        (insert "8. Then under Windows, go to ~/c/Users/SebastianGazey/MainFolder/timesheet~ and run ~python3 TimeSheetGenerator.py timesheet<weekNumber>.csv~ \n")
-        (insert "9. Check the output. then send both files to Dan and Allen\n")
-        (insert "#+END_COMMENT\n\n")
-        ;; Add detailed tasks section
-        (insert "* Task Details\n\n")
-
-        ;; Sort all tasks by date and time
-        (setq all-tasks (sort all-tasks
-                              (lambda (a b)
-                                (or (string< (nth 1 a) (nth 1 b))
-                                    (and (string= (nth 1 a) (nth 1 b))
-                                         (string< (nth 3 a) (nth 3 b)))))))
-
-        ;; Output detailed tasks
-        (dolist (task all-tasks)
-          (let ((task-id (nth 0 task))
-                (date (nth 1 task))
-                (day (nth 2 task))
-                (time (nth 3 task))
-                (title (nth 4 task))
-                (body (nth 5 task))
-                (tags (nth 6 task))
-                (priority (nth 7 task))
-                (effort (nth 8 task))
-                (properties (nth 9 task)))
-
-            ;; Create an anchor and heading for the task
-            ;; (insert (format "** [[#%s][%s]] ::%s::\n" task-id title task-id))
-
-            (insert (format "** %s \n" title ))
-            (insert ":PROPERTIES:\n")
-            (insert (format ":CUSTOM_ID: %s\n" task-id))
-            (insert ":END:\n")
-
-            ;; Add task metadata
-            ;; (insert (format "*** Metadata\n"))
-            (insert (format "*Completed on:* %s (%s) at %s\n" date day time))
-
-            ;; ;; Display priority if available
-            ;; (when priority
-            ;;   (insert (format "- *Priority:* %s\n" priority)))
-
-            ;; ;; Display effort if available
-            ;; (when effort
-            ;;   (insert (format "- *Effort:* %s\n" effort)))
-
-            ;; ;; Display tags if available
-            ;; (when tags
-            ;;   (insert (format "- *Tags:* %s\n" (mapconcat 'identity tags ", "))))
-
-            ;; ;; Display relevant properties
-            ;; (insert "- *Properties:*\n")
-            ;; (dolist (prop properties)
-            ;;   (when (and (not (string= (car prop) "CATEGORY"))
-            ;;              (not (string= (car prop) "ALLTAGS"))
-            ;;              (not (string= (car prop) "BLOCKED"))
-            ;;              (not (string= (car prop) "PRIORITY"))
-            ;;              (not (string= (car prop) "ITEM")))
-            ;;     (insert (format "  + %s: %s\n" (car prop) (cdr prop)))))
-
-            ;; Add task content section
-            (insert "*** Content\n")
-
-            ;; Clean up the body content
-            (let ((clean-body (replace-regexp-in-string "^\\*+ .*\n" "" body)))
-              (setq clean-body (replace-regexp-in-string "^:PROPERTIES:.*:END:\n" "" clean-body t))
-              (setq clean-body (replace-regexp-in-string "^\s*CLOSED:.*\n" "" clean-body))
-              (setq clean-body (replace-regexp-in-string "^\n+" "" clean-body))
-
-              ;; Insert cleaned body if not empty
-              (if (string-empty-p (string-trim clean-body))
-                  (insert "  /No additional content/\n\n")
-                (insert clean-body "\n\n")))
-
-            ;; Add a separator between tasks
-            (insert "-----\n\n")))
-
-        (org-mode)
-        (switch-to-buffer buffer)))))
-
-
-(use-package cicode-mode
-  :straight (cicode-mode :type git :host github :repo "Sebagabones/cicode-mode.el")
-  :ensure t  )
 
 (use-package dbml-mode
   :config
