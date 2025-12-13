@@ -120,6 +120,9 @@
 (auto-save-visited-mode 1)
 
 
+(use-package eldoc-box
+  :hook (eldoc-mode . eldoc-box-hover-at-point-mode)
+  )
 
 ;; Corfu enhances in-buffer completion by displaying a compact popup with
 ;; current candidates, positioned either below or above the point. Candidates
@@ -142,11 +145,16 @@
                  (text-mode-ispell-word-completion nil)
                  (tab-always-indent 'complete)
 
+                 (corfu-popupinfo-delay '(0.5 . 0.25))
                  ;; Enable Corfu
                  :config
                  ;; Free the RET key for less intrusive behavior.
                  (keymap-unset corfu-map "RET")
                  (global-corfu-mode)
+                 (corfu-popupinfo-mode)
+                 (keymap-set corfu-map "M-q" #'corfu-quick-complete)
+                 (keymap-set corfu-map "C-q" #'corfu-quick-insert)
+                 (corfu-history-mode)
                  )
 
 ;; Cape, or Completion At Point Extensions, extends the capabilities of
@@ -179,8 +187,11 @@
                  :ensure t
                  :custom
                  (completion-styles '(orderless basic))
-                 (completion-category-defaults nil)
-                 (completion-category-overrides '((file (styles partial-completion)))))
+                 (completion-category-overrides '((file (styles partial-completion))))
+                 (completion-category-defaults nil) ;; Disable defaults, use our settings
+                 (completion-pcm-leading-wildcard t)) ;; Emacs 31: partial-completion behaves like substring
+
+
 
 ;; Marginalia allows Embark to offer you preconfigured actions in more contexts.
 ;; In addition to that, Marginalia also enhances Vertico by adding rich
@@ -223,10 +234,10 @@
                                 nil
                                 (window-parameters (mode-line-format . none)))))
 
-(use-nix-package embark-consult
-                 :ensure t
-                 :hook
-                 (embark-collect-mode . consult-preview-at-point-mode))
+(use-package embark-consult
+  :ensure t
+  :hook
+  (embark-collect-mode . consult-preview-at-point-mode))
 
 ;; Consult offers a suite of commands for efficient searching, previewing, and
 ;; interacting with buffers, file contents, and more, improving various tasks.
@@ -1138,7 +1149,36 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
                  :after transient
                  :defer t)
 
+
 (use-nix-package flycheck
+                 :preface
+
+                 (defun mp-flycheck-eldoc (callback &rest _ignored)
+                   "Print flycheck messages at point by calling CALLBACK."
+                   (when-let ((flycheck-errors (and flycheck-mode (flycheck-overlay-errors-at (point)))))
+                     (mapc
+                      (lambda (err)
+                        (funcall callback
+                                 (format "%s: %s"
+                                         (let ((level (flycheck-error-level err)))
+                                           (pcase level
+                                             ('info (propertize "I" 'face 'flycheck-error-list-info))
+                                             ('error (propertize "E" 'face 'flycheck-error-list-error))
+                                             ('warning (propertize "W" 'face 'flycheck-error-list-warning))
+                                             (_ level)))
+                                         (flycheck-error-message err))
+                                 :thing (or (flycheck-error-id err)
+                                            (flycheck-error-group err))
+                                 :face 'font-lock-doc-face))
+                      flycheck-errors)))
+
+                 (defun mp-flycheck-prefer-eldoc ()
+                   (add-hook 'eldoc-documentation-functions #'mp-flycheck-eldoc nil t)
+                   (setq eldoc-documentation-strategy 'eldoc-documentation-compose-eagerly)
+                   (setq flycheck-display-errors-function nil)
+                   (setq flycheck-help-echo-function nil))
+
+                 :hook ((flycheck-mode . mp-flycheck-prefer-eldoc))
                  :defer t
                  :hook (elpaca-after-init . global-flycheck-mode)
 
