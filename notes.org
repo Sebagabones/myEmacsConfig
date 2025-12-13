@@ -60,3 +60,5 @@ see the above for the required packages
 #+CAPTION:Example
 #+RESULTS: Example
 [[file:Example.svg]]
+** Example of the above two:
+See [[file:example.org]]
