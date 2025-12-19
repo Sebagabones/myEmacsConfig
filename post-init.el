@@ -1101,7 +1101,7 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 
 
 (use-nix-package hl-todo
-                 :hook (elpaca-after-init . global-hl-todo-mode)
+                 :hook (prog-mode . global-hl-todo-mode)
                  :config (setq hl-todo-keyword-faces
                                '(("TODO"   . nerd-icons-green)
                                  ("HACK"  . nerd-icons-orange)
