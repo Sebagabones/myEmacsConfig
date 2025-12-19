@@ -146,6 +146,7 @@
                  (tab-always-indent 'complete)
 
                  (corfu-popupinfo-delay '(0.5 . 0.25))
+                 (corfu-popupinfo-max-height 30)
                  ;; Enable Corfu
                  :config
                  ;; Free the RET key for less intrusive behavior.
