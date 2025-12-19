@@ -1683,10 +1683,3 @@ function that sets `deactivate-mark' to t."
            ("\\(https?://[^ ]+\\)" 1 'button-face)))))  ; URLs
 
 (with-eval-after-load 'org-src(add-to-list 'org-src-lang-modes '("irc-log" . irc-log)))
-
-
-(use-package dbml-mode
-  :config
-  (add-to-list 'auto-mode-alist
-               '("\\.dbml\\'" . dbml-mode)))
-;;
