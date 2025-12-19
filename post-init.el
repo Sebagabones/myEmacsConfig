@@ -432,42 +432,42 @@
   :config
   :hook org-mode)
 
-(use-nix-package org-modern
-                 :ensure t
-                 :custom
-                 (org-modern-hide-stars nil)		; adds extra indentation
-                 (org-modern-table nil)
-                 (org-modern-list
-                  '(;; (?- . "-")
-                    (?* . "•")
-                    (?+ . "‣")))
-                 :config
-                 (setq
-                  org-auto-align-tags t
-                  org-tags-column 0
-                  org-fold-catch-invisible-edits 'show-and-error
-                  org-special-ctrl-a/e t
-                  org-insert-heading-respect-content t
-
-                  ;; ;; Don't style the following
-                  ;; org-modern-tag nil
-                  ;; org-modern-priority nil
-                  ;; org-modern-todo nil
-                  ;; org-modern-table nil
-
-                  ;; Agenda styling
-                  org-agenda-tags-column 0
-                  org-agenda-block-separator ?─
-                  org-agenda-time-grid
-                  '((daily today require-timed)
-	                (800 1000 1200 1400 1600 1800 2000)
-	                " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄")
-                  org-agenda-current-time-string
-                  "⭠ now ─────────────────────────────────────────────────")
-                 :hook
-                 (org-mode . org-modern-mode)
-                 (org-agenda-finalize . org-modern-agenda)
-                 (org-mode . global-org-modern-mode))
+;; (use-nix-package org-modern
+;;                  :ensure t
+;;                  :custom
+;;                  (org-modern-hide-stars nil)		; adds extra indentation
+;;                  (org-modern-table nil)
+;;                  (org-modern-list
+;;                   '(;; (?- . "-")
+;;                     (?* . "•")
+;;                     (?+ . "‣")))
+;;                  :config
+;;                  (setq
+;;                   org-auto-align-tags t
+;;                   org-tags-column 0
+;;                   org-fold-catch-invisible-edits 'show-and-error
+;;                   org-special-ctrl-a/e t
+;;                   org-insert-heading-respect-content t
+;;
+;;                   ;; ;; Don't style the following
+;;                   ;; org-modern-tag nil
+;;                   ;; org-modern-priority nil
+;;                   ;; org-modern-todo nil
+;;                   ;; org-modern-table nil
+;;
+;;                   ;; Agenda styling
+;;                   org-agenda-tags-column 0
+;;                   org-agenda-block-separator ?─
+;;                   org-agenda-time-grid
+;;                   '((daily today require-timed)
+;; 	                (800 1000 1200 1400 1600 1800 2000)
+;; 	                " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄")
+;;                   org-agenda-current-time-string
+;;                   "⭠ now ─────────────────────────────────────────────────")
+;;                  :hook
+;;                  (org-mode . org-modern-mode)
+;;                  (org-agenda-finalize . org-modern-agenda)
+;;                  (org-mode . global-org-modern-mode))
 
 (use-nix-package org-appear
                  :commands (org-appear-mode)
@@ -489,8 +489,6 @@
                  (setq org-latex-src-block-backend 'engraved
                        ;; org-latex-engraved-theme 'doom-tokyo-night))
                        ))
-
-
 
 (use-nix-package org-attach-screenshot
                  :bind ("C-c C-x s" . org-attach-screenshot)
@@ -605,8 +603,18 @@
                  (org-lowest-priority ?F "Gives us priorities A through F")  ;;Gives us priorities A through F
                  (org-default-priority ?E "If an item has no priority, it is considered [#E]") ;; If an item has no priority, it is considered [#E].
                  ;; (setq org-preview-latex-default-process 'dvisvgm))
-                 )
 
+                 (org-priority-faces
+                  (quote ((?A :background "#1a1b26"
+                              :foreground "#bb9af7"
+                              :weight bold
+                              )
+                          (?B :background "#1a1b26"
+                              :foreground "#7aa2f7"
+                              :weight bold)
+                          (?C :background "#1a1b26"
+                              :foreground "#7dcfff"
+                              :weight bold)))))
 
 (defun org-show-todo-tree ()
   "Create new indirect buffer with sparse tree of undone TODO items"
