@@ -1680,6 +1680,9 @@ function that sets `deactivate-mark' to t."
 
 
 (use-nix-package package-lint )
+(use-package cicode-mode
+  :straight (cicode-mode :type git :host github :repo "Sebagabones/cicode-mode.el")
+  :ensure t  )
 
 (define-derived-mode irc-log-mode fundamental-mode "IRC Log"
   "Major mode for viewing IRC-style logs - mostly for org mode."
