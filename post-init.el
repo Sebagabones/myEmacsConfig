@@ -683,6 +683,7 @@
   (treesit-auto-install 'prompt)
   :config
   (treesit-auto-add-to-auto-mode-alist 'all)
+  (setopt treesit-font-lock-level 4)
   (global-treesit-auto-mode))
 
 ;; A file and project explorer for Emacs that displays a structured tree
