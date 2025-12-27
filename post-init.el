@@ -520,45 +520,71 @@
                  ;; (org-mode . org-modern-indent-mode)
 
                  :config
-                 (setq org-directory "~/Org/")
+                 (setopt org-directory "~/Org/")
                  ;; lualatex setup from https://stackoverflow.com/questions/41568410/configure-org-mode-to-use-lualatex
-                 (setq org-babel-latex-preamble
-                       (lambda (_)
-                         "\\documentclass[tikz]{standalone}"))
+                 (setopt org-babel-latex-preamble
+                         (lambda (_)
+                           "\\documentclass[tikz]{standalone}"))
 
-                 (setq org-latex-create-formula-image-program 'dvisvgm)
+                 (setopt org-latex-create-formula-image-program 'dvisvgm)
                  (org-babel-do-load-languages 'org-babel-load-languages '((latex . t)))
-                 (setq org-babel-latex-pdf-svg-process "pdf2svg %F %O")
+                 (setopt org-babel-latex-pdf-svg-process "pdf2svg %F %O")
 
-                 (setq org-latex-pdf-process
-                       '("lualatex --shell-escape -interaction=nonstopmode -output-directory=%o %f"
-                         ;; "latexmk  -shell-escape -f -pdf -%latex -interaction=nonstopmode -output-directory=%o %f"
-                         "lualatex --shell-escape -interaction=nonstopmode -output-directory=%o %f"
-                         "lualatex --shell-escape -interaction=nonstopmode -output-directory=%o %f"))
-                 ;; (setq org-latex-pdf-process
+                 (setopt org-latex-pdf-process
+                         '("lualatex --shell-escape -interaction=nonstopmode -output-directory=%o %f"
+                           ;; "latexmk  -shell-escape -f -pdf -%latex -interaction=nonstopmode -output-directory=%o %f"
+                           "lualatex --shell-escape -interaction=nonstopmode -output-directory=%o %f"
+                           "lualatex --shell-escape -interaction=nonstopmode -output-directory=%o %f"))
+                 ;; (setopt org-latex-pdf-process
                  ;;       '("lualatex -pdflatex=-shell-escape -interaction nonstopmode %f"
                  ;;         "lualatex -shell-escape -interaction nonstopmode %f"))
 
-                 (setq luasvg '(luasvg :programs ("dvilualatex""dvisvgm") :description "dvi > svg" :message
-                                       "you need to install the programs: lualatex and dvisvgm."
-                                       :image-input-type "dvi" :image-output-type "svg" :image-size-adjust
-                                       (1.7 . 1.5) :latex-compiler
-                                       ("dvilualatex -interaction nonstopmode -output-directory %o %f")
-                                       :image-converter
-                                       ("dvisvgm %f --no-fonts --exact-bbox --scale=%S --output=%O")))
+                 (setopt luasvg '(luasvg :programs ("dvilualatex""dvisvgm") :description "dvi > svg" :message
+                                         "you need to install the programs: lualatex and dvisvgm."
+                                         :image-input-type "dvi" :image-output-type "svg" :image-size-adjust
+                                         (1.7 . 1.5) :latex-compiler
+                                         ("dvilualatex -interaction nonstopmode -output-directory %o %f")
+                                         :image-converter
+                                         ("dvisvgm %f --no-fonts --exact-bbox --scale=%S --output=%O")))
 
                  (add-to-list 'org-preview-latex-process-alist luasvg)
                  (require 'ox-latex)
                  ;; (add-to-list 'org-latex-packages-alist '("" "minted" nil))
                  ;; (setq org-latex-src-block-backend 'minted)
-                 (setq org-engraved-minted-options
-                       '(("frame" "leftline")
-                         ("linenos" "true")
-                         ("numberblanklines" "false")
-                         ("showspaces" "false")
-                         ("breaklines" "true")
-                         ))
-                 (setq org-latex-src-block-backend 'engraved)
+                 (setopt org-engraved-minted-options
+                         '(("frame" "leftline")
+                           ("linenos" "true")
+                           ("numberblanklines" "false")
+                           ("showspaces" "false")
+                           ("breaklines" "true")
+                           ))
+                 (setopt org-latex-src-block-backend 'engraved)
+
+                 (setopt org-todo-keywords
+                         '((sequence "TODO(t)" "|" "DONE(d)")
+                           (sequence "REPORT(r)" "BUG(b)" "KNOWNCAUSE(k)" "|" "FIXED(f)")
+                           (sequence "|" "CANCELED(c)")))
+
+                 (setopt org-publish-project-alist
+                         '(
+                           ("org-notes"
+                            :base-directory "~/Org/"
+                            :publishing-function org-html-publish-to-html
+                            :publishing-directory "~/Org/public"
+                            ;; :section-numbers nil
+                            ;; :with-toc nil
+                            :recursive "t")
+                           ;; :html-head "<link rel=\"stylesheet\" type=\"text/css\" href=\"css/.tufte.css\" /><link rel=\"stylesheet\" type=\"text/css\" href=\"css/.srctufte.css\"/><link rel=\"stylesheet\" type=\"text/css\" href=\"css/.style.css\" />")
+                           ;; :html-head "<link rel=\"stylesheet\" type=\"text/css\" href=\"~/Org/.style.css\" />"))
+                           ("org-static"
+                            :base-directory "~/Org/css/"
+                            :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf"
+                            :publishing-directory "~/Org/public"
+                            :recursive t
+                            :publishing-function org-publish-attachment
+                            )
+                           ("org" :components ("org-notes" "org-static")))
+                         )
 
                  ;; (add-to-list 'org-latex-packages-alist '("" "xcolor" nil))
                  (add-to-list 'org-latex-packages-alist '("" "fvextra" nil))
@@ -623,31 +649,6 @@
   (org-show-todo-tree nil)
   (org-remove-occur-highlights))
 
-(setq org-todo-keywords
-      '((sequence "TODO(t)" "|" "DONE(d)")
-        (sequence "REPORT(r)" "BUG(b)" "KNOWNCAUSE(k)" "|" "FIXED(f)")
-        (sequence "|" "CANCELED(c)")))
-
-(setq org-publish-project-alist
-      '(
-        ("org-notes"
-         :base-directory "~/Org/"
-         :publishing-function org-html-publish-to-html
-         :publishing-directory "~/Org/public"
-         ;; :section-numbers nil
-         ;; :with-toc nil
-         :recursive "t")
-        ;; :html-head "<link rel=\"stylesheet\" type=\"text/css\" href=\"css/.tufte.css\" /><link rel=\"stylesheet\" type=\"text/css\" href=\"css/.srctufte.css\"/><link rel=\"stylesheet\" type=\"text/css\" href=\"css/.style.css\" />")
-        ;; :html-head "<link rel=\"stylesheet\" type=\"text/css\" href=\"~/Org/.style.css\" />"))
-        ("org-static"
-         :base-directory "~/Org/css/"
-         :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf"
-         :publishing-directory "~/Org/public"
-         :recursive t
-         :publishing-function org-publish-attachment
-         )
-        ("org" :components ("org-notes" "org-static")))
-      )
 
 (use-nix-package htmlize
                  :defer t)
