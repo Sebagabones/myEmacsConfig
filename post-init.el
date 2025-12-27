@@ -74,13 +74,13 @@
 (use-nix-package base16-theme
                  :ensure t
                  )
-(use-nix-package  solaire-mode
-                  :ensure t
-                  :config
-                  ;; (add-to-list 'solaire-mode-themes-to-face-swap "doom-tokyo-night")
-                  :custom
-                  (solaire-global-mode +1)
-                  )
+(use-package  solaire-mode
+  :ensure t
+  :config
+  ;; (add-to-list 'solaire-mode-themes-to-face-swap "doom-tokyo-night")
+  :custom
+  (solaire-global-mode +1)
+  )
 ;; Auto-revert in Emacs is a feature that automatically updates the
 ;; contents of a buffer to reflect changes made to the underlying file
 ;; on disk.
