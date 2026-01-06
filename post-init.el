@@ -1285,20 +1285,20 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 ;; (use-nix-package treemacs-projectile :after (treemacs projectile))
 
 
-(use-package dap-mode
-  :defer t
-  :ensure t :after lsp-mode
-  :config
-  (require 'dap-python)
-  (require 'dap-ui)
+(use-nix-package dap-mode
+                 :defer t
+                 :ensure t :after lsp-mode
+                 :config
+                 (require 'dap-python)
+                 (require 'dap-ui)
 
-  (setq dap-mode t)
-  (setq dap-ui-mode t)
-  ;; enables mouse hover support
-  (setq dap-tooltip-mode t)
-  ;; if it is not enabled `dap-mode' will use the minibuffer.
-  (setq tooltip-mode t)
-  )
+                 (setq dap-mode t)
+                 (setq dap-ui-mode t)
+                 ;; enables mouse hover support
+                 (setq dap-tooltip-mode t)
+                 ;; if it is not enabled `dap-mode' will use the minibuffer.
+                 (setq tooltip-mode t)
+                 )
 
 (use-package avy
   :bind
@@ -1520,12 +1520,7 @@ function that sets `deactivate-mark' to t."
   :config
   (buffer-terminator-mode 1))
 
-;; (use-package numpydoc
-;;   :ensure t
-;;   :bind( (:map python-mode-map
-;;                ("C-c C-n" . numpydoc-generate))
-;;          (:map python-ts-mode-map
-;;                ("C-c C-n" . numpydoc-generate))))
+
 (use-package numpydoc
   :ensure t
   :after python
