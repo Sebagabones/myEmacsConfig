@@ -1285,33 +1285,31 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 ;; (use-nix-package treemacs-projectile :after (treemacs projectile))
 
 
-(use-nix-package dap-mode
-                 :defer t
-                 :ensure t :after lsp-mode
-                 :config
-                 (require 'dap-python)
-                 (require 'dap-ui)
+(use-package dap-mode
+  :defer t
+  :ensure t :after lsp-mode
+  :config
+  (require 'dap-python)
+  (require 'dap-ui)
 
-                 (setq dap-mode t)
-                 (setq dap-ui-mode t)
-                 ;; enables mouse hover support
-                 (setq dap-tooltip-mode t)
-                 ;; if it is not enabled `dap-mode' will use the minibuffer.
-                 (setq tooltip-mode t)
-                 )
+  (setq dap-mode t)
+  (setq dap-ui-mode t)
+  ;; enables mouse hover support
+  (setq dap-tooltip-mode t)
+  ;; if it is not enabled `dap-mode' will use the minibuffer.
+  (setq tooltip-mode t)
+  )
 
 (use-package avy
   :bind
-  ("C-c SPC" . avy-goto-char)
-  :hook (elpaca-after-init . avy))
+  ("C-c SPC" . avy-goto-char))
 
 
 (use-package ace-window
   :bind
   ("C-c o" . ace-select-window)
   :config
-  (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
-  :hook (elpaca-after-init . ace-window))
+  (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
 
 ;; (use-nix-package treemacs-nerd-icons
 ;;                  :config
