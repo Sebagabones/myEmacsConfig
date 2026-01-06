@@ -933,15 +933,16 @@
 (dolist (hook '(prog-mode-hook text-mode-hook conf-mode-hook))
   (add-hook hook #'display-line-numbers-mode))
 
-(use-nix-package which-key
-                 :ensure nil ; builtin
-                 :commands which-key-mode
-                 :hook (elpaca-after-init . which-key-mode)
-                 :custom
-                 (which-key-idle-delay 1.5)
-                 (which-key-idle-secondary-delay 0.25)
-                 (which-key-add-column-padding 1)
-                 (which-key-max-description-length 40))
+(use-package which-key
+  :ensure t ; builtin
+  :commands which-key-mode
+  :init (which-key-mode 1)
+  :custom
+  (which-key-mode)
+  (which-key-idle-delay 1.5)
+  (which-key-idle-secondary-delay 0.25)
+  (which-key-add-column-padding 1)
+  (which-key-max-description-length 40))
 
 (unless (and (eq window-system 'mac)
              (bound-and-true-p mac-carbon-version-string))
@@ -1159,9 +1160,9 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   :init
   (projectile-mode))
 
-(use-nix-package rg
-                 :after transient
-                 :defer t)
+(use-package rg
+  :after transient
+  :defer t)
 
 
 (use-nix-package flycheck
