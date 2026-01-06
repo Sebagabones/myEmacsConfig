@@ -1696,6 +1696,10 @@ function that sets `deactivate-mark' to t."
   :straight (cicode-mode :type git :host github :repo "Sebagabones/cicode-mode.el")
   :ensure t  )
 
+(setf use-default-font-for-symbols nil)
+(set-fontset-font t 'unicode "Noto Emoji" nil 'append)
+(use-package ement)
+
 (define-derived-mode irc-log-mode fundamental-mode "IRC Log"
   "Major mode for viewing IRC-style logs - mostly for org mode."
   (setq font-lock-defaults
