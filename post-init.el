@@ -1690,6 +1690,11 @@ function that sets `deactivate-mark' to t."
   :straight (cicode-mode :type git :host github :repo "Sebagabones/cicode-mode.el")
   :ensure t  )
 
+(use-package highlight-quoted
+  :straight (highlight-quoted :type git :host github :repo "Fanael/highlight-quoted")
+  :ensure t
+  :hook emacs-lisp-mode)
+
 (setf use-default-font-for-symbols nil)
 (set-fontset-font t 'unicode "Noto Emoji" nil 'append)
 (use-package ement)
