@@ -130,36 +130,36 @@
 ;; Corfu enhances in-buffer completion by displaying a compact popup with
 ;; current candidates, positioned either below or above the point. Candidates
 ;; can be selected by navigating up or down.
-(use-nix-package corfu
-                 :custom
-                 (corfu-auto t)               ;; Enable auto completion
-                 (corfu-preselect 'directory) ;; Select the first candidate, except for directories
+(use-package corfu
+  :custom
+  (corfu-auto t)               ;; Enable auto completion
+  (corfu-preselect 'directory) ;; Select the first candidate, except for directories
 
-                 :ensure t
-                 ;; :custom
-                 :commands (corfu-mode global-corfu-mode)
-                 :hook ((prog-mode . corfu-mode)
-                        (shell-mode . corfu-mode)
-                        (eshell-mode . corfu-mode))
-                 :custom
-                 ;; Hide commands in M-x which do not apply to the current mode.
-                 (read-extended-command-predicate #'command-completion-default-include-p)
-                 ;; Disable Ispell completion function. As an alternative try `cape-dict'.
-                 (text-mode-ispell-word-completion nil)
-                 (tab-always-indent 'complete)
+  :ensure t
+  ;; :custom
+  :commands (corfu-mode global-corfu-mode)
+  :hook ((prog-mode . corfu-mode)
+         (shell-mode . corfu-mode)
+         (eshell-mode . corfu-mode))
+  :custom
+  ;; Hide commands in M-x which do not apply to the current mode.
+  (read-extended-command-predicate #'command-completion-default-include-p)
+  ;; Disable Ispell completion function. As an alternative try `cape-dict'.
+  (text-mode-ispell-word-completion nil)
+  (tab-always-indent 'complete)
 
-                 (corfu-popupinfo-delay '(0.5 . 0.25))
-                 (corfu-popupinfo-max-height 30)
-                 ;; Enable Corfu
-                 :config
-                 ;; Free the RET key for less intrusive behavior.
-                 (keymap-unset corfu-map "RET")
-                 (global-corfu-mode)
-                 (corfu-popupinfo-mode)
-                 (keymap-set corfu-map "M-q" #'corfu-quick-complete)
-                 (keymap-set corfu-map "C-q" #'corfu-quick-insert)
-                 (corfu-history-mode)
-                 )
+  (corfu-popupinfo-delay '(0.5 . 0.25))
+  (corfu-popupinfo-max-height 30)
+  ;; Enable Corfu
+  :config
+  ;; Free the RET key for less intrusive behavior.
+  (keymap-unset corfu-map "RET")
+  (global-corfu-mode)
+  (corfu-popupinfo-mode)
+  (keymap-set corfu-map "M-q" #'corfu-quick-complete)
+  (keymap-set corfu-map "C-q" #'corfu-quick-insert)
+  (corfu-history-mode)
+  )
 
 ;; Cape, or Completion At Point Extensions, extends the capabilities of
 ;; in-buffer completion. It integrates with Corfu or the default completion UI,
@@ -1225,6 +1225,7 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 (use-package lsp-mode
   :init
   (setq lsp-keymap-prefix "C-c l")
+  (setq lsp-completion-provider :none)
   :ensure t
   :hook(
         (python-mode . lsp-deferred)
