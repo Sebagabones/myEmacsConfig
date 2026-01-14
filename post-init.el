@@ -433,6 +433,7 @@
 (use-package org-bullets-mode
   :ensure org-bullets
   :config
+  (setq org-bullets-bullet-list '("◉"))
   :hook org-mode)
 
 ;; (use-nix-package org-modern
@@ -562,6 +563,17 @@
                            ("breaklines" "true")
                            ))
                  (setopt org-latex-src-block-backend 'engraved)
+                 (custom-set-faces
+                  '(org-level-1 ((t (:inherit outline-1 :weight bold :height 1.8))))
+                  '(org-level-2 ((t (:inherit outline-2 :weight bold :height 1.7))))
+                  '(org-level-3 ((t (:inherit outline-3 :weight bold :height 1.5))))
+                  '(org-level-4 ((t (:inherit outline-4 :weight bold :height 1.4))))
+                  '(org-level-5 ((t (:inherit outline-5 :weight bold :height 1.3))))
+                  '(org-level-6 ((t (:inherit outline-6 :weight bold :height 1.2))))
+                  '(org-level-7 ((t (:inherit outline-7 :weight bold :height 1.1))))
+                  '(org-level-8 ((t (:inherit outline-8 :weight bold :height 1.0))))
+                  '(org-todo ((t (:weight bold))))
+                  )
 
                  (setopt org-todo-keywords
                          '((sequence "TODO(t)" "|" "DONE(d)")
@@ -905,12 +917,63 @@
 (use-package nerd-icons
   :ensure t)
 
-(use-package fira-code-mode
-  :custom (fira-code-mode-disabled-ligatures '("[]" "x" "//" "||" "lambda" "or" "and"))  ; ligatures you don't want
-  :hook (prog-mode org-mode))                                         ; mode to enable fira-code-mode in
+;; (use-package fira-code-mode
+;;   :custom (fira-code-mode-disabled-ligatures '("[]" "x" "//" "||" "lambda" "or" "and"))  ; ligatures you don't want
+;;   :hook (prog-mode org-mode))                                         ; mode to enable fira-code-mode in
 
-;; (set-face-attribute 'default nil :font "GoMono Nerd Font 12")
+(set-face-attribute 'default nil :font "Berkeley Mono 14")
 
+
+(use-package ligature
+  :config
+  (ligature-set-ligatures
+   'prog-mode
+   '(; Group A
+     ".." ".=" "..." "..<" "::" ":::" ":=" "::=" ";;" ";;;" "??" "???"
+     ".?" "?." ":?" "?:" "?=" "**" "***" "/*" "*/" "/**"
+                                        ; Group B
+     "<-" "->" "-<" ">-" "<--" "-->" "<<-" "->>" "-<<" ">>-" "<-<" ">->"
+     "<-|" "|->" "-|" "|-" "||-" "<!--" "<#--" "<=" "=>" ">=" "<==" "==>"
+     "<<=" "=>>" "=<<" ">>=" "<=<" ">=>" "<=|" "|=>" "<=>" "<==>" "||="
+     "|=" "//=" "/="
+                                        ; Group C
+     "<<" ">>" "<<<" ">>>" "<>" "<$" "$>" "<$>" "<+" "+>" "<+>" "<:" ":<"
+     "<:<" ">:" ":>" "<~" "~>" "<~>" "<<~" "<~~" "~~>" "~~" "<|" "|>"
+     "<|>" "<||" "||>" "<|||" "|||>" "</" "/>" "</>" "<*" "*>" "<*>" ":?>"
+                                        ; Group D
+     "#(" "#{" "#[" "]#" "#!" "#?" "#=" "#_" "#_(" "##" "###" "####"
+                                        ; Group E
+     "[|" "|]" "[<" ">]" "{!!" "!!}" "{|" "|}" "{{" "}}" "{{--" "--}}"
+     "{!--" "//" "///" "!!"
+                                        ; Group F
+     "www" "@_" "&&" "&&&" "&=" "~@" "++" "+++" "/\\" "\\/" "_|_" "||"
+                                        ; Group G
+     "=:" "=:=" "=!=" "==" "===" "=/=" "=~" "~-" "^=" "__" "!=" "!==" "-~"
+     "--" "---"))
+  (ligature-set-ligatures
+   'org-mode
+   '(                                        ; Group B
+     "<-" "->" "-<" ">-" "<--" "-->" "<<-" "->>" "-<<" ">>-" "<-<" ">->"
+     "<-|" "|->" "-|" "|-" "||-" "<!--" "<#--" "<=" "=>" ">=" "<==" "==>"
+     "<<=" "=>>" "=<<" ">>=" "<=<" ">=>" "<=|" "|=>" "<=>" "<==>" "||="
+     "|=" "//=" "/="
+                                        ; Group C
+     "<<" ">>" "<<<" ">>>" "<>" "<$" "$>" "<$>" "<+" "+>" "<+>" "<:" ":<"
+     "<:<" ">:" ":>" "<~" "~>" "<~>" "<<~" "<~~" "~~>" "~~" "<|" "|>"
+     "<|>" "<||" "||>" "<|||" "|||>" "</" "/>" "</>" "<*" "*>" "<*>" ":?>"
+                                        ; Group D
+     "#(" "#{" "#[" "]#" "#!" "#?" "#=" "#_" "#_(" "##" "###" "####"
+                                        ; Group E
+     "[|" "|]" "[<" ">]" "{!!" "!!}" "{|" "|}" "{{" "}}" "{{--" "--}}"
+     "{!--" "//" "///" "!!"
+                                        ; Group F
+     "www" "@_" "&&" "&&&" "&=" "~@" "++" "+++" "/\\" "\\/" "_|_" "||"
+                                        ; Group G
+     "=:" "=:=" "=!=" "==" "===" "=/=" "=~" "~-" "^=" "__" "!=" "!==" "-~"
+     "--" "---"))
+  ;; Enables ligature checks globally in all buffers. You can also do it
+  ;; per mode with `ligature-mode'.
+  (global-ligature-mode t))
 
 ;; (set-fontset-font t nil "Fira Code Symbol" nil 'append)
 
