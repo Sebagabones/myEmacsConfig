@@ -699,7 +699,8 @@
   :config
   (delete 'cpp treesit-auto-langs)
   (delete 'c treesit-auto-langs)
-  (treesit-auto-add-to-auto-mode-alist '((awk bash bibtex blueprint c-sharp clojure cmake commonlisp css dart
+  (delete 'csharp treesit-auto-langs)
+  (treesit-auto-add-to-auto-mode-alist '((awk bash bibtex blueprint clojure cmake commonlisp css dart
                                               dockerfile elixir glsl go gomod heex html janet java javascript json julia
                                               kotlin latex lua magik make markdown nix nu org perl proto python r ruby
                                               rust scala sql surface toml tsx typescript typst verilog vhdl vue wast wat
@@ -861,7 +862,7 @@
   ;; Replace default (black) to use ruff for sorting import and formatting.
   (setf (alist-get 'python-mode apheleia-mode-alist)
         '(ruff-isort ruff))
-  (setf (alist-get 'python-mode apheleia-mode-alist)
+  (setf (alist-get 'python-ts-mode apheleia-mode-alist)
         '(ruff-isort ruff)))
 
 ;; Enables automatic indentation of code while typing
@@ -1228,47 +1229,51 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   :defer t)
 
 
-(use-nix-package flycheck
-                 :preface
+;; (use-package flycheck
+;;   :preface
+;;
+;;   (defun mp-flycheck-eldoc (callback &rest _ignored)
+;;     "Print flycheck messages at point by calling CALLBACK."
+;;     (when-let ((flycheck-errors (and flycheck-mode (flycheck-overlay-errors-at (point)))))
+;;       (mapc
+;;        (lambda (err)
+;;          (funcall callback
+;;                   (format "%s: %s"
+;;                           (let ((level (flycheck-error-level err)))
+;;                             (pcase level
+;;                               ('info (propertize "I" 'face 'flycheck-error-list-info))
+;;                               ('error (propertize "E" 'face 'flycheck-error-list-error))
+;;                               ('warning (propertize "W" 'face 'flycheck-error-list-warning))
+;;                               (_ level)))
+;;                           (flycheck-error-message err))
+;;                   :thing (or (flycheck-error-id err)
+;;                              (flycheck-error-group err))
+;;                   :face 'font-lock-doc-face))
+;;        flycheck-errors)))
+;;
+;;   (defun mp-flycheck-prefer-eldoc ()
+;;     (add-hook 'eldoc-documentation-functions #'mp-flycheck-eldoc nil t)
+;;     (setq eldoc-documentation-strategy 'eldoc-documentation-compose-eagerly)
+;;     (setq flycheck-display-errors-function nil)
+;;     (setq flycheck-help-echo-function nil))
+;;
+;;   :hook ((flycheck-mode . mp-flycheck-prefer-eldoc))
+;;   :defer t
+;;   :hook (elpaca-after-init . global-flycheck-mode)
+;;
+;;   :config
+;;   (setq flycheck-highlighting-mode "lines")
+;;   (setq lsp-diagnostics-provider :none)
+;;   )
+;;
+;;
+;; (use-package flycheck-inline
+;;   :after flycheck
+;;   :hook (flycheck-mode . flycheck-inline-mode))
 
-                 (defun mp-flycheck-eldoc (callback &rest _ignored)
-                   "Print flycheck messages at point by calling CALLBACK."
-                   (when-let ((flycheck-errors (and flycheck-mode (flycheck-overlay-errors-at (point)))))
-                     (mapc
-                      (lambda (err)
-                        (funcall callback
-                                 (format "%s: %s"
-                                         (let ((level (flycheck-error-level err)))
-                                           (pcase level
-                                             ('info (propertize "I" 'face 'flycheck-error-list-info))
-                                             ('error (propertize "E" 'face 'flycheck-error-list-error))
-                                             ('warning (propertize "W" 'face 'flycheck-error-list-warning))
-                                             (_ level)))
-                                         (flycheck-error-message err))
-                                 :thing (or (flycheck-error-id err)
-                                            (flycheck-error-group err))
-                                 :face 'font-lock-doc-face))
-                      flycheck-errors)))
-
-                 (defun mp-flycheck-prefer-eldoc ()
-                   (add-hook 'eldoc-documentation-functions #'mp-flycheck-eldoc nil t)
-                   (setq eldoc-documentation-strategy 'eldoc-documentation-compose-eagerly)
-                   (setq flycheck-display-errors-function nil)
-                   (setq flycheck-help-echo-function nil))
-
-                 :hook ((flycheck-mode . mp-flycheck-prefer-eldoc))
-                 :defer t
-                 :hook (elpaca-after-init . global-flycheck-mode)
-
-                 :config
-                 (setq flycheck-highlighting-mode "lines")
-                 (setq lsp-diagnostics-provider :none)
-                 )
-
-
-(use-nix-package flycheck-inline
-                 :after flycheck
-                 :hook (flycheck-mode . flycheck-inline-mode))
+(use-package flymake-ruff
+  :ensure t
+  :hook (python-ts-mode . flymake-ruff-load))
 
 (use-nix-package scad-mode
                  :ensure t)
@@ -1291,7 +1296,7 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   (setq lsp-completion-provider :none)
   :ensure t
   :hook(
-        (python-mode . lsp-deferred)
+        (python-ts-mode . lsp-deferred)
         (nix-mode . lsp-deferred)
         (c-mode . lsp-deferred)
         (c++-mode . lsp-deferred)
@@ -1303,9 +1308,9 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 (use-package lsp-pyright
   :ensure t
   :custom (lsp-pyright-langserver-command "basedpyright") ;; or pyright
-  :hook ((python-mode python-ts-mode) . (lambda ()
-                                          (require 'lsp-pyright)
-                                          (lsp-deferred))))  ; or lsp
+  :hook ( python-ts-mode . (lambda ()
+                             (require 'lsp-pyright)
+                             (lsp-deferred))))  ; or lsp
 
 (use-package lsp-ui
   :defer t
