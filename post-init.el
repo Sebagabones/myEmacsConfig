@@ -818,15 +818,18 @@
 (use-package ispell
   :ensure nil
   :commands (ispell ispell-minor-mode)
-  :custom
+  :config
+  ;; NOTE: Fix for [https://github.com/nixos/nixpkgs/issues/476684]
+  (setenv "ASPELL_CONF" (concat "data-dir " (concat (getenv "HOME") "/.local/state/nix/profiles/home-manager/home-path/lib/aspell")))
   ;; Set the ispell program name to aspell
-  (ispell-program-name "aspell")
-
+  (setq ispell-program-name "aspell")
+  ;; (ispell-change-dictionary "english")
   ;; Configures Aspell's suggestion mode to "ultra", which provides more
   ;; aggressive and detailed suggestions for misspelled words. The language
   ;; is set to "en_US" for US English, which can be replaced with your desired
   ;; language code (e.g., "en_GB" for British English, "de_DE" for German).
-  (ispell-extra-args '("--sug-mode=ultra" "--lang=en_GB")))
+
+  (setq ispell-extra-args '("--sug-mode=ultra" "--lang=en_AU")))
 
 ;; The flyspell package is a built-in Emacs minor mode that provides
 ;; on-the-fly spell checking. It highlights misspelled words as you type,
