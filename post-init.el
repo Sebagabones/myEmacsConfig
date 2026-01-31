@@ -123,6 +123,9 @@
 (auto-save-visited-mode 1)
 
 
+(setq split-width-threshold 120)
+(setq split-height-threshold nil)
+
 (use-package eldoc-box
   :hook (eldoc-mode . eldoc-box-hover-at-point-mode)
   )
@@ -322,17 +325,17 @@
   ;;
   ;; However, the author of minimal-emacs.d uses these parameters to achieve
   ;; immediate feedback from Consult.
-  ;; (setq consult-async-input-debounce 0.02
-  ;;       consult-async-input-throttle 0.05
-  ;;       consult-async-refresh-delay 0.02)
+  (setq consult-async-input-debounce 0.02
+        consult-async-input-throttle 0.05
+        consult-async-refresh-delay 0.02)
 
   :config
   (consult-customize
    consult-theme :preview-key '(:debounce 0.2 any)
    consult-ripgrep consult-git-grep consult-grep
    consult-bookmark consult-recent-file consult-xref
-   consult--source-bookmark consult--source-file-register
-   consult--source-recent-file consult--source-project-recent-file
+   ;; consult--source-bookmark consult--source-file-register
+   ;; consult--source-recent-file consult--source-project-recent-file
    ;; :preview-key "M-."
    :preview-key '(:debounce 0.4 any))
   (setq consult-narrow-key "<"))
@@ -924,7 +927,7 @@
 ;;   :custom (fira-code-mode-disabled-ligatures '("[]" "x" "//" "||" "lambda" "or" "and"))  ; ligatures you don't want
 ;;   :hook (prog-mode org-mode))                                         ; mode to enable fira-code-mode in
 
-(set-face-attribute 'default nil :font "Berkeley Mono 14")
+(set-face-attribute 'default nil :font "Berkeley Mono 12")
 
 
 (use-package ligature
@@ -1619,10 +1622,23 @@ function that sets `deactivate-mark' to t."
                  ;; :hook (elpaca-after-init . vterm-toggle)
                  :bind
                  ("C-c t" . vterm-toggle-cd)
-
                  :config
                  (define-key vterm-mode-map [(control return)]   #'vterm-toggle-insert-cd)
                  (define-key vterm-copy-mode-map [(control return)]   #'vterm-toggle-insert-cd)
+                 (setq vterm-toggle-fullscreen-p nil)
+                 (add-to-list 'display-buffer-alist
+                              '((lambda (buffer-or-name _)
+                                  (let ((buffer (get-buffer buffer-or-name)))
+                                    (with-current-buffer buffer
+                                      (or (equal major-mode 'vterm-mode)
+                                          (string-prefix-p vterm-buffer-name (buffer-name buffer))))))
+                                (display-buffer-reuse-window display-buffer-at-bottom)
+                                ;;(display-buffer-reuse-window display-buffer-in-direction)
+                                ;;display-buffer-in-direction/direction/dedicated is added in emacs27
+                                ;;(direction . bottom)
+                                ;;(dedicated . t) ;dedicated is supported in emacs27
+                                (reusable-frames . visible)
+                                (window-height . 0.4)))
                  )
 
 (use-nix-package tabspaces
@@ -1645,24 +1661,24 @@ function that sets `deactivate-mark' to t."
 ;; Define a helper for clarity
 
 
-(with-eval-after-load 'consult
-  ;; hide full buffer list (still available with "b" prefix)
-  (consult-customize consult--source-buffer :hidden t :default nil)
-  ;; set consult-workspace buffer list
-  (defvar consult--source-workspace
-    (list :name     "Workspace Buffers"
-          :narrow   ?w
-          :history  'buffer-name-history
-          :category 'buffer
-          :state    #'consult--buffer-state
-          :default  t
-          :items    (lambda () (consult--buffer-query
-                                ;; :predicate #'tabspaces--local-buffer-p
-                                :sort 'visibility
-                                :as #'buffer-name)))
-
-    "Set workspace buffer list for consult-buffer.")
-  (add-to-list 'consult-buffer-sources 'consult--source-workspace))
+;; (with-eval-after-load 'consult
+;;   ;; hide full buffer list (still available with "b" prefix)
+;;   (consult-customize consult--source-buffer :hidden t :default nil)
+;;   ;; set consult-workspace buffer list
+;;   (defvar consult--source-workspace
+;;     (list :name     "Workspace Buffers"
+;;           :narrow   ?w
+;;           :history  'buffer-name-history
+;;           :category 'buffer
+;;           :state    #'consult--buffer-state
+;;           :default  t
+;;           :items    (lambda () (consult--buffer-query
+;;                                 ;; :predicate #'tabspaces--local-buffer-p
+;;                                 :sort 'visibility
+;;                                 :as #'buffer-name)))
+;;
+;;     "Set workspace buffer list for consult-buffer.")
+;;   (add-to-list 'consult-buffer-sources 'consult--source-workspace))
 
 (use-package simple-comment-markup
   :straight (:type git :host nil :repo "https://code.tecosaur.net/tec/simple-comment-markup.git")
