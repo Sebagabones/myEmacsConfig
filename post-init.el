@@ -865,7 +865,13 @@
   (setf (alist-get 'python-mode apheleia-mode-alist)
         '(ruff-isort ruff))
   (setf (alist-get 'python-mode apheleia-mode-alist)
-        '(ruff-isort ruff)))
+        '(ruff-isort ruff))
+  ;; turn off apheleia for go mode
+  (defun app/lsp-gopls-after-open-hook ()
+    (apheleia-mode -1)
+    (flycheck-mode -1))
+  (add-hook 'lsp-gopls-after-open-hook 'app/lsp-gopls-after-open-hook) ;from https://emacs.stackexchange.com/a/72882
+  )
 
 ;; Enables automatic indentation of code while typing
 (use-package aggressive-indent
@@ -924,7 +930,7 @@
 ;;   :custom (fira-code-mode-disabled-ligatures '("[]" "x" "//" "||" "lambda" "or" "and"))  ; ligatures you don't want
 ;;   :hook (prog-mode org-mode))                                         ; mode to enable fira-code-mode in
 
-(set-face-attribute 'default nil :font "Berkeley Mono 14")
+(set-face-attribute 'default nil :font "Berkeley Mono 12")
 
 
 (use-package ligature
@@ -1295,12 +1301,31 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   :ensure t
   :hook(
         (python-mode . lsp-deferred)
+        (python-ts-mode . lsp-deferred)
         (nix-mode . lsp-deferred)
         (c-mode . lsp-deferred)
         (c++-mode . lsp-deferred)
         (scad-mode . lsp-deferred)
+        (go-mode . lsp-deferred)
+        (go-ts-mode . lsp-deferred)
         ;; Add more major modes here
         (lsp-mode . lsp-enable-which-key-integration))
+  :config
+  ;; go configuration
+  (setq lsp-go-codelenses '((gc_details . :json-false)
+                            (generate . t)
+                            (regenerate_cgo . t)
+                            (tidy . t)
+                            (upgrade_dependency . t)
+                            (test . t)
+                            (vendor . t)))
+  (lsp-register-custom-settings  '(("gopls.completeUnimported" t t)
+                                   ("gopls.staticcheck" t t)
+                                   ("gopls.templateExtensions" lsp-go-template-extensions))
+                                 )
+
+
+  ;; end go configuration
   :commands  (lsp lsp-deferred))
 
 (use-package lsp-pyright
@@ -1710,6 +1735,11 @@ function that sets `deactivate-mark' to t."
 (use-package flycheck-pony
   :config
   (setq create-lockfiles nil))
+
+
+(use-package go-mode
+  :ensure t)
+
 
 (use-package doxymacs
   :straight (doxymacs :type git :host github :repo "pniedzielski/doxymacs")
