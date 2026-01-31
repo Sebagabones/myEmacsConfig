@@ -1729,8 +1729,8 @@ function that sets `deactivate-mark' to t."
 
 (use-package doxymacs
   :straight (doxymacs :type git :host github :repo "pniedzielski/doxymacs")
-  :hook (c-mode-common . doxymacs-mode)
-  :bind (:map c-mode-base-map
+  :hook (prog-mode . doxymacs-mode)
+  :bind (:map prog-mode-map
               ;; Lookup documentation for the symbol at point.
               ("C-c d ?" . doxymacs-lookup)
               ;; Rescan your Doxygen tags file.
@@ -1750,6 +1750,8 @@ function that sets `deactivate-mark' to t."
               ("C-c d s" . doxymacs-insert-blank-singleline-comment)
               ;; Insert a grouping comments around the current region.
               ("C-c d @" . doxymacs-insert-grouping-comments))
+  :config
+  (doxymacs-font-lock)
   :custom
   ;; Configure source code <-> Doxygen tag file <-> Doxygen HTML
   ;; documentation mapping:
