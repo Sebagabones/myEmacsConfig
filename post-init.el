@@ -872,7 +872,7 @@
   ;; Replace default (black) to use ruff for sorting import and formatting.
   (setf (alist-get 'python-mode apheleia-mode-alist)
         '(ruff-isort ruff))
-  (setf (alist-get 'python-mode apheleia-mode-alist)
+  (setf (alist-get 'python-ts-mode apheleia-mode-alist)
         '(ruff-isort ruff))
   ;; turn off apheleia for go mode
   (defun app/lsp-gopls-after-open-hook ()
@@ -1335,14 +1335,19 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 
 
   ;; end go configuration
+  ;; python configuration
+  (setq lsp-disabled-clients '(pylsp pyright))
+
+  ;; end python configuration
+
   :commands  (lsp lsp-deferred))
 
-(use-package lsp-pyright
-  :ensure t
-  :custom (lsp-pyright-langserver-command "basedpyright") ;; or pyright
-  :hook ((python-mode python-ts-mode) . (lambda ()
-                                          (require 'lsp-pyright)
-                                          (lsp-deferred))))  ; or lsp
+;; (use-package lsp-pyright
+;;   :ensure t
+;;   :custom (lsp-pyright-langserver-command "basedpyright") ;; or pyright
+;;   :hook ((python-mode python-ts-mode) . (lambda ()
+;;                                           (require 'lsp-pyright)
+;;                                           (lsp-deferred))))  ; or lsp
 
 (use-package lsp-ui
   :defer t
