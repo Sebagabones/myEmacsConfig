@@ -1246,47 +1246,51 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   :bind (("C-c r" . rg)))
 
 
-(use-nix-package flycheck
-                 :preface
+;; (use-package flycheck
+;;   :preface
+;;
+;;   (defun mp-flycheck-eldoc (callback &rest _ignored)
+;;     "Print flycheck messages at point by calling CALLBACK."
+;;     (when-let ((flycheck-errors (and flycheck-mode (flycheck-overlay-errors-at (point)))))
+;;       (mapc
+;;        (lambda (err)
+;;          (funcall callback
+;;                   (format "%s: %s"
+;;                           (let ((level (flycheck-error-level err)))
+;;                             (pcase level
+;;                               ('info (propertize "I" 'face 'flycheck-error-list-info))
+;;                               ('error (propertize "E" 'face 'flycheck-error-list-error))
+;;                               ('warning (propertize "W" 'face 'flycheck-error-list-warning))
+;;                               (_ level)))
+;;                           (flycheck-error-message err))
+;;                   :thing (or (flycheck-error-id err)
+;;                              (flycheck-error-group err))
+;;                   :face 'font-lock-doc-face))
+;;        flycheck-errors)))
+;;
+;;   (defun mp-flycheck-prefer-eldoc ()
+;;     (add-hook 'eldoc-documentation-functions #'mp-flycheck-eldoc nil t)
+;;     (setq eldoc-documentation-strategy 'eldoc-documentation-compose-eagerly)
+;;     (setq flycheck-display-errors-function nil)
+;;     (setq flycheck-help-echo-function nil))
+;;
+;;   :hook ((flycheck-mode . mp-flycheck-prefer-eldoc))
+;;   :defer t
+;;   :hook (elpaca-after-init . global-flycheck-mode)
+;;
+;;   :config
+;;   (setq flycheck-highlighting-mode "lines")
+;;   (setq lsp-diagnostics-provider :none)
+;;   )
+;;
+;;
+;; (use-package flycheck-inline
+;;   :after flycheck
+;;   :hook (flycheck-mode . flycheck-inline-mode))
 
-                 (defun mp-flycheck-eldoc (callback &rest _ignored)
-                   "Print flycheck messages at point by calling CALLBACK."
-                   (when-let ((flycheck-errors (and flycheck-mode (flycheck-overlay-errors-at (point)))))
-                     (mapc
-                      (lambda (err)
-                        (funcall callback
-                                 (format "%s: %s"
-                                         (let ((level (flycheck-error-level err)))
-                                           (pcase level
-                                             ('info (propertize "I" 'face 'flycheck-error-list-info))
-                                             ('error (propertize "E" 'face 'flycheck-error-list-error))
-                                             ('warning (propertize "W" 'face 'flycheck-error-list-warning))
-                                             (_ level)))
-                                         (flycheck-error-message err))
-                                 :thing (or (flycheck-error-id err)
-                                            (flycheck-error-group err))
-                                 :face 'font-lock-doc-face))
-                      flycheck-errors)))
-
-                 (defun mp-flycheck-prefer-eldoc ()
-                   (add-hook 'eldoc-documentation-functions #'mp-flycheck-eldoc nil t)
-                   (setq eldoc-documentation-strategy 'eldoc-documentation-compose-eagerly)
-                   (setq flycheck-display-errors-function nil)
-                   (setq flycheck-help-echo-function nil))
-
-                 :hook ((flycheck-mode . mp-flycheck-prefer-eldoc))
-                 :defer t
-                 :hook (elpaca-after-init . global-flycheck-mode)
-
-                 :config
-                 (setq flycheck-highlighting-mode "lines")
-                 (setq lsp-diagnostics-provider :none)
-                 )
-
-
-(use-nix-package flycheck-inline
-                 :after flycheck
-                 :hook (flycheck-mode . flycheck-inline-mode))
+(use-package flymake-ruff
+  :ensure t
+  :hook (python-ts-mode . flymake-ruff-load))
 
 (use-nix-package scad-mode
                  :ensure t)
@@ -1309,8 +1313,14 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   (setq lsp-completion-provider :none)
   :ensure t
   :hook(
+        <<<<<<< HEAD
+        (python-ts-mode . lsp-deferred)
+        ||||||| 40a3178
+        (python-mode . lsp-deferred)
+        =======
         (python-mode . lsp-deferred)
         (python-ts-mode . lsp-deferred)
+        >>>>>>> 80c31adb67b61380232771e48e159b631a85aab7
         (nix-mode . lsp-deferred)
         (c-mode . lsp-deferred)
         (c++-mode . lsp-deferred)
