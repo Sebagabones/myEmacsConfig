@@ -1,10 +1,15 @@
+;;; package --- this line is only here to remove warnings
+;;; Commentary:
 ;;; post-init.el --- This file is loaded after init.el. It is useful for additional configurations or package setups that depend on the configurations in init.el. -*- no-byte-compile: t; lexical-binding: t; -*-
 
 ;; Native compilation enhances Emacs performance by converting Elisp code into
 ;; native machine code, resulting in faster execution and improved
 ;; responsiveness.
 ;;
+;;; Code:
+
 (defmacro use-nix-package (name &rest args)
+  "Wrapper around ‘use-package’ that in theory should allow me to use packages installed with nix - NAME is the package name, ARGS are args passed."
   `(use-package ,name :elpaca nil ,@args))
 
 
@@ -122,6 +127,9 @@
 (setq auto-save-visited-interval 5)   ; Save after 5 seconds if inactivity
 (auto-save-visited-mode 1)
 
+
+(setq split-width-threshold 120)
+(setq split-height-threshold nil)
 
 (use-package eldoc-box
   :hook (eldoc-mode . eldoc-box-hover-at-point-mode)
@@ -322,17 +330,17 @@
   ;;
   ;; However, the author of minimal-emacs.d uses these parameters to achieve
   ;; immediate feedback from Consult.
-  ;; (setq consult-async-input-debounce 0.02
-  ;;       consult-async-input-throttle 0.05
-  ;;       consult-async-refresh-delay 0.02)
+  (setq consult-async-input-debounce 0.02
+        consult-async-input-throttle 0.05
+        consult-async-refresh-delay 0.02)
 
   :config
   (consult-customize
    consult-theme :preview-key '(:debounce 0.2 any)
    consult-ripgrep consult-git-grep consult-grep
    consult-bookmark consult-recent-file consult-xref
-   consult--source-bookmark consult--source-file-register
-   consult--source-recent-file consult--source-project-recent-file
+   ;; consult--source-bookmark consult--source-file-register
+   ;; consult--source-recent-file consult--source-project-recent-file
    ;; :preview-key "M-."
    :preview-key '(:debounce 0.4 any))
   (setq consult-narrow-key "<"))
@@ -658,7 +666,7 @@
                               :weight bold)))))
 
 (defun org-show-todo-tree ()
-  "Create new indirect buffer with sparse tree of undone TODO items"
+  "Create new indirect buffer with sparse tree of undone TODO items."
   (interactive)
   (clone-indirect-buffer "*org TODO undone*" t)
   (org-show-todo-tree nil)
@@ -697,10 +705,9 @@
   :custom
   (treesit-auto-install 'prompt)
   :config
-  (delete 'cpp treesit-auto-langs)
-  (delete 'c treesit-auto-langs)
-  (delete 'csharp treesit-auto-langs)
-  (treesit-auto-add-to-auto-mode-alist '((awk bash bibtex blueprint clojure cmake commonlisp css dart
+  ;; (delete 'cpp treesit-auto-langs)
+  ;; (delete 'c treesit-auto-langs)
+  (treesit-auto-add-to-auto-mode-alist '((awk bash bibtex blueprint c cpp c-sharp clojure cmake commonlisp css dart
                                               dockerfile elixir glsl go gomod heex html janet java javascript json julia
                                               kotlin latex lua magik make markdown nix nu org perl proto python r ruby
                                               rust scala sql surface toml tsx typescript typst verilog vhdl vue wast wat
@@ -820,7 +827,7 @@
   :commands (ispell ispell-minor-mode)
   :config
   ;; NOTE: Fix for [https://github.com/nixos/nixpkgs/issues/476684]
-  (setenv "ASPELL_CONF" (concat "data-dir " (concat (getenv "HOME") "/.local/state/nix/profiles/home-manager/home-path/lib/aspell")))
+  (setenv "ASPELL_CONF" (concat "data-dir " "/etc/profiles/per-user/bones/lib/aspell"))
   ;; Set the ispell program name to aspell
   (setq ispell-program-name "aspell")
   ;; (ispell-change-dictionary "english")
@@ -866,7 +873,13 @@
   (setf (alist-get 'python-mode apheleia-mode-alist)
         '(ruff-isort ruff))
   (setf (alist-get 'python-ts-mode apheleia-mode-alist)
-        '(ruff-isort ruff)))
+        '(ruff-isort ruff))
+  ;; turn off apheleia for go mode
+  (defun app/lsp-gopls-after-open-hook ()
+    (apheleia-mode -1)
+    (flycheck-mode -1))
+  (add-hook 'lsp-gopls-after-open-hook 'app/lsp-gopls-after-open-hook) ;from https://emacs.stackexchange.com/a/72882
+  )
 
 ;; Enables automatic indentation of code while typing
 (use-package aggressive-indent
@@ -925,7 +938,7 @@
 ;;   :custom (fira-code-mode-disabled-ligatures '("[]" "x" "//" "||" "lambda" "or" "and"))  ; ligatures you don't want
 ;;   :hook (prog-mode org-mode))                                         ; mode to enable fira-code-mode in
 
-(set-face-attribute 'default nil :font "Berkeley Mono 14")
+(set-face-attribute 'default nil :font "Berkeley Mono 12")
 
 
 (use-package ligature
@@ -1136,6 +1149,7 @@
                          "--color-only")))
 
 (defun myfun/toggle-magit-delta ()
+  "Toggle delta in magit."
   (interactive)
   (magit-delta-mode
    (if magit-delta-mode
@@ -1299,21 +1313,51 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   (setq lsp-completion-provider :none)
   :ensure t
   :hook(
+        <<<<<<< HEAD
         (python-ts-mode . lsp-deferred)
+        ||||||| 40a3178
+        (python-mode . lsp-deferred)
+        =======
+        (python-mode . lsp-deferred)
+        (python-ts-mode . lsp-deferred)
+        >>>>>>> 80c31adb67b61380232771e48e159b631a85aab7
         (nix-mode . lsp-deferred)
         (c-mode . lsp-deferred)
         (c++-mode . lsp-deferred)
         (scad-mode . lsp-deferred)
+        (go-mode . lsp-deferred)
+        (go-ts-mode . lsp-deferred)
         ;; Add more major modes here
         (lsp-mode . lsp-enable-which-key-integration))
+  :config
+  ;; go configuration
+  (setq lsp-go-codelenses '((gc_details . :json-false)
+                            (generate . t)
+                            (regenerate_cgo . t)
+                            (tidy . t)
+                            (upgrade_dependency . t)
+                            (test . t)
+                            (vendor . t)))
+  (lsp-register-custom-settings  '(("gopls.completeUnimported" t t)
+                                   ("gopls.staticcheck" t t)
+                                   ("gopls.templateExtensions" lsp-go-template-extensions))
+                                 )
+
+
+  ;; end go configuration
+  ;; python configuration
+  (setq lsp-disabled-clients '(pylsp pyright))
+
+  ;; end python configuration
+
   :commands  (lsp lsp-deferred))
 
-(use-package lsp-pyright
-  :ensure t
-  :custom (lsp-pyright-langserver-command "basedpyright") ;; or pyright
-  :hook ( python-ts-mode . (lambda ()
-                             (require 'lsp-pyright)
-                             (lsp-deferred))))  ; or lsp
+;; (use-package lsp-pyright
+;;   :ensure t
+;;   :custom (lsp-pyright-langserver-command "basedpyright") ;; or pyright
+;;   :hook ((python-mode python-ts-mode) . (lambda ()
+;;                                           (require 'lsp-pyright)
+;;                                           (lsp-deferred))))  ; or lsp
 
 (use-package lsp-ui
   :defer t
@@ -1419,6 +1463,7 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 (ad-activate 'kill-ring-save)
 
 (defadvice backward-kill-word (around delete-pair activate)
+  "Remove the word backwards from cursor."
   (if (eq (char-syntax (char-before)) ?\()
       (progn
         (backward-char 1)
@@ -1431,8 +1476,7 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
     ad-do-it))
 
 (defun acg/with-mark-active (&rest args)
-  "Keep mark active after command. To be used as advice AFTER any
-function that sets `deactivate-mark' to t."
+  "Keep mark active after command. Unusre what ARGS is. To be used as advice AFTER any function that set variable `deactivate-mark' to t."
   (setq deactivate-mark nil))
 
 (with-eval-after-load 'newcomment
@@ -1445,7 +1489,7 @@ function that sets `deactivate-mark' to t."
   ("M-;" . comment-dwim-2))
 
 (defun kill-line-or-region ()
-  "kill region if active only or kill line normally"
+  "Kill region if active only or kill line normally."
   (interactive)
   (if (region-active-p)
       (call-interactively 'kill-region)
@@ -1454,7 +1498,7 @@ function that sets `deactivate-mark' to t."
 (global-set-key (kbd "C-k") 'kill-line-or-region)
 
 (defun backward-kill-region-or-word ()
-  "kill region if active only or kill line normally"
+  "Kill region if active only or kill line normally."
   (interactive)
   (if (region-active-p)
       (call-interactively 'kill-region)
@@ -1624,10 +1668,23 @@ function that sets `deactivate-mark' to t."
                  ;; :hook (elpaca-after-init . vterm-toggle)
                  :bind
                  ("C-c t" . vterm-toggle-cd)
-
                  :config
                  (define-key vterm-mode-map [(control return)]   #'vterm-toggle-insert-cd)
                  (define-key vterm-copy-mode-map [(control return)]   #'vterm-toggle-insert-cd)
+                 (setq vterm-toggle-fullscreen-p nil)
+                 (add-to-list 'display-buffer-alist
+                              '((lambda (buffer-or-name _)
+                                  (let ((buffer (get-buffer buffer-or-name)))
+                                    (with-current-buffer buffer
+                                      (or (equal major-mode 'vterm-mode)
+                                          (string-prefix-p vterm-buffer-name (buffer-name buffer))))))
+                                (display-buffer-reuse-window display-buffer-at-bottom)
+                                ;;(display-buffer-reuse-window display-buffer-in-direction)
+                                ;;display-buffer-in-direction/direction/dedicated is added in emacs27
+                                ;;(direction . bottom)
+                                ;;(dedicated . t) ;dedicated is supported in emacs27
+                                (reusable-frames . visible)
+                                (window-height . 0.4)))
                  )
 
 (use-nix-package tabspaces
@@ -1650,24 +1707,24 @@ function that sets `deactivate-mark' to t."
 ;; Define a helper for clarity
 
 
-(with-eval-after-load 'consult
-  ;; hide full buffer list (still available with "b" prefix)
-  (consult-customize consult--source-buffer :hidden t :default nil)
-  ;; set consult-workspace buffer list
-  (defvar consult--source-workspace
-    (list :name     "Workspace Buffers"
-          :narrow   ?w
-          :history  'buffer-name-history
-          :category 'buffer
-          :state    #'consult--buffer-state
-          :default  t
-          :items    (lambda () (consult--buffer-query
-                                ;; :predicate #'tabspaces--local-buffer-p
-                                :sort 'visibility
-                                :as #'buffer-name)))
-
-    "Set workspace buffer list for consult-buffer.")
-  (add-to-list 'consult-buffer-sources 'consult--source-workspace))
+;; (with-eval-after-load 'consult
+;;   ;; hide full buffer list (still available with "b" prefix)
+;;   (consult-customize consult--source-buffer :hidden t :default nil)
+;;   ;; set consult-workspace buffer list
+;;   (defvar consult--source-workspace
+;;     (list :name     "Workspace Buffers"
+;;           :narrow   ?w
+;;           :history  'buffer-name-history
+;;           :category 'buffer
+;;           :state    #'consult--buffer-state
+;;           :default  t
+;;           :items    (lambda () (consult--buffer-query
+;;                                 ;; :predicate #'tabspaces--local-buffer-p
+;;                                 :sort 'visibility
+;;                                 :as #'buffer-name)))
+;;
+;;     "Set workspace buffer list for consult-buffer.")
+;;   (add-to-list 'consult-buffer-sources 'consult--source-workspace))
 
 (use-package simple-comment-markup
   :straight (:type git :host nil :repo "https://code.tecosaur.net/tec/simple-comment-markup.git")
@@ -1716,10 +1773,15 @@ function that sets `deactivate-mark' to t."
   :config
   (setq create-lockfiles nil))
 
+
+(use-package go-mode
+  :ensure t)
+
+
 (use-package doxymacs
   :straight (doxymacs :type git :host github :repo "pniedzielski/doxymacs")
-  :hook (c-mode-common . doxymacs-mode)
-  :bind (:map c-mode-base-map
+  :hook (prog-mode . doxymacs-mode)
+  :bind (:map prog-mode-map
               ;; Lookup documentation for the symbol at point.
               ("C-c d ?" . doxymacs-lookup)
               ;; Rescan your Doxygen tags file.
@@ -1739,6 +1801,8 @@ function that sets `deactivate-mark' to t."
               ("C-c d s" . doxymacs-insert-blank-singleline-comment)
               ;; Insert a grouping comments around the current region.
               ("C-c d @" . doxymacs-insert-grouping-comments))
+  :config
+  (doxymacs-font-lock)
   :custom
   ;; Configure source code <-> Doxygen tag file <-> Doxygen HTML
   ;; documentation mapping:
@@ -1781,3 +1845,5 @@ function that sets `deactivate-mark' to t."
            ("\\(https?://[^ ]+\\)" 1 'button-face)))))  ; URLs
 
 (with-eval-after-load 'org-src(add-to-list 'org-src-lang-modes '("irc-log" . irc-log)))
+
+;;; post-init.el ends here
