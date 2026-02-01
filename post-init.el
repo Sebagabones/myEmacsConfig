@@ -822,7 +822,7 @@
   :commands (ispell ispell-minor-mode)
   :config
   ;; NOTE: Fix for [https://github.com/nixos/nixpkgs/issues/476684]
-  (setenv "ASPELL_CONF" (concat "data-dir " (concat (getenv "HOME") "/.local/state/nix/profiles/home-manager/home-path/lib/aspell")))
+  (setenv "ASPELL_CONF" (concat "data-dir " "/etc/profiles/per-user/bones/lib/aspell"))
   ;; Set the ispell program name to aspell
   (setq ispell-program-name "aspell")
   ;; (ispell-change-dictionary "english")
