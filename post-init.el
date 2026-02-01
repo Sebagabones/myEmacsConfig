@@ -1,10 +1,15 @@
+;;; package --- this line is only here to remove warnings
+;;; Commentary:
 ;;; post-init.el --- This file is loaded after init.el. It is useful for additional configurations or package setups that depend on the configurations in init.el. -*- no-byte-compile: t; lexical-binding: t; -*-
 
 ;; Native compilation enhances Emacs performance by converting Elisp code into
 ;; native machine code, resulting in faster execution and improved
 ;; responsiveness.
 ;;
+;;; Code:
+
 (defmacro use-nix-package (name &rest args)
+  "Wrapper around ‘use-package’ that in theory should allow me to use packages installed with nix - NAME is the package name, ARGS are args passed."
   `(use-package ,name :elpaca nil ,@args))
 
 
@@ -661,7 +666,7 @@
                               :weight bold)))))
 
 (defun org-show-todo-tree ()
-  "Create new indirect buffer with sparse tree of undone TODO items"
+  "Create new indirect buffer with sparse tree of undone TODO items."
   (interactive)
   (clone-indirect-buffer "*org TODO undone*" t)
   (org-show-todo-tree nil)
@@ -1144,6 +1149,7 @@
                          "--color-only")))
 
 (defun myfun/toggle-magit-delta ()
+  "Toggle delta in magit."
   (interactive)
   (magit-delta-mode
    (if magit-delta-mode
@@ -1442,6 +1448,7 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 (ad-activate 'kill-ring-save)
 
 (defadvice backward-kill-word (around delete-pair activate)
+  "Remove the word backwards from cursor."
   (if (eq (char-syntax (char-before)) ?\()
       (progn
         (backward-char 1)
@@ -1454,8 +1461,7 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
     ad-do-it))
 
 (defun acg/with-mark-active (&rest args)
-  "Keep mark active after command. To be used as advice AFTER any
-function that sets `deactivate-mark' to t."
+  "Keep mark active after command. Unusre what ARGS is. To be used as advice AFTER any function that set variable `deactivate-mark' to t."
   (setq deactivate-mark nil))
 
 (with-eval-after-load 'newcomment
@@ -1468,7 +1474,7 @@ function that sets `deactivate-mark' to t."
   ("M-;" . comment-dwim-2))
 
 (defun kill-line-or-region ()
-  "kill region if active only or kill line normally"
+  "Kill region if active only or kill line normally."
   (interactive)
   (if (region-active-p)
       (call-interactively 'kill-region)
@@ -1477,7 +1483,7 @@ function that sets `deactivate-mark' to t."
 (global-set-key (kbd "C-k") 'kill-line-or-region)
 
 (defun backward-kill-region-or-word ()
-  "kill region if active only or kill line normally"
+  "Kill region if active only or kill line normally."
   (interactive)
   (if (region-active-p)
       (call-interactively 'kill-region)
@@ -1824,3 +1830,5 @@ function that sets `deactivate-mark' to t."
            ("\\(https?://[^ ]+\\)" 1 'button-face)))))  ; URLs
 
 (with-eval-after-load 'org-src(add-to-list 'org-src-lang-modes '("irc-log" . irc-log)))
+
+;;; post-init.el ends here
