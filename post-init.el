@@ -1109,7 +1109,6 @@
 
 (setq visible-bell t)
 (electric-pair-mode)
-(electric-quote-mode)
 
 (use-package transient
   :ensure t)
@@ -1243,7 +1242,8 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 
 (use-package rg
   :after transient
-  :defer t)
+  :defer t
+  :bind (("C-c r" . rg)))
 
 
 (use-nix-package flycheck
@@ -1526,8 +1526,16 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   (setq ivy-initial-inputs-alist nil)
   ;; Enable this if you want `swiper' to use it:
   ;; (setopt search-default-mode #'char-fold-to-regexp)
+  ;; (define-key counsel-find-file-map (kbd "TAB") #'ivy-alt-done) ;you may need to uncomment this if the line beneath isn't working
+  (define-key counsel-find-file-map (kbd "<tab>") #'ivy-alt-done)
   )
 
+
+(use-package counsel-ag-popup
+  :after counsel
+  :defer t
+  :bind
+  (("C-c s" . counsel-ag-popup)))
 
 
 (use-package ivy-prescient
