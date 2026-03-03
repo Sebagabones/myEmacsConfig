@@ -1732,6 +1732,8 @@ function that sets `deactivate-mark' to t."
   :config
   (setq create-lockfiles nil))
 
+;; Enables doxymacs in all modes
+(add-hook 'font-lock-mode-hook 'doxymacs-font-lock)
 (use-package doxymacs
   :straight (doxymacs :type git :host github :repo "pniedzielski/doxymacs")
   :hook (prog-mode . doxymacs-mode)
