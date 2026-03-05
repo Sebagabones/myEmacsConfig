@@ -1314,14 +1314,8 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   (setq lsp-completion-provider :none)
   :ensure t
   :hook(
-        <<<<<<< HEAD
+        ;; (python-mode . lsp-deferred)
         (python-ts-mode . lsp-deferred)
-        ||||||| 40a3178
-        (python-mode . lsp-deferred)
-        =======
-        (python-mode . lsp-deferred)
-        (python-ts-mode . lsp-deferred)
-        >>>>>>> 80c31adb67b61380232771e48e159b631a85aab7
         (nix-mode . lsp-deferred)
         (c-mode . lsp-deferred)
         (c++-mode . lsp-deferred)
