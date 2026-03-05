@@ -707,12 +707,13 @@
   :config
   ;; (delete 'cpp treesit-auto-langs)
   ;; (delete 'c treesit-auto-langs)
-  (treesit-auto-add-to-auto-mode-alist '((awk bash bibtex blueprint c cpp c-sharp clojure cmake commonlisp css dart
-                                              dockerfile elixir glsl go gomod heex html janet java javascript json julia
-                                              kotlin latex lua magik make markdown nix nu org perl proto python r ruby
-                                              rust scala sql surface toml tsx typescript typst verilog vhdl vue wast wat
-                                              wgsl yaml)))
+  ;; (treesit-auto-add-to-auto-mode-alist '((awk bash bibtex blueprint c cpp c-sharp clojure cmake commonlisp css dart
+  ;;                                             dockerfile elixir glsl go gomod heex html janet java javascript json julia
+  ;;                                             kotlin latex lua magik make markdown nix nu org perl proto python r ruby
+  ;;                                             rust scala sql surface toml tsx typescript typst verilog vhdl vue wast wat
+  ;;                                             wgsl yaml)))
   (setopt treesit-font-lock-level 4)
+  (treesit-auto-add-to-auto-mode-alist)
   (global-treesit-auto-mode)
   )
 
