@@ -1612,9 +1612,12 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   :config
   (setq vundo-glyph-alist vundo-unicode-symbols))
 
-(use-package direnv
-  :config
-  (direnv-mode))
+;; (use-package direnv
+;;   :config
+;;   (direnv-mode))
+
+(use-package envrc
+  :hook (elpaca-after-init . envrc-global-mode))
 
 (use-package color-identifiers-mode
   :ensure t
