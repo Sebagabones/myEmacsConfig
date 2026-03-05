@@ -1786,7 +1786,7 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 
 (use-package doxymacs
   :straight (doxymacs :type git :host github :repo "pniedzielski/doxymacs")
-  :hook (prog-mode . doxymacs-mode)
+  :hook ((prog-mode . doxymacs-mode) (font-lock-mode . doxymacs-font-lock))
   :bind (:map prog-mode-map
               ;; Lookup documentation for the symbol at point.
               ("C-c d ?" . doxymacs-lookup)
@@ -1808,7 +1808,8 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
               ;; Insert a grouping comments around the current region.
               ("C-c d @" . doxymacs-insert-grouping-comments))
   :config
-  (doxymacs-font-lock)
+  ;; (doxymacs-font-lock)
+  ;; (font-lock-add-keywords nil doxymacs--doxygen-keywords) ;should be the same as doxymacs-font-lock
   :custom
   ;; Configure source code <-> Doxygen tag file <-> Doxygen HTML
   ;; documentation mapping:
