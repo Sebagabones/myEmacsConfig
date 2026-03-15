@@ -1423,7 +1423,8 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 
 (use-package ace-window
   :bind
-  ("C-c o" . ace-select-window)
+  ("C-c o" . other-window)
+  ("C-x o" . ace-select-window)
   :config
   (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
 
