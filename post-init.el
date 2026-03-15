@@ -1240,7 +1240,11 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 (use-package projectile
   :defer t
   :init
-  (projectile-mode))
+  (projectile-mode)
+
+  :config
+  (setq projectile-auto-cleanup-known-projects t)
+  )
 
 (use-package rg
   :after transient
