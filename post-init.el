@@ -1695,7 +1695,7 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 (use-nix-package tabspaces
                  ;; use this next line only if you also use straight, otherwise ignore it.
                  ;; :straight (:type git :host github :repo "mclear-tools/tabspaces")
-                 :hook (elpaca-after-init-hook . tabspaces-mode) ;; use this only if you want the minor-mode loaded at startup.
+                 :hook (elpaca-after-init . tabspaces-mode) ;; use this only if you want the minor-mode loaded at startup.
                  :commands (tabspaces-switch-or-create-workspace
                             tabspaces-open-or-create-project-and-workspace)
                  :custom
