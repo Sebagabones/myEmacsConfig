@@ -1851,5 +1851,51 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
            ("\\(https?://[^ ]+\\)" 1 'button-face)))))  ; URLs
 
 (with-eval-after-load 'org-src(add-to-list 'org-src-lang-modes '("irc-log" . irc-log)))
+(use-package indent-bars
+  :hook ((python-ts-mode python-mode c-ts-mode c-mode c++-ts-mode c++-mode yaml-ts-mode nix-ts-mode nix-mode toml-ts-mode rust-ts-mode ) . indent-bars-mode)
+  :config
+  (setq
+   indent-bars-color '(highlight :face-bg t :blend 0.8)
+   indent-bars-pattern ". . . ."
+   indent-bars-color-by-depth '(:palette (outline-1 outline-2 outline-3 outline-4 outline-5 outline-6 outline-7 outline-8) :blend 0.8)
+   indent-bars-highlight-current-depth '(:blend 1.0 :width 0.2 :pad 0.1 :pattern ". . ." :zigzag 0)
+   indent-bars-pad-frac 0.3
+   indent-bars-ts-highlight-current-depth '(no-inherit) ; equivalent to nil
+   indent-bars-ts-color-by-depth '(no-inherit)
+   indent-bars-ts-color '(inherit fringe :face-bg t :blend 0.2)
+
+   )
+  :custom
+  (indent-bars-treesit-support t)
+
+  ;; Python
+  (indent-bars-no-descend-lists t)
+  (indent-bars-treesit-scope '((python function_definition class_definition for_statement
+				                       if_statement with_statement while_statement)))
+  (indent-bars-treesit-ignore-blank-lines-types '("module"))
+
+  ;; C
+  (indent-bars-treesit-wrap '((c argument_list parameter_list init_declarator parenthesized_expression)))
+  ;; Rust
+  (indent-bars-treesit-wrap '((rust arguments parameters)))
+  (indent-bars-treesit-scope '((rust trait_item impl_item
+                                     macro_definition macro_invocation
+                                     struct_item enum_item mod_item
+                                     const_item let_declaration
+                                     function_item for_expression
+                                     if_expression loop_expression
+                                     while_expression match_expression
+                                     match_arm call_expression
+                                     token_tree token_tree_pattern
+                                     token_repetition)))
+  ;; TOML
+
+  (indent-bars-treesit-wrap '((toml
+                               table array comment)))
+  ;; YAML
+
+  (indent-bars-treesit-wrap '((yaml
+                               block_mapping_pair comment)))
+  )
 
 ;;; post-init.el ends here
