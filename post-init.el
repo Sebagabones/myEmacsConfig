@@ -1568,15 +1568,6 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 (setq kill-whole-line t)
 
 
-
-;; nix releated
-;; (use-package nix-mode
-;;   :defer t
-;;   :mode ("\\.nix\\'" "\\.nix.in\\'"))
-;; (add-hook! 'nix-mode-hook
-;;            ;; enable autocompletion with company
-;;            (setq company-idle-delay 0.1))
-
 (use-package nix-mode
   :after lsp-mode
   :ensure t
@@ -1591,6 +1582,8 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
         lsp-nix-nixd-nixos-options-expr "(builtins.getFlake \"/home/nb/nixos\").nixosConfigurations.mnd.options"
         lsp-nix-nixd-home-manager-options-expr "(builtins.getFlake \"/home/nb/nixos\").homeConfigurations.\"nb@mnd\".options"))
 
+(use-package nix-ts-mode
+  :mode "\\.nix\\'")
 
 (use-package nix-modeline
   :after nix-mode
