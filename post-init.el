@@ -712,6 +712,7 @@
   ;;                                             kotlin latex lua magik make markdown nix nu org perl proto python r ruby
   ;;                                             rust scala sql surface toml tsx typescript typst verilog vhdl vue wast wat
   ;;                                             wgsl yaml)))
+  (add-to-list 'auto-mode-alist '("CMakeLists\\.txt\\'" . cmake-ts-mode))
   (setopt treesit-font-lock-level 4)
   (treesit-auto-add-to-auto-mode-alist)
   (global-treesit-auto-mode)
