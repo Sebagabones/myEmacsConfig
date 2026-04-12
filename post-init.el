@@ -509,7 +509,7 @@
 		                         (progn (cl-assert (buffer-file-name))
 			                            (concat (file-name-sans-extension (buffer-file-name))
 				                                "-att")))
-		                       org-attach-screenshot-command-line "gnome-screenshot -a -f %f"))
+		                       org-attach-screenshot-command-line "spectacle -o %f"))
 
 (use-nix-package org-sidebar
                  :straight (:type git :host github :repo "alphapapa/org-sidebar")
@@ -1328,6 +1328,9 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
         (scad-mode . lsp-deferred)
         (go-mode . lsp-deferred)
         (go-ts-mode . lsp-deferred)
+        (ada-mode . lsp-deferred)
+        (ada-ts-mode . lsp-deferred)
+
         ;; Add more major modes here
         (lsp-mode . lsp-enable-which-key-integration))
   :config
@@ -1852,6 +1855,7 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
            ("\\(https?://[^ ]+\\)" 1 'button-face)))))  ; URLs
 
 (with-eval-after-load 'org-src(add-to-list 'org-src-lang-modes '("irc-log" . irc-log)))
+
 (use-package indent-bars
   :hook ((python-ts-mode python-mode c-ts-mode c-mode c++-ts-mode c++-mode yaml-ts-mode nix-ts-mode nix-mode toml-ts-mode rust-ts-mode ) . indent-bars-mode)
   :config
@@ -1898,5 +1902,10 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   (indent-bars-treesit-wrap '((yaml
                                block_mapping_pair comment)))
   )
-
+(use-package gpr-ts-mode
+  :ensure t
+  )
+(use-package ada-ts-mode
+  :ensure t
+  )
 ;;; post-init.el ends here
