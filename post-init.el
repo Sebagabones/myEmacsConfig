@@ -1908,4 +1908,6 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 (use-package ada-ts-mode
   :ensure t
   )
+(use-package  haskell-mode
+  :ensure t)
 ;;; post-init.el ends here
