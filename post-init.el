@@ -4,9 +4,6 @@
 ;; native machine code, resulting in faster execution and improved
 ;; responsiveness.
 ;;
-(defmacro use-nix-package (name &rest args)
-  `(use-package ,name :elpaca nil ,@args))
-
 
 ;; Ensure adding the following compile-angel code at the very beginning
 ;; of your `~/.emacs.d/post-init.el` file, before all other packages.
@@ -71,16 +68,16 @@
 ;;   ;; (load-theme 'catppuccin :no-confirm)
 ;;   ;; ;; (catppuccin-reload)
 ;;   )
-(use-nix-package base16-theme
-                 :ensure t
-                 )
-(use-nix-package  solaire-mode
-                  :ensure t
-                  :config
-                  ;; (add-to-list 'solaire-mode-themes-to-face-swap "doom-tokyo-night")
-                  :custom
-                  (solaire-global-mode +1)
-                  )
+(use-package base16-theme
+  :ensure t
+  )
+(use-package  solaire-mode
+  :ensure t
+  :config
+  ;; (add-to-list 'solaire-mode-themes-to-face-swap "doom-tokyo-night")
+  :custom
+  (solaire-global-mode +1)
+  )
 ;; Auto-revert in Emacs is a feature that automatically updates the
 ;; contents of a buffer to reflect changes made to the underlying file
 ;; on disk.
@@ -124,31 +121,36 @@
 ;; Corfu enhances in-buffer completion by displaying a compact popup with
 ;; current candidates, positioned either below or above the point. Candidates
 ;; can be selected by navigating up or down.
-(use-nix-package corfu
-                 :custom
-                 (corfu-auto t)               ;; Enable auto completion
-                 (corfu-preselect 'directory) ;; Select the first candidate, except for directories
+(use-package corfu
+  :custom
+  (corfu-auto t)               ;; Enable auto completion
+  (corfu-preselect 'directory) ;; Select the first candidate, except for directories
 
-                 :ensure t
-                 ;; :custom
-                 :commands (corfu-mode global-corfu-mode)
-                 :hook ((prog-mode . corfu-mode)
-                        (shell-mode . corfu-mode)
-                        (eshell-mode . corfu-mode))
-                 :custom
-                 ;; Hide commands in M-x which do not apply to the current mode.
-                 (read-extended-command-predicate #'command-completion-default-include-p)
-                 ;; Disable Ispell completion function. As an alternative try `cape-dict'.
-                 (text-mode-ispell-word-completion nil)
-                 (tab-always-indent 'complete)
+  :ensure t
+  ;; :custom
+  :commands (corfu-mode global-corfu-mode)
+  :hook ((prog-mode . corfu-mode)
+         (shell-mode . corfu-mode)
+         (eshell-mode . corfu-mode))
+  :custom
+  ;; Hide commands in M-x which do not apply to the current mode.
+  (read-extended-command-predicate #'command-completion-default-include-p)
+  ;; Disable Ispell completion function. As an alternative try `cape-dict'.
+  (text-mode-ispell-word-completion nil)
+  (tab-always-indent 'complete)
 
-                 ;; Enable Corfu
-                 :config
-                 ;; Free the RET key for less intrusive behavior.
-                 (keymap-unset corfu-map "RET")
-                 (global-corfu-mode)
-                 )
-
+  (corfu-popupinfo-delay '(0.5 . 0.25))
+  (corfu-popupinfo-max-height 30)
+  ;; Enable Corfu
+  :config
+  ;; Free the RET key for less intrusive behavior.
+  (keymap-unset corfu-map "RET")
+  (global-corfu-mode)
+  (corfu-popupinfo-mode)
+  (keymap-set corfu-map "M-q" #'corfu-quick-complete)
+  (keymap-set corfu-map "C-q" #'corfu-quick-insert)
+  (corfu-history-mode)
+  )
 ;; Cape, or Completion At Point Extensions, extends the capabilities of
 ;; in-buffer completion. It integrates with Corfu or the default completion UI,
 ;; by providing additional backends through completion-at-point-functions.
@@ -159,7 +161,7 @@
   :init
   ;; Add to the global default value of `completion-at-point-functions' which is
   ;; used by `completion-at-point'.
-  ;; (add-hook 'completion-at-point-functions #'cape-dabbrev)
+  (add-hook 'completion-at-point-functions #'cape-dabbrev)
   (add-hook 'completion-at-point-functions #'cape-file)
   (add-hook 'completion-at-point-functions #'cape-elisp-block))
 
@@ -175,58 +177,58 @@
 ;; Vertico leverages Orderless' flexible matching capabilities, allowing users
 ;; to input multiple patterns separated by spaces, which Orderless then
 ;; matches in any order against the candidates.
-(use-nix-package orderless
-                 :ensure t
-                 :custom
-                 (completion-styles '(orderless basic))
-                 (completion-category-defaults nil)
-                 (completion-category-overrides '((file (styles partial-completion)))))
+(use-package orderless
+  :ensure t
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-defaults nil)
+  (completion-category-overrides '((file (styles partial-completion)))))
 
 ;; Marginalia allows Embark to offer you preconfigured actions in more contexts.
 ;; In addition to that, Marginalia also enhances Vertico by adding rich
 ;; annotations to the completion candidates displayed in Vertico's interface.
-(use-nix-package marginalia
-                 :ensure t
-                 :commands (marginalia-mode marginalia-cycle)
-                 ;; :init
-                 ;; :defer t
-                 ;; (marginalia-mode))
-                 :hook (elpaca-after-init . marginalia-mode))
+(use-package marginalia
+  :ensure t
+  :commands (marginalia-mode marginalia-cycle)
+  ;; :init
+  ;; :defer t
+  ;; (marginalia-mode))
+  :hook (elpaca-after-init . marginalia-mode))
 
 ;; Embark integrates with Consult and Vertico to provide context-sensitive
 ;; actions and quick access to commands based on the current selection, further
 ;; improving user efficiency and workflow within Emacs. Together, they create a
 ;; cohesive and powerful environment for managing completions and interactions.
-(use-nix-package embark
-                 ;; Embark is an Emacs package that acts like a context menu, allowing
-                 ;; users to perform context-sensitive actions on selected items
-                 ;; directly from the completion interface.
-                 :ensure t
-                 :commands (embark-act
-                            embark-dwim
-                            embark-export
-                            embark-collect
-                            embark-bindings
-                            embark-prefix-help-command)
-                 :bind
-                 (("C-." . embark-act)         ;; pick some comfortable binding
-                  ("C-;" . embark-dwim)        ;; good alternative: M-.
-                  ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
+(use-package embark
+  ;; Embark is an Emacs package that acts like a context menu, allowing
+  ;; users to perform context-sensitive actions on selected items
+  ;; directly from the completion interface.
+  :ensure t
+  :commands (embark-act
+             embark-dwim
+             embark-export
+             embark-collect
+             embark-bindings
+             embark-prefix-help-command)
+  :bind
+  (("C-." . embark-act)         ;; pick some comfortable binding
+   ("C-;" . embark-dwim)        ;; good alternative: M-.
+   ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
 
-                 :init
-                 (setq prefix-help-command #'embark-prefix-help-command)
+  :init
+  (setq prefix-help-command #'embark-prefix-help-command)
 
-                 :config
-                 ;; Hide the mode line of the Embark live/completions buffers
-                 (add-to-list 'display-buffer-alist
-                              '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
-                                nil
-                                (window-parameters (mode-line-format . none)))))
+  :config
+  ;; Hide the mode line of the Embark live/completions buffers
+  (add-to-list 'display-buffer-alist
+               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                 nil
+                 (window-parameters (mode-line-format . none)))))
 
-(use-nix-package embark-consult
-                 :ensure t
-                 :hook
-                 (embark-collect-mode . consult-preview-at-point-mode))
+(use-package embark-consult
+  :ensure t
+  :hook
+  (embark-collect-mode . consult-preview-at-point-mode))
 
 ;; Consult offers a suite of commands for efficient searching, previewing, and
 ;; interacting with buffers, file contents, and more, improving various tasks.
@@ -326,59 +328,59 @@
 ;; such as Emacs Lisp and Python, allowing users to collapse and expand sections
 ;; based on headings or indentation levels. This feature enhances navigation and
 ;; improves the management of large files with hierarchical structures.
-(use-nix-package outline-indent
-                 :ensure t
-                 :commands outline-indent-minor-mode
+(use-package outline-indent
+  :ensure t
+  :commands outline-indent-minor-mode
 
-                 :custom
-                 (outline-indent-ellipsis " ▼ ")
+  :custom
+  (outline-indent-ellipsis " ▼ ")
 
-                 :init
-                 ;; The minor mode can also be automatically activated for a certain modes.
-                 (add-hook 'python-mode-hook #'outline-indent-minor-mode)
-                 (add-hook 'python-ts-mode-hook #'outline-indent-minor-mode)
+  :init
+  ;; The minor mode can also be automatically activated for a certain modes.
+  (add-hook 'python-mode-hook #'outline-indent-minor-mode)
+  (add-hook 'python-ts-mode-hook #'outline-indent-minor-mode)
 
-                 (add-hook 'yaml-mode-hook #'outline-indent-minor-mode)
-                 (add-hook 'yaml-ts-mode-hook #'outline-indent-minor-mode))
+  (add-hook 'yaml-mode-hook #'outline-indent-minor-mode)
+  (add-hook 'yaml-ts-mode-hook #'outline-indent-minor-mode))
 
 
 ;; The stripspace Emacs package provides stripspace-local-mode, a minor mode
 ;; that automatically removes trailing whitespace and blank lines at the end of
 ;; the buffer when saving.
-(use-nix-package stripspace
-                 :ensure t
-                 :commands stripspace-local-mode
+(use-package stripspace
+  :ensure t
+  :commands stripspace-local-mode
 
-                 ;; Enable for prog-mode-hook, text-mode-hook, conf-mode-hook
-                 :hook ((prog-mode . stripspace-local-mode)
-                        (text-mode . stripspace-local-mode)
-                        (conf-mode . stripspace-local-mode))
+  ;; Enable for prog-mode-hook, text-mode-hook, conf-mode-hook
+  :hook ((prog-mode . stripspace-local-mode)
+         (text-mode . stripspace-local-mode)
+         (conf-mode . stripspace-local-mode))
 
-                 :custom
-                 ;; The `stripspace-only-if-initially-clean' option:
-                 ;; - nil to always delete trailing whitespace.
-                 ;; - Non-nil to only delete whitespace when the buffer is clean initially.
-                 ;; (The initial cleanliness check is performed when `stripspace-local-mode'
-                 ;; is enabled.)
-                 (stripspace-only-if-initially-clean nil)
+  :custom
+  ;; The `stripspace-only-if-initially-clean' option:
+  ;; - nil to always delete trailing whitespace.
+  ;; - Non-nil to only delete whitespace when the buffer is clean initially.
+  ;; (The initial cleanliness check is performed when `stripspace-local-mode'
+  ;; is enabled.)
+  (stripspace-only-if-initially-clean nil)
 
-                 ;; Enabling `stripspace-restore-column' preserves the cursor's column position
-                 ;; even after stripping spaces. This is useful in scenarios where you add
-                 ;; extra spaces and then save the file. Although the spaces are removed in the
-                 ;; saved file, the cursor remains in the same position, ensuring a consistent
-                 ;; editing experience without affecting cursor placement.
-                 (stripspace-restore-column t))
+  ;; Enabling `stripspace-restore-column' preserves the cursor's column position
+  ;; even after stripping spaces. This is useful in scenarios where you add
+  ;; extra spaces and then save the file. Although the spaces are removed in the
+  ;; saved file, the cursor remains in the same position, ensuring a consistent
+  ;; editing experience without affecting cursor placement.
+  (stripspace-restore-column t))
 
 ;; The undo-fu package is a lightweight wrapper around Emacs' built-in undo
 ;; system, providing more convenient undo/redo functionality.
-(use-nix-package undo-fu
-                 :ensure t
-                 :commands (undo-fu-only-undo
-                            undo-fu-only-redo
-                            undo-fu-only-redo-all
-                            undo-fu-disable-checkpoint)
-                 :config
-                 (global-unset-key (kbd "C-z")))
+(use-package undo-fu
+  :ensure t
+  :commands (undo-fu-only-undo
+             undo-fu-only-redo
+             undo-fu-only-redo-all
+             undo-fu-disable-checkpoint)
+  :config
+  (global-unset-key (kbd "C-z")))
 
 
 ;; The undo-fu-session package complements undo-fu by enabling the saving
@@ -392,16 +394,16 @@
   (undo-fu-session-global-mode))
 
 ;; Give Emacs sessions-bar a style similar to Vim's
-(use-nix-package vim-tab-bar
-                 :ensure t
-                 :commands vim-tab-bar-mode
-                 :hook (elpaca-after-init . vim-tab-bar-mode))
+(use-package vim-tab-bar
+  :ensure t
+  :commands vim-tab-bar-mode
+  :hook (elpaca-after-init . vim-tab-bar-mode))
 
-(use-nix-package ox-gfm
-                 :ensure t
-                 :init
-                 (eval-after-load "org"
-                   '(require 'ox-gfm nil t)))
+(use-package ox-gfm
+  :ensure t
+  :init
+  (eval-after-load "org"
+    '(require 'ox-gfm nil t)))
 
 ;; (use-package olivetti
 ;;   :ensure t
@@ -420,177 +422,95 @@
   :config
   :hook org-mode)
 
-(use-nix-package org-modern
-                 :ensure t
-                 :custom
-                 (org-modern-hide-stars nil)		; adds extra indentation
-                 (org-modern-table nil)
-                 (org-modern-list
-                  '(;; (?- . "-")
-                    (?* . "•")
-                    (?+ . "‣")))
-                 :config
-                 (setq
-                  org-auto-align-tags t
-                  org-tags-column 0
-                  org-fold-catch-invisible-edits 'show-and-error
-                  org-special-ctrl-a/e t
-                  org-insert-heading-respect-content t
+(use-package org-modern
+  :ensure t
+  :custom
+  (org-modern-hide-stars nil)		; adds extra indentation
+  (org-modern-table nil)
+  (org-modern-list
+   '(;; (?- . "-")
+     (?* . "•")
+     (?+ . "‣")))
+  :config
+  (setq
+   org-auto-align-tags t
+   org-tags-column 0
+   org-fold-catch-invisible-edits 'show-and-error
+   org-special-ctrl-a/e t
+   org-insert-heading-respect-content t
 
-                  ;; ;; Don't style the following
-                  ;; org-modern-tag nil
-                  ;; org-modern-priority nil
-                  ;; org-modern-todo nil
-                  ;; org-modern-table nil
+   ;; ;; Don't style the following
+   ;; org-modern-tag nil
+   ;; org-modern-priority nil
+   ;; org-modern-todo nil
+   ;; org-modern-table nil
 
-                  ;; Agenda styling
-                  org-agenda-tags-column 0
-                  org-agenda-block-separator ?─
-                  org-agenda-time-grid
-                  '((daily today require-timed)
-	                (800 1000 1200 1400 1600 1800 2000)
-	                " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄")
-                  org-agenda-current-time-string
-                  "⭠ now ─────────────────────────────────────────────────")
-                 :hook
-                 (org-mode . org-modern-mode)
-                 (org-agenda-finalize . org-modern-agenda)
-                 (org-mode . global-org-modern-mode))
+   ;; Agenda styling
+   org-agenda-tags-column 0
+   org-agenda-block-separator ?─
+   org-agenda-time-grid
+   '((daily today require-timed)
+	 (800 1000 1200 1400 1600 1800 2000)
+	 " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄")
+   org-agenda-current-time-string
+   "⭠ now ─────────────────────────────────────────────────")
+  :hook
+  (org-mode . org-modern-mode)
+  (org-agenda-finalize . org-modern-agenda)
+  (org-mode . global-org-modern-mode))
 
-(use-nix-package org-appear
-                 :commands (org-appear-mode)
-                 :hook     (org-mode . org-appear-mode)
-                 :config
-                 (setq org-hide-emphasis-markers t)  ;; Must be activated for org-appear to work
-                 (setq org-appear-autoemphasis   t   ;; Show bold, italics, verbatim, etc.
-                       org-appear-autolinks      t   ;; Show links
-                       org-appear-autosubmarkers t)) ;; Show sub- and superscripts
+(use-package org-appear
+  :commands (org-appear-mode)
+  :hook     (org-mode . org-appear-mode)
+  :config
+  (setq org-hide-emphasis-markers t)  ;; Must be activated for org-appear to work
+  (setq org-appear-autoemphasis   t   ;; Show bold, italics, verbatim, etc.
+        org-appear-autolinks      t   ;; Show links
+        org-appear-autosubmarkers t)) ;; Show sub- and superscripts
 
-(use-nix-package org-fragtog
-                 :after org
-                 :hook (org-mode . org-fragtog-mode))
+(use-package org-fragtog
+  :after org
+  :hook (org-mode . org-fragtog-mode))
 
-(use-nix-package engrave-faces
-                 :ensure t
-                 :after ox-latex
-                 :init
-                 (setq org-latex-src-block-backend 'engraved
-                       ;; org-latex-engraved-theme 'doom-tokyo-night))
-                       ))
+(use-package engrave-faces
+  :ensure t
+  :after ox-latex hl-todo
+  :init
+  (setq org-latex-src-block-backend 'engraved
+        ;; org-latex-engraved-theme 'doom-tokyo-night))
+        )
+  )
 
 
 
-(use-nix-package org-attach-screenshot
-                 :bind ("C-c C-x s" . org-attach-screenshot)
-                 :config (setq org-attach-screenshot-dirfunction
-		                       (lambda ()
-		                         (progn (cl-assert (buffer-file-name))
-			                            (concat (file-name-sans-extension (buffer-file-name))
-				                                "-att")))
-		                       org-attach-screenshot-command-line "gnome-screenshot -a -f %f"))
+(use-package org-attach-screenshot
+  :bind ("C-c C-x s" . org-attach-screenshot)
+  :config (setq org-attach-screenshot-dirfunction
+		        (lambda ()
+		          (progn (cl-assert (buffer-file-name))
+			             (concat (file-name-sans-extension (buffer-file-name))
+				                 "-att")))
+		        org-attach-screenshot-command-line "gnome-screenshot -a -f %f"))
 
-(use-nix-package org-sidebar
-                 :straight (:type git :host github :repo "alphapapa/org-sidebar")
-                 :ensure t
-                 )
+(use-package org-sidebar
+  :straight (:type git :host github :repo "alphapapa/org-sidebar")
+  :ensure t
+  )
 ;; org mode is a major mode designed for organizing notes, planning, task
 ;; management, and authoring documents using plain text with a simple and
 ;; expressive markup syntax. It supports hierarchical outlines, TODO lists,
 ;; scheduling, deadlines, time tracking, and exporting to multiple formats
 ;; including HTML, LaTeX, PDF, and Markdown.
-(use-nix-package org
-                 :ensure t
-                 :commands (org-mode org-version)
-                 :mode
-                 ("\\.org\\'" . org-mode)
-                 :hook
-                 (org-mode . visual-line-mode)
-                 ;; (org-mode . olivetti-mode)
-                 (org-mode . org-indent-mode)
-                 ;; (org-mode . org-modern-indent-mode)
-
-                 :config
-                 (setq org-directory "~/Org/")
-                 ;; lualatex setup from https://stackoverflow.com/questions/41568410/configure-org-mode-to-use-lualatex
-                 (setq org-babel-latex-preamble
-                       (lambda (_)
-                         "\\documentclass[tikz]{standalone}"))
-
-                 (setq org-latex-create-formula-image-program 'dvisvgm)
-                 (org-babel-do-load-languages 'org-babel-load-languages '((latex . t)))
-                 (setq org-babel-latex-pdf-svg-process "pdf2svg %F %O")
-
-                 (setq org-latex-pdf-process
-                       '("latexmk -lualatex -shell-escape -interaction=nonstopmode  %f"))
-                 ;; (setq org-latex-pdf-process
-                 ;;       '("lualatex -pdflatex=-shell-escape -interaction nonstopmode %f"
-                 ;;         "lualatex -shell-escape -interaction nonstopmode %f"))
-
-                 (setq luasvg '(luasvg :programs ("dvilualatex""dvisvgm") :description "dvi > svg" :message
-                                       "you need to install the programs: lualatex and dvisvgm."
-                                       :image-input-type "dvi" :image-output-type "svg" :image-size-adjust
-                                       (1.7 . 1.5) :latex-compiler
-                                       ("dvilualatex -interaction nonstopmode -output-directory %o %f")
-                                       :image-converter
-                                       ("dvisvgm %f --no-fonts --exact-bbox --scale=%S --output=%O")))
-
-                 (add-to-list 'org-preview-latex-process-alist luasvg)
-                 (require 'ox-latex)
-                 ;; (add-to-list 'org-latex-packages-alist '("" "minted" nil))
-                 ;; (setq org-latex-src-block-backend 'minted)
-                 (setq org-engraved-minted-options
-                       '(("frame" "leftline")
-                         ("linenos" "true")
-                         ("numberblanklines" "false")
-                         ("showspaces" "false")
-                         ("breaklines" "true")
-                         ))
-                 (setq org-latex-src-block-backend 'engraved)
-
-                 ;; (add-to-list 'org-latex-packages-alist '("" "xcolor" nil))
-                 (add-to-list 'org-latex-packages-alist '("" "fvextra" nil))
-                 (add-to-list 'org-latex-packages-alist '("" "upquote" nil))
-                 (add-to-list 'org-latex-packages-alist '("" "booktabs" nil))
-
-                 ;; (add-to-list 'org-latex-packages-alist '("" "lineno" nil))
-
-                 ;; (add-to-list 'org-latex-packages-alist '("" "hyperref" nil))
-                 ;; (add-to-list 'org-latex-packages-alist '("" "geometry" nil))
-                 ;; (customize-set-variable 'org-format-latex-header
-                 ;;                         (concat org-format-latex-header "\n\\setlength{\\parindent}{0pt}\n\\hypersetup{colorlinks=false, hidelinks=true}\n\\newgeometry{vmargin={15mm}, hmargin={17mm,17mm}}"))
-
-                 (defun org-html--format-image (source attributes info) ;base64 encodes images on export to HTML
-                   (format "<img src=\"data:image/%s;base64,%s\"%s />"
-                           (or (file-name-extension source) "")
-                           (base64-encode-string
-                            (with-temp-buffer
-	                          (insert-file-contents-literally source)
-	                          (buffer-string)))
-                           (file-name-nondirectory source)))
-                 :custom
-                 (org-preview-latex-default-process 'luasvg)
-                 (org-hide-leading-stars t)
-                 (org-html-validation-link nil)
-                 (org-startup-indented t)
-                 (org-edit-src-content-indentation 0)
-                 (org-link-search-must-match-exact-headline nil)
-                 (org-fontify-done-headline t)
-                 (org-fontify-todo-headline t)
-                 (org-fontify-whole-heading-line t)
-                 (org-fontify-quote-and-verse-blocks t)
-                 (org-startup-truncated t)
-                 (org-latex-compiler "lualatex")
-                 (org-adapt-indentation t)
-                 (org-hide-emphasis-markers t)
-                 (org-pretty-entities t)
-                 (org-agenda-tags-column 0)
-                 (org-ellipsis "…")
-                 (org-latex-tables-booktabs t)
-                 (org-footnote-auto-adjust t)
-                 (org-lowest-priority ?F "Gives us priorities A through F")  ;;Gives us priorities A through F
-                 (org-default-priority ?E "If an item has no priority, it is considered [#E]") ;; If an item has no priority, it is considered [#E].
-                 ;; (setq org-preview-latex-default-process 'dvisvgm))
-                 )
+(use-package org
+  :ensure t
+  :commands (org-mode org-version)
+  :mode
+  ("\\.org\\'" . org-mode)
+  :hook
+  (org-mode . visual-line-mode)
+  ;; (org-mode . olivetti-mode)
+  (org-mode . org-indent-mode)
+  ;; (org-mode . org-modern-indent-mode)
 
   :config
   (setq org-directory "~/Org/")
@@ -667,6 +587,18 @@
   (org-fontify-whole-heading-line t)
   (org-fontify-quote-and-verse-blocks t)
   (org-startup-truncated t)
+  (org-latex-compiler "lualatex")
+  (org-adapt-indentation t)
+  (org-hide-emphasis-markers t)
+  (org-pretty-entities t)
+  (org-agenda-tags-column 0)
+  (org-ellipsis "…")
+  (org-latex-tables-booktabs t)
+  (org-footnote-auto-adjust t)
+  (org-lowest-priority ?F "Gives us priorities A through F")  ;;Gives us priorities A through F
+  (org-default-priority ?E "If an item has no priority, it is considered [#E]") ;; If an item has no priority, it is considered [#E].
+  ;; (setq org-preview-latex-default-process 'dvisvgm))
+  )
 
 (defun org-show-todo-tree ()
   "Create new indirect buffer with sparse tree of undone TODO items"
@@ -701,27 +633,27 @@
         ("org" :components ("org-notes" "org-static")))
       )
 
-(use-nix-package htmlize
-                 :defer t)
+(use-package htmlize
+  :defer t)
 
 ;; The markdown-mode package provides a major mode for Emacs for syntax
 ;; highlighting, editing commands, and preview support for Markdown documents.
 ;; It supports core Markdown syntax as well as extensions like GitHub Flavored
 ;; Markdown (GFM).
-(use-nix-package markdown-mode
-                 :commands (gfm-mode
-                            gfm-view-mode
-                            markdown-mode
-                            markdown-view-mode)
-                 :mode (("\\.markdown\\'" . markdown-mode)
-                        ("\\.md\\'" . markdown-mode)
-                        ("README\\.md\\'" . gfm-mode))
-                 :init
-                 (setq markdown-command "multimarkdown")
+(use-package markdown-mode
+  :commands (gfm-mode
+             gfm-view-mode
+             markdown-mode
+             markdown-view-mode)
+  :mode (("\\.markdown\\'" . markdown-mode)
+         ("\\.md\\'" . markdown-mode)
+         ("README\\.md\\'" . gfm-mode))
+  :init
+  (setq markdown-command "multimarkdown")
 
-                 :bind
-                 (:map markdown-mode-map
-                       ("C-c C-e" . markdown-do)))
+  :bind
+  (:map markdown-mode-map
+        ("C-c C-e" . markdown-do)))
 
 ;; ;; Tree-sitter in Emacs is an incremental parsing system introduced in Emacs 29
 ;; ;; that provides precise, high-performance syntax highlighting. It supports a
@@ -740,106 +672,107 @@
 ;; layout, similar to file browsers in modern IDEs. It functions as a sidebar
 ;; in the left window, providing a persistent view of files, projects, and
 ;; other elements.
-(use-nix-package treemacs
-                 ;; :ensure t
-                 :elpaca nil
-                 :commands (treemacs
-                            treemacs-select-window
-                            treemacs-delete-other-windows
-                            treemacs-select-directory
-                            treemacs-bookmark
-                            treemacs-find-file
-                            treemacs-find-tag)
+(use-package treemacs
+  ;; :ensure t
+  :elpaca nil
+  :after doom-themes
+  :commands (treemacs
+             treemacs-select-window
+             treemacs-delete-other-windows
+             treemacs-select-directory
+             treemacs-bookmark
+             treemacs-find-file
+             treemacs-find-tag)
 
-                 :bind
-                 (:map global-map
-                       ("M-0"       . treemacs-select-window)
+  :bind
+  (:map global-map
+        ("M-0"       . treemacs-select-window)
 
-                       ("C-x t 1"   . treemacs-delete-other-windows)
-                       ("C-x t t"   . treemacs)
-                       ("C-x t d"   . treemacs-select-directory)
-                       ("C-x t B"   . treemacs-bookmark)
-                       ("C-x t C-t" . treemacs-find-file)
-                       ("C-x t M-t" . treemacs-find-tag))
+        ("C-x t 1"   . treemacs-delete-other-windows)
+        ("C-x t t"   . treemacs)
+        ("C-x t d"   . treemacs-select-directory)
+        ("C-x t B"   . treemacs-bookmark)
+        ("C-x t C-t" . treemacs-find-file)
+        ("C-x t M-t" . treemacs-find-tag))
 
-                 :init
-                 (with-eval-after-load 'winum
-                   (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
+  :init
+  (with-eval-after-load 'winum
+    (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
 
-                 :config
-                 (setq treemacs-collapse-dirs                   (if treemacs-python-executable 3 0)
-                       treemacs-deferred-git-apply-delay        0.5
-                       treemacs-directory-name-transformer      #'identity
-                       treemacs-display-in-side-window          t
-                       treemacs-eldoc-display                   'simple
-                       treemacs-file-event-delay                2000
-                       treemacs-file-extension-regex            treemacs-last-period-regex-value
-                       treemacs-file-follow-delay               0.2
-                       treemacs-file-name-transformer           #'identity
-                       treemacs-follow-after-init               t
-                       treemacs-expand-after-init               t
-                       treemacs-find-workspace-method           'find-for-file-or-pick-first
-                       treemacs-git-command-pipe                ""
-                       treemacs-goto-tag-strategy               'refetch-index
-                       treemacs-header-scroll-indicators        '(nil . "^^^^^^")
-                       treemacs-hide-dot-git-directory          t
-                       treemacs-indentation                     2
-                       treemacs-indentation-string              " "
-                       treemacs-is-never-other-window           nil
-                       treemacs-max-git-entries                 5000
-                       treemacs-missing-project-action          'ask
-                       treemacs-move-files-by-mouse-dragging    t
-                       treemacs-move-forward-on-expand          nil
-                       treemacs-no-png-images                   nil
-                       treemacs-no-delete-other-windows         t
-                       treemacs-project-follow-cleanup          nil
-                       treemacs-persist-file                    (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
-                       treemacs-position                        'left
-                       treemacs-read-string-input               'from-child-frame
-                       treemacs-recenter-distance               0.1
-                       treemacs-recenter-after-file-follow      nil
-                       treemacs-recenter-after-tag-follow       nil
-                       treemacs-recenter-after-project-jump     'always
-                       treemacs-recenter-after-project-expand   'on-distance
-                       treemacs-litter-directories              '("/node_modules" "/.venv" "/.cask")
-                       treemacs-project-follow-into-home        nil
-                       treemacs-show-cursor                     nil
-                       treemacs-show-hidden-files               t
-                       treemacs-silent-filewatch                nil
-                       treemacs-silent-refresh                  nil
-                       treemacs-sorting                         'alphabetic-asc
-                       treemacs-select-when-already-in-treemacs 'move-back
-                       treemacs-space-between-root-nodes        t
-                       treemacs-tag-follow-cleanup              t
-                       treemacs-tag-follow-delay                1.5
-                       treemacs-text-scale                      nil
-                       treemacs-user-mode-line-format           nil
-                       treemacs-user-header-line-format         nil
-                       treemacs-wide-toggle-width               70
-                       treemacs-width                           35
-                       treemacs-width-increment                 1
-                       treemacs-width-is-initially-locked       t
-                       treemacs-workspace-switch-cleanup        nil)
+  :config
+  (setq treemacs-collapse-dirs                   (if treemacs-python-executable 3 0)
+        treemacs-deferred-git-apply-delay        0.5
+        treemacs-directory-name-transformer      #'identity
+        treemacs-display-in-side-window          t
+        treemacs-eldoc-display                   'simple
+        treemacs-file-event-delay                2000
+        treemacs-file-extension-regex            treemacs-last-period-regex-value
+        treemacs-file-follow-delay               0.2
+        treemacs-file-name-transformer           #'identity
+        treemacs-follow-after-init               t
+        treemacs-expand-after-init               t
+        treemacs-find-workspace-method           'find-for-file-or-pick-first
+        treemacs-git-command-pipe                ""
+        treemacs-goto-tag-strategy               'refetch-index
+        treemacs-header-scroll-indicators        '(nil . "^^^^^^")
+        treemacs-hide-dot-git-directory          t
+        treemacs-indentation                     2
+        treemacs-indentation-string              " "
+        treemacs-is-never-other-window           nil
+        treemacs-max-git-entries                 5000
+        treemacs-missing-project-action          'ask
+        treemacs-move-files-by-mouse-dragging    t
+        treemacs-move-forward-on-expand          nil
+        treemacs-no-png-images                   nil
+        treemacs-no-delete-other-windows         t
+        treemacs-project-follow-cleanup          nil
+        treemacs-persist-file                    (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
+        treemacs-position                        'left
+        treemacs-read-string-input               'from-child-frame
+        treemacs-recenter-distance               0.1
+        treemacs-recenter-after-file-follow      nil
+        treemacs-recenter-after-tag-follow       nil
+        treemacs-recenter-after-project-jump     'always
+        treemacs-recenter-after-project-expand   'on-distance
+        treemacs-litter-directories              '("/node_modules" "/.venv" "/.cask")
+        treemacs-project-follow-into-home        nil
+        treemacs-show-cursor                     nil
+        treemacs-show-hidden-files               t
+        treemacs-silent-filewatch                nil
+        treemacs-silent-refresh                  nil
+        treemacs-sorting                         'alphabetic-asc
+        treemacs-select-when-already-in-treemacs 'move-back
+        treemacs-space-between-root-nodes        t
+        treemacs-tag-follow-cleanup              t
+        treemacs-tag-follow-delay                1.5
+        treemacs-text-scale                      nil
+        treemacs-user-mode-line-format           nil
+        treemacs-user-header-line-format         nil
+        treemacs-wide-toggle-width               70
+        treemacs-width                           35
+        treemacs-width-increment                 1
+        treemacs-width-is-initially-locked       t
+        treemacs-workspace-switch-cleanup        nil)
 
-                 ;; The default width and height of the icons is 22 pixels. If you are
-                 ;; using a Hi-DPI display, uncomment this to double the icon size.
-                 ;; (treemacs-resize-icons 44)
+  ;; The default width and height of the icons is 22 pixels. If you are
+  ;; using a Hi-DPI display, uncomment this to double the icon size.
+  ;; (treemacs-resize-icons 44)
 
-                 (treemacs-follow-mode t)
-                 (treemacs-filewatch-mode t)
-                 (treemacs-fringe-indicator-mode 'always)
+  (treemacs-follow-mode t)
+  (treemacs-filewatch-mode t)
+  (treemacs-fringe-indicator-mode 'always)
 
-                 ;;(when treemacs-python-executable
-                 ;;  (treemacs-git-commit-diff-mode t))
+  ;;(when treemacs-python-executable
+  ;;  (treemacs-git-commit-diff-mode t))
 
-                 (pcase (cons (not (null (executable-find "git")))
-                              (not (null treemacs-python-executable)))
-                   (`(t . t)
-                    (treemacs-git-mode 'deferred))
-                   (`(t . _)
-                    (treemacs-git-mode 'simple)))
+  (pcase (cons (not (null (executable-find "git")))
+               (not (null treemacs-python-executable)))
+    (`(t . t)
+     (treemacs-git-mode 'deferred))
+    (`(t . _)
+     (treemacs-git-mode 'simple)))
 
-                 (treemacs-hide-gitignored-files-mode nil))
+  (treemacs-hide-gitignored-files-mode nil))
 
 
 (use-package ispell
@@ -1049,15 +982,15 @@
 (dolist (hook '(prog-mode-hook text-mode-hook conf-mode-hook))
   (add-hook hook #'display-line-numbers-mode))
 
-(use-nix-package which-key
-                 :ensure nil ; builtin
-                 :commands which-key-mode
-                 :hook (elpaca-after-init . which-key-mode)
-                 :custom
-                 (which-key-idle-delay 1.5)
-                 (which-key-idle-secondary-delay 0.25)
-                 (which-key-add-column-padding 1)
-                 (which-key-max-description-length 40))
+(use-package which-key
+  :ensure nil ; builtin
+  :commands which-key-mode
+  :hook (elpaca-after-init . which-key-mode)
+  :custom
+  (which-key-idle-delay 1.5)
+  (which-key-idle-secondary-delay 0.25)
+  (which-key-add-column-padding 1)
+  (which-key-max-description-length 40))
 
 (unless (and (eq window-system 'mac)
              (bound-and-true-p mac-carbon-version-string))
@@ -1161,27 +1094,27 @@
 ;; :straight (:host github :repo "magit/forge" :branch "main" ))
 
 
-(use-nix-package difftastic
-                 :demand t
-                 :bind (:map magit-blame-read-only-mode-map
-                             ("D" . difftastic-magit-show)
-                             ("S" . difftastic-magit-show))
-                 :config
-                 (eval-after-load 'magit-diff
-                   '(transient-append-suffix 'magit-diff '(-1 -1)
-                      [("D" "Difftastic diff (dwim)" difftastic-magit-diff)
-                       ("S" "Difftastic show" difftastic-magit-show)])))
+(use-package difftastic
+  :demand t
+  :bind (:map magit-blame-read-only-mode-map
+              ("D" . difftastic-magit-show)
+              ("S" . difftastic-magit-show))
+  :config
+  (eval-after-load 'magit-diff
+    '(transient-append-suffix 'magit-diff '(-1 -1)
+       [("D" "Difftastic diff (dwim)" difftastic-magit-diff)
+        ("S" "Difftastic show" difftastic-magit-show)])))
 
-(use-nix-package magit-delta
-                 :after transient
-                 :hook (magit-mode . magit-delta-mode)
-                 :config
-                 (setq magit-delta-delta-args
-                       `("--syntax-theme" "tokyoNightNight"
-                         ;; `("--syntax-theme" "Dracula"
-                         "--max-line-distance" "0.6"
-                         "--true-color" "always"
-                         "--color-only")))
+(use-package magit-delta
+  :after transient
+  :hook (magit-mode . magit-delta-mode)
+  :config
+  (setq magit-delta-delta-args
+        `("--syntax-theme" "tokyoNightNight"
+          ;; `("--syntax-theme" "Dracula"
+          "--max-line-distance" "0.6"
+          "--true-color" "always"
+          "--color-only")))
 
 (defun myfun/toggle-magit-delta ()
   (interactive)
@@ -1237,17 +1170,17 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
                                      (unpackaged/smerge-hydra/body)))))
 
 
-(use-nix-package hl-todo
-                 :hook (elpaca-after-init . global-hl-todo-mode)
-                 :config (setq hl-todo-keyword-faces
-                               '(("TODO"   . nerd-icons-green)
-                                 ("HACK"  . nerd-icons-orange)
-                                 ("NOTE" . nerd-icons-maroon)
-                                 ("FIXME:" . nerd-icons-lred)
-                                 ("WARN"   . nerd-icons-red)
-                                 ("HERE"   . nerd-icons-blue-alt)
-                                 ))
-                 )
+(use-package hl-todo
+  :hook (elpaca-after-init . global-hl-todo-mode)
+  :config (setq hl-todo-keyword-faces
+                '(("TODO"   . nerd-icons-green)
+                  ("HACK"  . nerd-icons-orange)
+                  ("NOTE" . nerd-icons-maroon)
+                  ("FIXME:" . nerd-icons-lred)
+                  ("WARN"   . nerd-icons-red)
+                  ("HERE"   . nerd-icons-blue-alt)
+                  ))
+  )
 
 (use-package consult-todo :demand t)
 
@@ -1275,26 +1208,26 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   :init
   (projectile-mode))
 
-(use-nix-package rg
-                 :after transient
-                 :defer t)
+(use-package rg
+  :after transient
+  :defer t)
 
-(use-nix-package flycheck
-                 :defer t
-                 :hook (elpaca-after-init . global-flycheck-mode)
+(use-package flycheck
+  :defer t
+  :hook (elpaca-after-init . global-flycheck-mode)
 
-                 :config
-                 (setq flycheck-highlighting-mode "lines")
-                 (setq lsp-diagnostics-provider :none)
-                 )
+  :config
+  (setq flycheck-highlighting-mode "lines")
+  (setq lsp-diagnostics-provider :none)
+  )
 
 
-(use-nix-package flycheck-inline
-                 :after flycheck
-                 :hook (flycheck-mode . flycheck-inline-mode))
+(use-package flycheck-inline
+  :after flycheck
+  :hook (flycheck-mode . flycheck-inline-mode))
 
-(use-nix-package scad-mode
-                 :ensure t)
+(use-package scad-mode
+  :ensure t)
 
 (use-package scad-preview
   :after scad-mode
@@ -1353,7 +1286,7 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
         lsp-ui-sideline-delay 0.05))
 
 (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
-(use-nix-package lsp-treemacs :commands lsp-treemacs-errors-list)
+(use-package lsp-treemacs :commands lsp-treemacs-errors-list)
 
 
 ;; (use-package ccls
@@ -1368,23 +1301,23 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 ;;          (lambda () (require 'ccls) (lsp))))
 
 
-(use-nix-package treemacs-projectile :after (treemacs projectile))
+(use-package treemacs-projectile :after (treemacs projectile))
 
 
-(use-nix-package dap-mode
-                 :defer t
-                 :ensure t :after lsp-mode
-                 :config
-                 (require 'dap-python)
-                 (require 'dap-ui)
+(use-package dap-mode
+  :defer t
+  :ensure t :after lsp-mode
+  :config
+  (require 'dap-python)
+  (require 'dap-ui)
 
-                 (setq dap-mode t)
-                 (setq dap-ui-mode t)
-                 ;; enables mouse hover support
-                 (setq dap-tooltip-mode t)
-                 ;; if it is not enabled `dap-mode' will use the minibuffer.
-                 (setq tooltip-mode t)
-                 )
+  (setq dap-mode t)
+  (setq dap-ui-mode t)
+  ;; enables mouse hover support
+  (setq dap-tooltip-mode t)
+  ;; if it is not enabled `dap-mode' will use the minibuffer.
+  (setq tooltip-mode t)
+  )
 
 ;; Yes ace is unmaintained, but it just is nicer imo
 (use-package ace-jump-mode
@@ -1394,9 +1327,9 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   ("C-c o" . ace-select-window)
   )
 
-(use-nix-package treemacs-nerd-icons
-                 :config
-                 (treemacs-load-theme "nerd-icons"))
+(use-package treemacs-nerd-icons
+  :config
+  (treemacs-load-theme "nerd-icons"))
 
 (use-package clipetty
   :ensure t
@@ -1517,8 +1450,12 @@ function that sets `deactivate-mark' to t."
 (use-package corfu-prescient
   :after corfu
   :config
-  (corfu-prescient-mode 1))
+  (corfu-prescient-mode 1)
+  )
 
+(use-package eldoc-box
+  :hook (eldoc-mode . eldoc-box-hover-at-point-mode)
+  )
 
 (setq completion-preview-sort-function #'prescient-completion-sort)
 
@@ -1558,17 +1495,17 @@ function that sets `deactivate-mark' to t."
 
 
 ;; git gutter from https://ianyepan.github.io/posts/emacs-git-gutter/
-(use-nix-package git-gutter
-                 :hook (prog-mode . git-gutter-mode)
-                 :config
-                 (setq git-gutter:update-interval 0.02))
+(use-package git-gutter
+  :hook (prog-mode . git-gutter-mode)
+  :config
+  (setq git-gutter:update-interval 0.02))
 
-(use-nix-package git-gutter-fringe
-                 :config
-                 (define-fringe-bitmap 'git-gutter-fr:added [224] nil nil '(center repeated))
-                 (define-fringe-bitmap 'git-gutter-fr:modified [224] nil nil '(center repeated))
-                 (define-fringe-bitmap 'git-gutter-fr:deleted [128 192 224 240] nil nil 'bottom)
-                 )
+(use-package git-gutter-fringe
+  :config
+  (define-fringe-bitmap 'git-gutter-fr:added [224] nil nil '(center repeated))
+  (define-fringe-bitmap 'git-gutter-fr:modified [224] nil nil '(center repeated))
+  (define-fringe-bitmap 'git-gutter-fr:deleted [128 192 224 240] nil nil 'bottom)
+  )
 
 
 (use-package vundo
@@ -1614,9 +1551,9 @@ function that sets `deactivate-mark' to t."
   :after python
   :bind ("C-c C-n" . numpydoc-generate))
 
-(use-nix-package pyvenv
-                 :ensure t
-                 :after python)
+(use-package pyvenv
+  :ensure t
+  :after python)
 
 (use-package uv
   :straight (uv :type git :host github :repo "johannes-mueller/uv.el")
@@ -1635,33 +1572,34 @@ function that sets `deactivate-mark' to t."
 ;;          (lambda () (require 'ccls) (lsp))))
 ;;
 
-(use-nix-package vterm-toggle
-                 :ensure t
-                 ;; :hook (elpaca-after-init . vterm-toggle)
-                 :bind
-                 ("C-c t" . vterm-toggle-cd)
+(use-package vterm-toggle
+  :ensure t
+  ;; :hook (elpaca-after-init . vterm-toggle)
+  :bind
+  ("C-c t" . vterm-toggle-cd)
 
-                 :config
-                 (define-key vterm-mode-map [(control return)]   #'vterm-toggle-insert-cd)
-                 (define-key vterm-copy-mode-map [(control return)]   #'vterm-toggle-insert-cd)
-                 )
+  :config
+  (define-key vterm-mode-map [(control return)]   #'vterm-toggle-insert-cd)
+  (define-key vterm-copy-mode-map [(control return)]   #'vterm-toggle-insert-cd)
+  )
 
-(use-nix-package tabspaces
-                 ;; use this next line only if you also use straight, otherwise ignore it.
-                 ;; :straight (:type git :host github :repo "mclear-tools/tabspaces")
-                 :hook (elpaca-after-init-hook . tabspaces-mode) ;; use this only if you want the minor-mode loaded at startup.
-                 :commands (tabspaces-switch-or-create-workspace
-                            tabspaces-open-or-create-project-and-workspace)
-                 :custom
-                 (tabspaces-use-filtered-buffers-as-default t)
-                 (tabspaces-default-tab "Default")
-                 (tabspaces-remove-to-default t)
-                 (tabspaces-include-buffers '("*scratch*"))
-                 (tabspaces-initialize-project-with-todo nil)
-                 ;; sessions
-                 (tabspaces-session t)
-                 (tabspaces-session-auto-restore nil)
-                 (tab-bar-new-tab-choice "*scratch*"))
+(use-package tabspaces
+  :ensure t
+  ;; use this next line only if you also use straight, otherwise ignore it.
+  ;; :straight (:type git :host github :repo "mclear-tools/tabspaces")
+  :hook (elpaca-after-init-hook . tabspaces-mode) ;; use this only if you want the minor-mode loaded at startup.
+  :commands (tabspaces-switch-or-create-workspace
+             tabspaces-open-or-create-project-and-workspace)
+  :custom
+  (tabspaces-use-filtered-buffers-as-default t)
+  (tabspaces-default-tab "Default")
+  (tabspaces-remove-to-default t)
+  (tabspaces-include-buffers '("*scratch*"))
+  (tabspaces-initialize-project-with-todo nil)
+  ;; sessions
+  (tabspaces-session t)
+  (tabspaces-session-auto-restore nil)
+  (tab-bar-new-tab-choice "*scratch*"))
 ;; Filter Buffers for Consult-Buffer
 ;; Define a helper for clarity
 
@@ -1732,8 +1670,8 @@ function that sets `deactivate-mark' to t."
   :config
   (setq create-lockfiles nil))
 
+
 ;; Enables doxymacs in all modes
-(add-hook 'font-lock-mode-hook 'doxymacs-font-lock)
 (use-package doxymacs
   :straight (doxymacs :type git :host github :repo "pniedzielski/doxymacs")
   :hook (prog-mode . doxymacs-mode)
@@ -1758,7 +1696,9 @@ function that sets `deactivate-mark' to t."
               ;; Insert a grouping comments around the current region.
               ("C-c d @" . doxymacs-insert-grouping-comments))
   :config
-  (doxymacs-font-lock)
+  ;;(doxymacs-font-lock)
+  (add-hook 'doxymacs-mode-hook (lambda ()
+                                  (doxymacs-font-lock)))
   :custom
   ;; Configure source code <-> Doxygen tag file <-> Doxygen HTML
   ;; documentation mapping:
@@ -1770,9 +1710,9 @@ function that sets `deactivate-mark' to t."
   ;;     file:///home/me/project/bar/doc/.
   ;; This must be configured for Doxymacs to function!
   (doxymacs-doxygen-dirs
-   '(("^/home/bones/Storage/Uniwork/.gitJankness/ELEC3020_Project/"
-      "~/home/bones/Storage/Uniwork/.gitJankness/ELEC3020_Project/project.xml"
-      "file::///home/bones/Storage/Uniwork/.gitJankness/ELEC3020_Project/doc/")
+   '(("^/mnt/c/projects/mp-grouping/"
+      "/mnt/c/projects/mp-grouping/doxytags.xml"
+      "file:///mnt/c/projects/mp-grouping/Docs/html")
      )))
 
 
@@ -2029,4 +1969,5 @@ function that sets `deactivate-mark' to t."
   :config
   (add-to-list 'auto-mode-alist
                '("\\.dbml\\'" . dbml-mode)))
+
 ;;
