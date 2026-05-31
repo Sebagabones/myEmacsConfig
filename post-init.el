@@ -12,7 +12,7 @@
   "Wrapper around ‘use-package’ that in theory should allow me to use packages installed with nix - NAME is the package name, ARGS are args passed."
   `(use-package ,name :elpaca nil ,@args))
 
-
+(setq default-input-method "Tex")
 ;; Ensure adding the following compile-angel code at the very beginning
 ;; of your `~/.emacs.d/post-init.el` file, before all other packages.
 (use-package compile-angel
@@ -49,6 +49,7 @@
 (use-package neotree
   :bind ("C-c C-t" . neotree-toggle))
 
+
 (use-package doom-themes
   :ensure t
   ;;  :hook  solaire-mode
@@ -57,11 +58,11 @@
   (doom-themes-enable-bold t)   ; if nil, bold is universally disabled
   (doom-themes-enable-italic t) ; if nil, italics is universally disabled
   ;; for treemacs users
-  ;;  (doom-themes-treemacs-theme "doom-tokyo-night") ; use "doom-colors" for less minimal icon theme
+  (doom-themes-treemacs-theme "doom-tokyo-night") ; use "doom-colors" for less minimal icon theme
 
 
   :config
-  (load-theme 'doom-tokyo-night t)
+  ;; (load-theme 'doom-tokyo-night t)
 
   ;; Enable flashing mode-line on errors
   ;;  (doom-themes-visual-bell-config)
@@ -71,17 +72,24 @@
   ;;  (doom-themes-treemacs-config)         ;
   ;; Corrects (and improves) org-mode's native fontification.
   (doom-themes-org-config))
+(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
+(load-theme 'doom-tokyo-dark :no-confirm)
 
-;; (use-package catppuccin-theme
-;;   :ensure t
-;;   :config
-;;   (setq catppuccin-flavor 'latte) ;; or 'latte, 'macchiato, or 'mocha
-;;   ;; (load-theme 'catppuccin :no-confirm)
-;;   ;; ;; (catppuccin-reload)
-;;   )
+
 (use-nix-package base16-theme
                  :ensure t
+                 :defer t
                  )
+(use-package catppuccin-theme
+  :ensure t
+  :defer t
+  :config
+  (setq catppuccin-flavor 'mocha) ;; or 'latte, 'macchiato, or 'mocha
+  ;; (load-theme 'catppuccin :no-confirm)
+  ;; (catppuccin-reload)
+  )
+
+
 (use-package  solaire-mode
   :ensure t
   :config
@@ -544,6 +552,7 @@
 
                  (setopt org-latex-pdf-process
                          '("lualatex --shell-escape -interaction=nonstopmode -output-directory=%o %f"
+                           "biber %b"
                            ;; "latexmk  -shell-escape -f -pdf -%latex -interaction=nonstopmode -output-directory=%o %f"
                            "lualatex --shell-escape -interaction=nonstopmode -output-directory=%o %f"
                            "lualatex --shell-escape -interaction=nonstopmode -output-directory=%o %f"))
@@ -560,16 +569,25 @@
                                          ("dvisvgm %f --no-fonts --exact-bbox --scale=%S --output=%O")))
 
                  (add-to-list 'org-preview-latex-process-alist luasvg)
+                 (setopt org-preview-latex-default-process 'luasvg)
                  (require 'ox-latex)
                  ;; (add-to-list 'org-latex-packages-alist '("" "minted" nil))
-                 ;; (setq org-latex-src-block-backend 'minted)
-                 (setopt org-engraved-minted-options
+                 (setopt org-latex-minted-options
                          '(("frame" "leftline")
                            ("linenos" "true")
                            ("numberblanklines" "false")
                            ("showspaces" "false")
                            ("breaklines" "true")
+                           ("bgcolor" "{CtpMantle}")
                            ))
+                 (setq org-latex-src-block-backend 'minted)
+                 ;; (setopt org-latex-engraved-options
+                 ;;         '(("frame" "leftline")
+                 ;;           ("linenos" "true")
+                 ;;           ("numberblanklines" "false")
+                 ;;           ("showspaces" "false")
+                 ;;           ("breaklines" "true")
+                 ;;           ))
                  (setopt org-latex-src-block-backend 'engraved)
                  (custom-set-faces
                   '(org-level-1 ((t (:inherit outline-1 :weight bold :height 1.8))))
@@ -651,7 +669,7 @@
                  (org-footnote-auto-adjust t)
                  (org-lowest-priority ?F "Gives us priorities A through F")  ;;Gives us priorities A through F
                  (org-default-priority ?E "If an item has no priority, it is considered [#E]") ;; If an item has no priority, it is considered [#E].
-                 ;; (setq org-preview-latex-default-process 'dvisvgm))
+
 
                  (org-priority-faces
                   (quote ((?A :background "#1a1b26"
@@ -671,6 +689,10 @@
   (clone-indirect-buffer "*org TODO undone*" t)
   (org-show-todo-tree nil)
   (org-remove-occur-highlights))
+(use-package citeproc
+  :ensure t
+  :defer t
+  )
 
 
 (use-nix-package htmlize
@@ -1390,16 +1412,16 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 ;;(use-nix-package lsp-treemacs :commands lsp-treemacs-errors-list) ;
 
 
-;; (use-package ccls
-;;   :ensure t
-;;   :config
-;;   (setq ccls-sem-highlight-method 'font-lock)
-;;   ;; alternatively, (setq ccls-sem-highlight-method 'overlay)
-;;
-;;   ;; For rainbow semantic highlighting
-;;   (ccls-use-default-rainbow-sem-highlight)
-;;   :hook ((c-mode c++-mode objc-mode cuda-mode) .
-;;          (lambda () (require 'ccls) (lsp))))
+(use-nix-package ccls
+                 :ensure t
+                 :config
+                 (setq ccls-sem-highlight-method 'font-lock)
+                 ;; alternatively, (setq ccls-sem-highlight-method 'overlay)
+
+                 ;; For rainbow semantic highlighting
+                 (ccls-use-default-rainbow-sem-highlight)
+                 :hook ((c-mode c++-mode objc-mode cuda-mode) .
+                        (lambda () (require 'ccls) (lsp))))
 
 
 ;; (use-nix-package treemacs-projectile :after (treemacs projectile))
@@ -1411,13 +1433,16 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
                  :config
                  (require 'dap-python)
                  (require 'dap-ui)
-
+                 ;; (require 'dap-lldb)
+                 ;; (require 'dap-cpptools)
+                 (require 'dap-gdb)
                  (setq dap-mode t)
                  (setq dap-ui-mode t)
                  ;; enables mouse hover support
                  (setq dap-tooltip-mode t)
                  ;; if it is not enabled `dap-mode' will use the minibuffer.
                  (setq tooltip-mode t)
+                 (setq dap-ui-controls-mode t)
                  )
 
 (use-package avy
@@ -1672,29 +1697,32 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 ;;          (lambda () (require 'ccls) (lsp))))
 ;;
 
-(use-nix-package vterm-toggle
-                 :ensure t
-                 ;; :hook (elpaca-after-init . vterm-toggle)
-                 :bind
-                 ("C-c t" . vterm-toggle-cd)
-                 :config
-                 (define-key vterm-mode-map [(control return)]   #'vterm-toggle-insert-cd)
-                 (define-key vterm-copy-mode-map [(control return)]   #'vterm-toggle-insert-cd)
-                 (setq vterm-toggle-fullscreen-p nil)
-                 (add-to-list 'display-buffer-alist
-                              '((lambda (buffer-or-name _)
-                                  (let ((buffer (get-buffer buffer-or-name)))
-                                    (with-current-buffer buffer
-                                      (or (equal major-mode 'vterm-mode)
-                                          (string-prefix-p vterm-buffer-name (buffer-name buffer))))))
-                                (display-buffer-reuse-window display-buffer-at-bottom)
-                                ;;(display-buffer-reuse-window display-buffer-in-direction)
-                                ;;display-buffer-in-direction/direction/dedicated is added in emacs27
-                                ;;(direction . bottom)
-                                ;;(dedicated . t) ;dedicated is supported in emacs27
-                                (reusable-frames . visible)
-                                (window-height . 0.4)))
-                 )
+(use-package vterm-toggle
+  :ensure t
+  ;; :hook (elpaca-after-init . vterm-toggle)
+  :bind
+  ("C-c t" . vterm-toggle-cd)
+  ("C-x c" . vterm-copy-mode)
+
+  :config
+  (setq vterm-toggle-fullscreen-p nil)
+
+  ;; Protect vterm-specific variables
+  (with-eval-after-load 'vterm
+    (define-key vterm-mode-map [(control return)] #'vterm-toggle-insert-cd)
+    (define-key vterm-copy-mode-map [(control return)] #'vterm-toggle-insert-cd))
+
+  (add-to-list 'display-buffer-alist
+               `((lambda (buffer-or-name _)
+                   (let ((buffer (get-buffer buffer-or-name)))
+                     (when buffer
+                       (with-current-buffer buffer
+                         (or (derived-mode-p 'vterm-mode)
+                             (string-prefix-p vterm-buffer-name (buffer-name buffer)))))))
+                 (display-buffer-reuse-window display-buffer-at-bottom)
+                 (reusable-frames . visible)
+                 (window-height . 0.4)))
+  )
 
 (use-nix-package tabspaces
                  ;; use this next line only if you also use straight, otherwise ignore it.
@@ -1910,4 +1938,11 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   )
 (use-package  haskell-mode
   :ensure t)
+
+(use-package math-at-point
+  :straight (math-at-point :type git :host github :repo "shankar2k/math-at-point")
+  :ensure t
+  :bind ("C-=" . math-at-point)
+  :hook org-mode)
+
 ;;; post-init.el ends here
