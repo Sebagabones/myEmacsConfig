@@ -62,6 +62,9 @@
 
 
   :config
+  (add-to-list 'default-frame-alist '(alpha-background . 95))
+  (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
+  (load-theme 'doom-tokyo-dark :no-confirm)
   ;; (load-theme 'doom-tokyo-night t)
 
   ;; Enable flashing mode-line on errors
@@ -72,8 +75,6 @@
   ;;  (doom-themes-treemacs-config)         ;
   ;; Corrects (and improves) org-mode's native fontification.
   (doom-themes-org-config))
-(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
-(load-theme 'doom-tokyo-dark :no-confirm)
 
 
 (use-nix-package base16-theme
